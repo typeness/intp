@@ -1,4 +1,4 @@
-package io.github.jerylee.intp
+package io.github.typeness.intp
 
 class Lexer(text: String) {
   private var currentPosition: Int = 0

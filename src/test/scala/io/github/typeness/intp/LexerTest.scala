@@ -1,4 +1,4 @@
-package io.github.jerylee.intp
+package io.github.typeness.intp
 
 import org.scalatest.FunSuite
 
