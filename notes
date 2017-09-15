@@ -1,0 +1,43 @@
+factorial = (n) => {
+  return 0
+}
+
+def concat(array1, array2) = {
+  return array1 + array2
+}
+
+size = ???
+
+size x
+x = [1]
+ x = concat(x, [1])
+
+komenatrze //
+
+importy jako wczywtywanie i interpretowanie pliku --> import nazwa_pliku
+
+builtin functions:
+print, println, readString, readDouble, readInt, size,
+
+wbudowane operatory
+ arytmetyczne i znakowe: +, *, /, -, +=, -=,, *=, /=, <, <=, >=, >, ==,
+ dla tablic: +, +=, [], size(id), ==
+ logiczne: or, and, not 
+ funkcyjne: return
+wbudowane typy:
+  int --> 1
+  double --> 1.5
+  char --> 'a'
+  bool --> true
+  array --> [1]
+  function -> () => {}
+Tablice moga przechowywac obiekty roznych typow???
+tablice tablic???
+
+stringi to cukier skladniowy dla tablic znakow
+petla while
+instrukcja warunkowa if, if else oraz else
+brak srednikow!
+
+Tokeny: +, *, /, -, +=, -=,, *=, /=, {, }, [, ], (, ), liczby, znaki,
+        => <, <=, >=, >, ==, or, while, true, false, if, else, and, not, return, break
