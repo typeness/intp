@@ -1,0 +1,6 @@
+factor(0): not (unary)- unary(+)
+term(1): * /
+expression(2): - +
+boolean(3): > >= < <= ==
+conjunction(4): and
+disjunction(5): or
