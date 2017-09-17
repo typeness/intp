@@ -41,8 +41,8 @@ class ParserTest extends FunSuite {
     val parser = new Parser("true or false and not true")
     val ast = parser.parse().children.head
     assert(ast ==
-      BinOp(Boolean(TrueToken), OrToken,
-        BinOp(Boolean(FalseToken), AndToken, UnaryOp(NotToken, Boolean(TrueToken)))
+      BinOp(BooleanAST(TrueToken), OrToken,
+        BinOp(BooleanAST(FalseToken), AndToken, UnaryOp(NotToken, BooleanAST(TrueToken)))
       )
     )
   }
@@ -95,7 +95,7 @@ class ParserTest extends FunSuite {
         BinOp(Number(IntegerConstToken(2)),MultiplicationToken,Number(IntegerConstToken(3))),
         Number(RealConstToken(1.3)), BinOp(VarAST(IdToken("y")),MultiplicationToken,
           VarAST(IdToken("x"))),
-        BinOp(Boolean(TrueToken),OrToken,Boolean(FalseToken))))),
+        BinOp(BooleanAST(TrueToken),OrToken,BooleanAST(FalseToken))))),
         BinOp(VarAST(IdToken("abcd")),MultiplicationToken,Number(IntegerConstToken(2))),
         FunctionCall(IdToken("f"),List(VarAST(IdToken("abcd")),
         BinOp(ArrayAccess(IdToken("g"),Number(IntegerConstToken(1))),MultiplicationToken,
@@ -107,7 +107,7 @@ class ParserTest extends FunSuite {
     val parser = new Parser("f(3, false)\ng()")
     val ast = parser.parse().children
     val excepted = List(
-      FunctionCall(IdToken("f"), List(Number(IntegerConstToken(3)), Boolean(FalseToken))),
+      FunctionCall(IdToken("f"), List(Number(IntegerConstToken(3)), BooleanAST(FalseToken))),
       FunctionCall(IdToken("g"), List())
     )
     assert(ast == excepted)
@@ -173,5 +173,21 @@ class ParserTest extends FunSuite {
           IdToken("var"), ArrayLiteral(List(VarAST(IdToken("a")), VarAST(IdToken("b")), VarAST(IdToken("x"))))))))
       )
     ))
+  }
+  test("Parse character assignment") {
+    val parser = new Parser("c = 'a'")
+    val ast = parser.parse().children.head
+    assert(ast ==
+      AssignAST(IdToken("c"), CharAST(CharToken('a')))
+    )
+  }
+  test("Parse string assignment") {
+    val parser = new Parser("s = \"text\"")
+    val ast = parser.parse().children.head
+    assert(ast ==
+      AssignAST(IdToken("s"), ArrayLiteral(List(
+        CharAST(CharToken('t')), CharAST(CharToken('e')), CharAST(CharToken('x')), CharAST(CharToken('t'))
+      )))
+    )
   }
 }

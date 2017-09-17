@@ -12,7 +12,10 @@ case class BinOp(left: AST, op: Token, right: AST) extends AST {
 case class Number(token: Token) extends AST {
 }
 
-case class Boolean(token: Token) extends AST {
+case class BooleanAST(token: Token) extends AST {
+}
+
+case class CharAST(token: CharToken) extends AST {
 }
 
 case class UnaryOp(op: Token, expr: AST) extends AST {

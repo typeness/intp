@@ -4,7 +4,7 @@ import org.scalatest.FunSuite
 
 class LexerTest extends FunSuite {
   test("Tokenize all possible tokens") {
-    val lexer = new Lexer("+ * / - { } [ ] ( ) 1234 12.34 ' \" ," +
+    val lexer = new Lexer("+ * / - { } [ ] ( ) 1234 12.34 'f' \"\" ," +
       " < <= >= > == or while true false if else and not return break . import = identifier" +
       " func")
     assert(lexer.getNextToken == AdditionToken)
@@ -20,6 +20,10 @@ class LexerTest extends FunSuite {
     assert(lexer.getNextToken == IntegerConstToken(1234))
     assert(lexer.getNextToken == RealConstToken(12.34))
     assert(lexer.getNextToken == ApostropheToken)
+    assert(lexer.getNextToken == CharToken('f'))
+    assert(lexer.getNextToken == ApostropheToken)
+    assert(lexer.getNextToken == QuotationToken)
+    assert(lexer.getNextToken == StringToken(""))
     assert(lexer.getNextToken == QuotationToken)
     assert(lexer.getNextToken == CommaToken)
     assert(lexer.getNextToken == LessToken)
@@ -42,6 +46,21 @@ class LexerTest extends FunSuite {
     assert(lexer.getNextToken == AssignToken)
     assert(lexer.getNextToken == IdToken("identifier"))
     assert(lexer.getNextToken == FuncToken)
+    assert(lexer.getNextToken == EOFToken)
+  }
+  test("Tokenize string with special character and id") {
+    val lexer = new Lexer("\"this is some string with special \n char\" id")
+    assert(lexer.getNextToken == QuotationToken)
+    assert(lexer.getNextToken == StringToken("this is some string with special \n char"))
+    assert(lexer.getNextToken == QuotationToken)
+    assert(lexer.getNextToken == IdToken("id"))
+    assert(lexer.getNextToken == EOFToken)
+  }
+  test("Tokenize apostrophe character") {
+    val lexer = new Lexer("'''")
+    assert(lexer.getNextToken == ApostropheToken)
+    assert(lexer.getNextToken == CharToken('\''))
+    assert(lexer.getNextToken == ApostropheToken)
     assert(lexer.getNextToken == EOFToken)
   }
 }

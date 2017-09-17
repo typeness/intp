@@ -184,10 +184,10 @@ class Parser(text: String) {
         Number(RealConstToken(token.value.toDouble))
       case TRUE =>
         eat(TRUE)
-        Boolean(TrueToken)
+        BooleanAST(TrueToken)
       case FALSE =>
         eat(FALSE)
-        Boolean(FalseToken)
+        BooleanAST(FalseToken)
       case L_ROUND_BRACKET =>
         eat(L_ROUND_BRACKET)
         val result = disjunction()
@@ -195,8 +195,43 @@ class Parser(text: String) {
         result
       case L_SQUARE_BRACKET =>
         arrrayLiteral()
-      case APOSTROPHE => ???
-      case QUOTATION => ???
+      case APOSTROPHE => characterLiteral()
+      case QUOTATION => stringLiteral()
+    }
+  }
+
+  private def stringToListOfChars(str: StringToken): List[AST] =
+    str.value.map(c => CharAST(CharToken(c))).toList
+
+  /*
+  string_literal: QUOTATION CHAR QUOTATION
+   */
+
+  def stringLiteral(): AST = {
+    eat(QUOTATION)
+    currentToken match {
+      case str: StringToken =>
+        val result = ArrayLiteral(stringToListOfChars(str))
+        eat(STRING)
+        eat(QUOTATION)
+        result
+      case _ => throw new ParserError(currentToken)
+    }
+  }
+
+  /*
+  character_literal: APOSTROPHE CHAR APOSTROPHE
+   */
+
+  def characterLiteral(): AST = {
+    eat(APOSTROPHE)
+    currentToken match {
+      case ch: CharToken =>
+        val result = CharAST(ch)
+        eat(CHARACTER)
+        eat(APOSTROPHE)
+        result
+      case _ => throw new ParserError(currentToken)
     }
   }
 

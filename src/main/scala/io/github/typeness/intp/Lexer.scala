@@ -3,6 +3,10 @@ package io.github.typeness.intp
 class Lexer(text: String) {
   private var currentPosition: Int = 0
   private var currentChar: Option[Char] = Some(text.charAt(currentPosition))
+  private var isOpeningQuote: Boolean = false
+  private var isClosingQuote: Boolean = false
+  private var isOpeningApostrophe: Boolean = false
+  private var isClosingApostrophe: Boolean = false
 
   private val keywords: Map[String, Token] = Map(
     IfToken.value -> IfToken,
@@ -20,7 +24,15 @@ class Lexer(text: String) {
   )
 
   def getNextToken: Token = {
-    if (currentChar.isDefined) {
+    if (isOpeningQuote) {
+      isOpeningQuote = false
+      isClosingQuote = true
+      str()
+    } else if(isOpeningApostrophe) {
+      isOpeningApostrophe = false
+      isClosingApostrophe = true
+      character()
+    } else if (currentChar.isDefined) {
       skipWhitespaces()
       if (currentChar.isDefined && currentChar.get.isDigit) {
         number()
@@ -79,14 +91,17 @@ class Lexer(text: String) {
         advance()
         LessToken
       } else if (currentChar.contains('\'')) {
+        if(!isClosingApostrophe) isOpeningApostrophe = true
+        else isClosingApostrophe = false
         advance()
         ApostropheToken
       } else if (currentChar.contains('"')) {
+        if (!isClosingQuote) isOpeningQuote = true
+        else isClosingQuote = false
         advance()
         QuotationToken
       } else if (currentChar.isDefined && (currentChar.get.isLetter || currentChar.get == '_')) {
-        val wtf = id()
-        wtf
+        id()
       } else if (currentChar.contains('.')) {
         advance()
         DotToken
@@ -139,6 +154,28 @@ class Lexer(text: String) {
     else Some(text.charAt(currentPosition + 1))
   }
 
+  private def str(): Token = {
+    val sb = new StringBuilder()
+    var specialChar = false
+    while (currentChar.isDefined && (specialChar || !currentChar.contains('\'') && !currentChar.contains('"'))) {
+      if (currentChar.get == '\\') {
+        specialChar = true
+      } else {
+        specialChar = false
+      }
+      sb.append(currentChar.get)
+      advance()
+    }
+    StringToken(sb.toString())
+  }
+
+  private def character(): Token = {
+    val ch = currentChar.get
+    advance()
+    CharToken(ch)
+  }
+
+  // todo: return IdToken
   private def id(): Token = {
     val sb = new StringBuilder()
     while (currentChar.isDefined && (currentChar.get.isLetterOrDigit || currentChar.get == '_')) {

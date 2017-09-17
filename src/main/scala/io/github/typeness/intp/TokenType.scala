@@ -10,6 +10,12 @@ case object INTEGER_CONST extends TokenType
 // eg. 123.456
 case object REAL_CONST extends TokenType
 
+// eg. "3ab123"
+case object STRING extends TokenType
+
+// eg. '$'
+case object CHARACTER extends TokenType
+
 // Operators
 
 // -

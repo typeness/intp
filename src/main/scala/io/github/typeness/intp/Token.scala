@@ -18,6 +18,16 @@ case class RealConstToken(doubleValue: Double) extends Token {
   override def value: String = doubleValue.toString
 }
 
+case class StringToken(value: String) extends Token {
+  override def tokenType: STRING.type = STRING
+}
+
+case class CharToken(c: Char) extends Token {
+  override def tokenType: CHARACTER.type = CHARACTER
+
+  override def value: String = c.toString
+}
+
 case object SubtractionToken extends Token {
   override def tokenType: TokenType = MINUS
 
