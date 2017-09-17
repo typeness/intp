@@ -167,12 +167,6 @@ case object QuotationToken extends Token {
   override def value: String = "\""
 }
 
-case object ArrowToken extends Token {
-  override def tokenType: TokenType = ARROW
-
-  override def value: String = "=>"
-}
-
 case object ImportToken extends Token {
   override def tokenType: TokenType = IMPORT
 
@@ -219,4 +213,10 @@ case object ReturnToken extends Token {
   override def tokenType: TokenType = RETURN
 
   override def value: String = "return"
+}
+
+case object FuncToken extends Token {
+  override def tokenType: TokenType = FUNC
+
+  override def value: String = "func"
 }

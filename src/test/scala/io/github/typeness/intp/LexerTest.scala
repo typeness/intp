@@ -5,7 +5,8 @@ import org.scalatest.FunSuite
 class LexerTest extends FunSuite {
   test("Tokenize all possible tokens") {
     val lexer = new Lexer("+ * / - { } [ ] ( ) 1234 12.34 ' \" ," +
-      " => < <= >= > == or while true false if else and not return break . import = identifier")
+      " < <= >= > == or while true false if else and not return break . import = identifier" +
+      " func")
     assert(lexer.getNextToken == AdditionToken)
     assert(lexer.getNextToken == MultiplicationToken)
     assert(lexer.getNextToken == DivisionToken)
@@ -21,7 +22,6 @@ class LexerTest extends FunSuite {
     assert(lexer.getNextToken == ApostropheToken)
     assert(lexer.getNextToken == QuotationToken)
     assert(lexer.getNextToken == CommaToken)
-    assert(lexer.getNextToken == ArrowToken)
     assert(lexer.getNextToken == LessToken)
     assert(lexer.getNextToken == LessOrEqualsToken)
     assert(lexer.getNextToken == GreaterOrEqualsToken)
@@ -41,6 +41,7 @@ class LexerTest extends FunSuite {
     assert(lexer.getNextToken == ImportToken)
     assert(lexer.getNextToken == AssignToken)
     assert(lexer.getNextToken == IdToken("identifier"))
+    assert(lexer.getNextToken == FuncToken)
     assert(lexer.getNextToken == EOFToken)
   }
 }

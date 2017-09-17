@@ -15,7 +15,8 @@ class Lexer(text: String) {
     TrueToken.value -> TrueToken,
     FalseToken.value -> FalseToken,
     BreakToken.value -> BreakToken,
-    ReturnToken.value -> ReturnToken
+    ReturnToken.value -> ReturnToken,
+    FuncToken.value -> FuncToken
   )
 
   def getNextToken: Token = {
@@ -27,10 +28,6 @@ class Lexer(text: String) {
         advance()
         advance()
         EqualsToken
-      } else if (currentChar.contains('=') && peek().contains('>')) {
-        advance()
-        advance()
-        ArrowToken
       } else if (currentChar.contains('>') && peek().contains('=')) {
         advance()
         advance()

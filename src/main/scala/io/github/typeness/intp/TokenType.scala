@@ -91,9 +91,6 @@ case object DOT extends TokenType
 // "
 case object QUOTATION extends TokenType
 
-case object ARROW extends TokenType
-// =>
-
 // Keywords
 
 // import
@@ -118,3 +115,6 @@ case object BREAK extends TokenType
 
 // return
 case object RETURN extends TokenType
+
+// func
+case object FUNC extends TokenType
