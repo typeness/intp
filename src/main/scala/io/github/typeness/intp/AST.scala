@@ -40,8 +40,8 @@ case class Program(children: List[AST]) extends AST {
   override def toString: String = s"Program(${children.map(_.toString).mkString("\n")})"
 }
 
-case class FunctionCall(name: IdToken, actualParameters: List[AST]) extends AST {
-  override def token: Token = name
+case class FunctionCall(source: AST, actualParameters: List[AST]) extends AST {
+  override def token: Token = source.token
 }
 
 case class FunctionDefinition(formalParameters: List[IdToken],

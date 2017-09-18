@@ -97,7 +97,7 @@ class ParserTest extends FunSuite {
           VarAST(IdToken("x"))),
         BinOp(BooleanAST(TrueToken),OrToken,BooleanAST(FalseToken))))),
         BinOp(VarAST(IdToken("abcd")),MultiplicationToken,Number(IntegerConstToken(2))),
-        FunctionCall(IdToken("f"),List(VarAST(IdToken("abcd")),
+        FunctionCall(VarAST(IdToken("f")),List(VarAST(IdToken("abcd")),
         BinOp(ArrayAccess(VarAST(IdToken("g")),Number(IntegerConstToken(1))),MultiplicationToken,
           ArrayAccess(VarAST(IdToken("h")),Number(IntegerConstToken(2))))))
     )
@@ -107,8 +107,8 @@ class ParserTest extends FunSuite {
     val parser = new Parser("f(3, false)\ng()")
     val ast = parser.parse().children
     val excepted = List(
-      FunctionCall(IdToken("f"), List(Number(IntegerConstToken(3)), BooleanAST(FalseToken))),
-      FunctionCall(IdToken("g"), List())
+      FunctionCall(VarAST(IdToken("f")), List(Number(IntegerConstToken(3)), BooleanAST(FalseToken))),
+      FunctionCall(VarAST(IdToken("g")), List())
     )
     assert(ast == excepted)
   }
@@ -160,6 +160,10 @@ class ParserTest extends FunSuite {
   }
   test("Parser chain function calls") {
     val parser = new Parser("f(1)(2)")
+    val ast = parser.parse().children.head
+    assert(ast ==
+      FunctionCall(FunctionCall(VarAST(IdToken("f")), List(Number(IntegerConstToken(1)))), List(Number(IntegerConstToken(2))))
+    )
 
   }
   test("Parse function definition") {

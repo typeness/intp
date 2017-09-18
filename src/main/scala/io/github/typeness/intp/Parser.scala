@@ -286,7 +286,13 @@ class Parser(text: String) {
     val name = currentToken.value
     eat(ID)
     currentToken.tokenType match {
-      case L_ROUND_BRACKET => FunctionCall(name = IdToken(name), actualParametersList())
+      case L_ROUND_BRACKET =>
+        var functionCall = FunctionCall(VarAST(IdToken(name)), actualParametersList())
+        while (currentToken.tokenType == L_ROUND_BRACKET) {
+          functionCall = FunctionCall(source = functionCall, actualParametersList())
+        }
+        functionCall
+//        FunctionCall(source = VarAST(IdToken(name)), actualParametersList())
       case L_SQUARE_BRACKET =>
         var arrayAccess = ArrayAccess(VarAST(IdToken(name)), arrayIndexing())
         while (currentToken.tokenType == L_SQUARE_BRACKET) {
