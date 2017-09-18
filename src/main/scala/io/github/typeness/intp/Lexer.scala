@@ -157,7 +157,7 @@ class Lexer(text: String) {
   private def str(): Token = {
     val sb = new StringBuilder()
     var specialChar = false
-    while (currentChar.isDefined && (specialChar || !currentChar.contains('\'') && !currentChar.contains('"'))) {
+    while (currentChar.isDefined && (specialChar || !currentChar.contains('"'))) {
       if (currentChar.get == '\\') {
         specialChar = true
       } else {

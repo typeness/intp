@@ -63,4 +63,11 @@ class LexerTest extends FunSuite {
     assert(lexer.getNextToken == ApostropheToken)
     assert(lexer.getNextToken == EOFToken)
   }
+  test("Tokenize ' string") {
+    val lexer = new Lexer("\"'\"")
+    assert(lexer.getNextToken == QuotationToken)
+    assert(lexer.getNextToken == StringToken("'"))
+    assert(lexer.getNextToken == QuotationToken)
+    assert(lexer.getNextToken == EOFToken)
+  }
 }
