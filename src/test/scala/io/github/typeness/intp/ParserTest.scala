@@ -98,8 +98,8 @@ class ParserTest extends FunSuite {
         BinOp(BooleanAST(TrueToken),OrToken,BooleanAST(FalseToken))))),
         BinOp(VarAST(IdToken("abcd")),MultiplicationToken,Number(IntegerConstToken(2))),
         FunctionCall(IdToken("f"),List(VarAST(IdToken("abcd")),
-        BinOp(ArrayAccess(IdToken("g"),Number(IntegerConstToken(1))),MultiplicationToken,
-          ArrayAccess(IdToken("h"),Number(IntegerConstToken(2))))))
+        BinOp(ArrayAccess(VarAST(IdToken("g")),Number(IntegerConstToken(1))),MultiplicationToken,
+          ArrayAccess(VarAST(IdToken("h")),Number(IntegerConstToken(2))))))
     )
     assert(ast == expected)
   }
@@ -125,14 +125,14 @@ class ParserTest extends FunSuite {
     val parser = new Parser("x[0]")
     val ast = parser.parse().children.head
     assert(ast ==
-      ArrayAccess(IdToken("x"), Number(IntegerConstToken(0)))
+      ArrayAccess(VarAST(IdToken("x")), Number(IntegerConstToken(0)))
     )
   }
   test("Parse assignment for array indexed object") {
     val parser = new Parser("v[1] = 3")
     val ast = parser.parse().children.head
     assert(ast ==
-      ArrayAssignAST(IdToken("v"), Number(IntegerConstToken(1)), Number(IntegerConstToken(3)))
+      ArrayAssignAST(VarAST(IdToken("v")), Number(IntegerConstToken(1)), Number(IntegerConstToken(3)))
     )
   }
   test("Parse multiple dimension array literal") {
@@ -153,15 +153,16 @@ class ParserTest extends FunSuite {
   }
   test("Parse multiple dimension array indexing") {
     val parser = new Parser("a[0][2]")
-    val ast = parser.parse()
-    // todo: fix
+    val ast = parser.parse().children.head
+    assert(ast ==
+      ArrayAccess(ArrayAccess(VarAST(IdToken("a")), Number(IntegerConstToken(0))), Number(IntegerConstToken(2)))
+    )
   }
   test("Parser chain function calls") {
     val parser = new Parser("f(1)(2)")
-    val ast = parser.parse()
-    // todo: fix
+
   }
-  test("Parse function definiton") {
+  test("Parse function definition") {
     val parser = Parser.fromResource("parser/functionDefinition.intp")
     val ast = parser.parse().children
     assert(ast == List(

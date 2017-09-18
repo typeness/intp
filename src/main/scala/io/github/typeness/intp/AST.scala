@@ -26,8 +26,8 @@ case class AssignAST(name: IdToken, expr: AST) extends AST {
   override def token: Token = AssignToken
 }
 
-case class ArrayAssignAST(name: IdToken, index: AST, expr: AST) extends AST {
-  override def token: Token = name
+case class ArrayAssignAST(source: AST, index: AST, expr: AST) extends AST {
+  override def token: Token = source.token
 }
 
 case class VarAST(name: IdToken) extends AST {
@@ -49,8 +49,8 @@ case class FunctionDefinition(formalParameters: List[IdToken],
   override def token: Token = FuncToken
 }
 
-case class ArrayAccess(name: IdToken, index: AST) extends AST {
-  override def token: Token = name
+case class ArrayAccess(source: AST, index: AST) extends AST {
+  override def token: Token = source.token
 }
 
 case class ArrayLiteral(elements: List[AST]) extends AST {

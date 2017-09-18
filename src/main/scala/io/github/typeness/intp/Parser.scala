@@ -279,14 +279,20 @@ class Parser(text: String) {
 
   /*
   variable: ID
-          | ID actual_parameters_list
+          | ID (actual_parameters_list)*
+          | ID (array_indexing)*
    */
   private def variable(): AST = {
     val name = currentToken.value
     eat(ID)
     currentToken.tokenType match {
       case L_ROUND_BRACKET => FunctionCall(name = IdToken(name), actualParametersList())
-      case L_SQUARE_BRACKET => ArrayAccess(name = IdToken(name), arrayIndexing())
+      case L_SQUARE_BRACKET =>
+        var arrayAccess = ArrayAccess(VarAST(IdToken(name)), arrayIndexing())
+        while (currentToken.tokenType == L_SQUARE_BRACKET) {
+          arrayAccess = ArrayAccess(source = arrayAccess, arrayIndexing())
+        }
+        arrayAccess
       case _ => VarAST(name = IdToken(name))
     }
   }
