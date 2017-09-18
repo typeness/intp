@@ -86,20 +86,20 @@ class ParserTest extends FunSuite {
   test("Parse multiple statements") {
     val parser = Parser.fromResource("parser/multipleStatements.intp")
     val ast = parser.parse().children
-    val expected = List (
-      AssignAST(IdToken("x"),BinOp(Number(IntegerConstToken(1)),MultiplicationToken,
+    val expected = List(
+      AssignAST(IdToken("x"), BinOp(Number(IntegerConstToken(1)), MultiplicationToken,
         Number(IntegerConstToken(2)))),
-        AssignAST(IdToken("y"),
-        BinOp(Number(IntegerConstToken(2)),AdditionToken,VarAST(IdToken("x")))),
-        AssignAST(IdToken("abcd"),ArrayLiteral(List(
-        BinOp(Number(IntegerConstToken(2)),MultiplicationToken,Number(IntegerConstToken(3))),
-        Number(RealConstToken(1.3)), BinOp(VarAST(IdToken("y")),MultiplicationToken,
+      AssignAST(IdToken("y"),
+        BinOp(Number(IntegerConstToken(2)), AdditionToken, VarAST(IdToken("x")))),
+      AssignAST(IdToken("abcd"), ArrayLiteral(List(
+        BinOp(Number(IntegerConstToken(2)), MultiplicationToken, Number(IntegerConstToken(3))),
+        Number(RealConstToken(1.3)), BinOp(VarAST(IdToken("y")), MultiplicationToken,
           VarAST(IdToken("x"))),
-        BinOp(BooleanLiteral(TrueToken),OrToken,BooleanLiteral(FalseToken))))),
-        BinOp(VarAST(IdToken("abcd")),MultiplicationToken,Number(IntegerConstToken(2))),
-        FunctionCall(VarAST(IdToken("f")),List(VarAST(IdToken("abcd")),
-        BinOp(ArrayAccess(VarAST(IdToken("g")),Number(IntegerConstToken(1))),MultiplicationToken,
-          ArrayAccess(VarAST(IdToken("h")),Number(IntegerConstToken(2))))))
+        BinOp(BooleanLiteral(TrueToken), OrToken, BooleanLiteral(FalseToken))))),
+      BinOp(VarAST(IdToken("abcd")), MultiplicationToken, Number(IntegerConstToken(2))),
+      FunctionCall(VarAST(IdToken("f")), List(VarAST(IdToken("abcd")),
+        BinOp(ArrayAccess(VarAST(IdToken("g")), Number(IntegerConstToken(1))), MultiplicationToken,
+          ArrayAccess(VarAST(IdToken("h")), Number(IntegerConstToken(2))))))
     )
     assert(ast == expected)
   }
@@ -170,12 +170,12 @@ class ParserTest extends FunSuite {
     val parser = Parser.fromResource("parser/functionDefinition.intp")
     val ast = parser.parse().children
     assert(ast == List(
-      AssignAST(IdToken("f"),FunctionDefinition(List(IdToken("a"), IdToken("b")),
+      AssignAST(IdToken("f"), FunctionDefinition(List(IdToken("a"), IdToken("b")),
         Program(List(
           AssignAST(
-            IdToken("x"), BinOp(VarAST(IdToken("a")),MultiplicationToken,Number(IntegerConstToken(2)))),
-        AssignAST(
-          IdToken("var"), ArrayLiteral(List(VarAST(IdToken("a")), VarAST(IdToken("b")), VarAST(IdToken("x"))))))))
+            IdToken("x"), BinOp(VarAST(IdToken("a")), MultiplicationToken, Number(IntegerConstToken(2)))),
+          AssignAST(
+            IdToken("var"), ArrayLiteral(List(VarAST(IdToken("a")), VarAST(IdToken("b")), VarAST(IdToken("x"))))))))
       )
     ))
   }
@@ -208,9 +208,9 @@ class ParserTest extends FunSuite {
     val parser = Parser.fromResource("parser/if-else.intp")
     val ast = parser.parse().children.head
     assert(ast ==
-      IfAST(BinOp(VarAST(IdToken("x")),EqualsToken,Number(IntegerConstToken(2))),
-        Program(List(AssignAST(IdToken("c"),BooleanLiteral(TrueToken)))),
-        Some(Program(List(AssignAST(IdToken("c"),BooleanLiteral(FalseToken)))))
+      IfAST(BinOp(VarAST(IdToken("x")), EqualsToken, Number(IntegerConstToken(2))),
+        Program(List(AssignAST(IdToken("c"), BooleanLiteral(TrueToken)))),
+        Some(Program(List(AssignAST(IdToken("c"), BooleanLiteral(FalseToken)))))
       )
     )
   }
@@ -219,8 +219,20 @@ class ParserTest extends FunSuite {
     val ast = parser.parse().children.head
     assert(ast ==
       WhileAST(BooleanLiteral(TrueToken),
-        Program(List(AssignAST(IdToken("x"),BinOp(VarAST(IdToken("x")),AdditionToken,Number(IntegerConstToken(1))))))
+        Program(List(AssignAST(IdToken("x"), BinOp(VarAST(IdToken("x")), AdditionToken, Number(IntegerConstToken(1))))))
       )
+    )
+  }
+  test("Parse function definition inside another function") {
+    val parser = Parser.fromResource("parser/nestedFunctions.intp")
+    val ast = parser.parse().children.head
+    assert(ast ==
+      AssignAST(IdToken("f"), FunctionDefinition(List(IdToken("a"), IdToken("b")),
+        Program(List(AssignAST(IdToken("g"), FunctionDefinition(List(IdToken("c"), IdToken("d")),
+          Program(List(FunctionCall(VarAST(IdToken("f")), List(VarAST(IdToken("c")), VarAST(IdToken("d"))))
+          )))),
+          FunctionCall(VarAST(IdToken("g")), List(VarAST(IdToken("a")), VarAST(IdToken("b"))))))
+      ))
     )
   }
 }

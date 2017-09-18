@@ -1,0 +1,6 @@
+f = func(a, b) {
+  g = func(c, d) {
+    f(c, d)
+  }
+  g(a, b)
+}
