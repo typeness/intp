@@ -184,10 +184,10 @@ class Parser(text: String) {
         Number(RealConstToken(token.value.toDouble))
       case TRUE =>
         eat(TRUE)
-        BooleanAST(TrueToken)
+        BooleanLiteral(TrueToken)
       case FALSE =>
         eat(FALSE)
-        BooleanAST(FalseToken)
+        BooleanLiteral(FalseToken)
       case L_ROUND_BRACKET =>
         eat(L_ROUND_BRACKET)
         val result = disjunction()
@@ -201,7 +201,7 @@ class Parser(text: String) {
   }
 
   private def stringToListOfChars(str: StringToken): List[AST] =
-    str.value.map(c => CharAST(CharToken(c))).toList
+    str.value.map(c => CharLiteral(CharToken(c))).toList
 
   /*
   string_literal: QUOTATION CHAR QUOTATION
@@ -227,7 +227,7 @@ class Parser(text: String) {
     eat(APOSTROPHE)
     currentToken match {
       case ch: CharToken =>
-        val result = CharAST(ch)
+        val result = CharLiteral(ch)
         eat(CHARACTER)
         eat(APOSTROPHE)
         result

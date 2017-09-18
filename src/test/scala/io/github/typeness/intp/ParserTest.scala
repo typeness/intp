@@ -41,8 +41,8 @@ class ParserTest extends FunSuite {
     val parser = new Parser("true or false and not true")
     val ast = parser.parse().children.head
     assert(ast ==
-      BinOp(BooleanAST(TrueToken), OrToken,
-        BinOp(BooleanAST(FalseToken), AndToken, UnaryOp(NotToken, BooleanAST(TrueToken)))
+      BinOp(BooleanLiteral(TrueToken), OrToken,
+        BinOp(BooleanLiteral(FalseToken), AndToken, UnaryOp(NotToken, BooleanLiteral(TrueToken)))
       )
     )
   }
@@ -95,7 +95,7 @@ class ParserTest extends FunSuite {
         BinOp(Number(IntegerConstToken(2)),MultiplicationToken,Number(IntegerConstToken(3))),
         Number(RealConstToken(1.3)), BinOp(VarAST(IdToken("y")),MultiplicationToken,
           VarAST(IdToken("x"))),
-        BinOp(BooleanAST(TrueToken),OrToken,BooleanAST(FalseToken))))),
+        BinOp(BooleanLiteral(TrueToken),OrToken,BooleanLiteral(FalseToken))))),
         BinOp(VarAST(IdToken("abcd")),MultiplicationToken,Number(IntegerConstToken(2))),
         FunctionCall(VarAST(IdToken("f")),List(VarAST(IdToken("abcd")),
         BinOp(ArrayAccess(VarAST(IdToken("g")),Number(IntegerConstToken(1))),MultiplicationToken,
@@ -107,7 +107,7 @@ class ParserTest extends FunSuite {
     val parser = new Parser("f(3, false)\ng()")
     val ast = parser.parse().children
     val excepted = List(
-      FunctionCall(VarAST(IdToken("f")), List(Number(IntegerConstToken(3)), BooleanAST(FalseToken))),
+      FunctionCall(VarAST(IdToken("f")), List(Number(IntegerConstToken(3)), BooleanLiteral(FalseToken))),
       FunctionCall(VarAST(IdToken("g")), List())
     )
     assert(ast == excepted)
@@ -183,7 +183,7 @@ class ParserTest extends FunSuite {
     val parser = new Parser("c = 'a'")
     val ast = parser.parse().children.head
     assert(ast ==
-      AssignAST(IdToken("c"), CharAST(CharToken('a')))
+      AssignAST(IdToken("c"), CharLiteral(CharToken('a')))
     )
   }
   test("Parse string assignment") {
@@ -191,7 +191,7 @@ class ParserTest extends FunSuite {
     val ast = parser.parse().children.head
     assert(ast ==
       AssignAST(IdToken("s"), ArrayLiteral(List(
-        CharAST(CharToken('t')), CharAST(CharToken('e')), CharAST(CharToken('x')), CharAST(CharToken('t'))
+        CharLiteral(CharToken('t')), CharLiteral(CharToken('e')), CharLiteral(CharToken('x')), CharLiteral(CharToken('t'))
       )))
     )
   }
