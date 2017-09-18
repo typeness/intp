@@ -15,7 +15,7 @@ scalacOptions ++= Seq(
   "-Yno-adapted-args",
   "-Ywarn-dead-code",
   "-Ywarn-value-discard",
-  "-Ywarn-unused"
+  "-Xlint:-unused,_"
 )
 
 initialCommands in console :=  """import io.github.typeness.intp._"""
