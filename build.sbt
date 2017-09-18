@@ -17,3 +17,5 @@ scalacOptions ++= Seq(
   "-Ywarn-value-discard",
   "-Ywarn-unused"
 )
+
+initialCommands in console :=  """import io.github.typeness.intp._"""
