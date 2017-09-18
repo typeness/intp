@@ -45,7 +45,7 @@ case class FunctionCall(source: AST, actualParameters: List[AST]) extends AST {
 }
 
 case class FunctionDefinition(formalParameters: List[IdToken],
-                              body: Program) extends AST {
+body: Program) extends AST {
   override def token: Token = FuncToken
 }
 
@@ -55,4 +55,12 @@ case class ArrayAccess(source: AST, index: AST) extends AST {
 
 case class ArrayLiteral(elements: List[AST]) extends AST {
   override def token: Token = LSquareBracketToken
+}
+
+case class IfAST(condition: AST, ifBlock: AST, elseBlock: Option[AST]) extends AST {
+  override def token: IfToken.type = IfToken
+}
+
+case class WhileAST(condition: AST, whileBlock: AST) extends AST {
+  override def token: WhileToken.type = WhileToken
 }

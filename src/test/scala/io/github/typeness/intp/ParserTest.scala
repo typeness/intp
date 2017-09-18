@@ -195,4 +195,32 @@ class ParserTest extends FunSuite {
       )))
     )
   }
+  test("Parse if statement") {
+    val parser = Parser.fromResource("parser/if.intp")
+    val ast = parser.parse().children.head
+    assert(ast ==
+      IfAST(BooleanLiteral(FalseToken),
+        Program(List(FunctionCall(VarAST(IdToken("f")), List()))),
+        None)
+    )
+  }
+  test("Parse if-else statement") {
+    val parser = Parser.fromResource("parser/if-else.intp")
+    val ast = parser.parse().children.head
+    assert(ast ==
+      IfAST(BinOp(VarAST(IdToken("x")),EqualsToken,Number(IntegerConstToken(2))),
+        Program(List(AssignAST(IdToken("c"),BooleanLiteral(TrueToken)))),
+        Some(Program(List(AssignAST(IdToken("c"),BooleanLiteral(FalseToken)))))
+      )
+    )
+  }
+  test("Parse while statement") {
+    val parser = Parser.fromResource("parser/while.intp")
+    val ast = parser.parse().children.head
+    assert(ast ==
+      WhileAST(BooleanLiteral(TrueToken),
+        Program(List(AssignAST(IdToken("x"),BinOp(VarAST(IdToken("x")),AdditionToken,Number(IntegerConstToken(1))))))
+      )
+    )
+  }
 }

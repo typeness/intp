@@ -29,12 +29,16 @@ class Parser(text: String) {
   }
 
   /*
-  statement: expression
-             | loop
-             | condition
+  statement: disjunction
+             | if_statement
+             | while_statement
    */
   def statement(): AST = {
-    disjunction()
+    currentToken.tokenType match {
+      case IF => ifStatement()
+      case WHILE => whileStatement()
+      case _ => disjunction()
+    }
   }
 
   /*
@@ -159,6 +163,45 @@ class Parser(text: String) {
         eat(R_ROUND_BRACKET)
         List.empty
     }
+  }
+
+  /*
+  if_statement = IF L_ROUND_BRACKET disjunction R_ROUND_BRACKET L_CURLY_BRACKET program
+       R_CURLY_BRACKET [ELSE L_CURLY_BRACKET program R_CURLY_BRACKET]
+   */
+  def ifStatement(): AST = {
+    eat(IF)
+    eat(L_ROUND_BRACKET)
+    val condition = disjunction()
+    eat(R_ROUND_BRACKET)
+    eat(L_CURLY_BRACKET)
+    val ifBlock = program()
+    eat(R_CURLY_BRACKET)
+    val elseBlock = currentToken.tokenType match {
+      case ELSE =>
+        eat(ELSE)
+        eat(L_CURLY_BRACKET)
+        val elseBlock = program()
+        eat(R_CURLY_BRACKET)
+        Some(elseBlock)
+      case _ => None
+    }
+    IfAST(condition, ifBlock, elseBlock)
+  }
+
+  /*
+ while_statement = WHILE L_ROUND_BRACKET disjunction R_ROUND_BRACKET L_CURLY_BRACKET program
+      R_CURLY_BRACKET
+  */
+  def whileStatement(): AST = {
+    eat(WHILE)
+    eat(L_ROUND_BRACKET)
+    val condition = disjunction()
+    eat(R_ROUND_BRACKET)
+    eat(L_CURLY_BRACKET)
+    val whileBlock = program()
+    eat(R_CURLY_BRACKET)
+    WhileAST(condition, whileBlock)
   }
 
   /*
