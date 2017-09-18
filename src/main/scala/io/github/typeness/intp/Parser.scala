@@ -32,13 +32,23 @@ class Parser(text: String) {
   statement: disjunction
              | if_statement
              | while_statement
+             | return_statement
    */
   def statement(): AST = {
     currentToken.tokenType match {
       case IF => ifStatement()
       case WHILE => whileStatement()
+      case RETURN => returnStatement()
       case _ => disjunction()
     }
+  }
+
+  /*
+  return_statement = RETURN disjunction
+   */
+  def returnStatement(): AST = {
+    eat(RETURN)
+    ReturnAST(result = disjunction())
   }
 
   /*

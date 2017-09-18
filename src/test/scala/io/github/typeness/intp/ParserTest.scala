@@ -235,4 +235,19 @@ class ParserTest extends FunSuite {
       ))
     )
   }
+  test("Parse return statement") {
+    val parser = Parser.fromResource("parser/return.intp")
+    val ast = parser.parse().children.head
+    assert(ast ==
+      AssignAST(IdToken("f"),
+        FunctionDefinition(
+          List(IdToken("a")),
+          Program(List(
+            IfAST(BinOp(VarAST(IdToken("a")), GreaterToken, Number(IntegerConstToken(10))),
+              Program(List(ReturnAST(BooleanLiteral(TrueToken)))), None),
+            ReturnAST(BooleanLiteral(FalseToken))
+          )))
+      )
+    )
+  }
 }

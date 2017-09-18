@@ -64,3 +64,7 @@ case class IfAST(condition: AST, ifBlock: AST, elseBlock: Option[AST]) extends A
 case class WhileAST(condition: AST, whileBlock: AST) extends AST {
   override def token: WhileToken.type = WhileToken
 }
+
+case class ReturnAST(result: AST) extends AST {
+  override def token: Token = ReturnToken
+}
