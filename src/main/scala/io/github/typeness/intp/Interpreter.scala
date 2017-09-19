@@ -75,7 +75,7 @@ class Interpreter extends ASTVisitor {
     case None => throw new InterpreterError(s"Variable not found ${ast.name.value}") {}
   }
 
-  override protected def program(ast: Program): Any = ???
+  override protected def program(ast: Program): Any = ast.children.foreach(visit)
 
   override protected def functionCall(ast: FunctionCall): Any = ???
 
