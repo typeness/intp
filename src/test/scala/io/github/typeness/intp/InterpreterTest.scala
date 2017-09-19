@@ -96,4 +96,22 @@ class InterpreterTest extends FunSuite {
     val interpreter = new Interpreter()
     assert(interpreter.visit(ast) == true)
   }
+  test("If statement") {
+    val parser = Parser.fromResource("interpreter/if.intp")
+    val ast = parser.parse()
+    val interpreter = new Interpreter()
+    interpreter.visit(ast)
+    assert(
+      interpreter.globalScope == Map("is" -> true, "d" -> 1000)
+    )
+  }
+  test("If-else statements") {
+    val parser = Parser.fromResource("interpreter/if-else.intp")
+    val ast = parser.parse()
+    val interpreter = new Interpreter()
+    interpreter.visit(ast)
+    assert(
+      interpreter.globalScope == Map("x" -> 2, "c" -> true)
+    )
+  }
 }

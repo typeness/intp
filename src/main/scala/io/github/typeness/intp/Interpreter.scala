@@ -6,13 +6,18 @@ class Interpreter extends ASTVisitor {
 
   val globalScope: mutable.Map[String, Any] = mutable.Map.empty
 
-  private def numericOperands[T](left: T, op: Token, right: T)(implicit num: Fractional[T]): T = {
+  private def numericOperands[T](left: T, op: Token, right: T)(implicit num: Fractional[T]): Any = {
     import num._
     op match {
       case AdditionToken => left + right
       case SubtractionToken => left - right
       case MultiplicationToken => left * right
       case DivisionToken => left / right
+      case EqualsToken => left == right
+      case GreaterOrEqualsToken => left >= right
+      case LessOrEqualsToken => left <= right
+      case GreaterToken => left > right
+      case LessToken => left < right
       case _ => throw UndefinedBinaryOp(left, op, right)
     }
   }
@@ -27,7 +32,10 @@ class Interpreter extends ASTVisitor {
     /* In case of double Ints to be able to call numericOperands method
         we need to cast one operand to Double then we can cast again to Int
       */
-    case (left: Int, right: Int) => numericOperands(left.toDouble, ast.op, right).toInt
+    case (left: Int, right: Int) => numericOperands(left.toDouble, ast.op, right) match {
+      case value: Double => value.toInt
+      case value => value
+    }
     case (left: Int, right: Double) => numericOperands(left, ast.op, right)
     case (left: Double, right: Int) => numericOperands(left, ast.op, right)
     case (left: Double, right: Double) => numericOperands(left, ast.op, right)
@@ -85,7 +93,11 @@ class Interpreter extends ASTVisitor {
 
   override protected def arrayLiteral(ast: ArrayLiteral): Any = ???
 
-  override protected def ifAST(ast: IfAST): Any = ???
+  override protected def ifAST(ast: IfAST): Any = visit(ast.condition) match {
+    case true => visit(ast.ifBlock)
+    case false => ast.elseBlock.foreach(visit)
+    case value => throw TypeMismatch(s"excepted boolean expression in if statement not $value")
+  }
 
   override protected def whileAST(ast: WhileAST): Any = ???
 
@@ -97,4 +109,6 @@ abstract class InterpreterError(cause: String) extends Exception(cause)
 case class UndefinedUnaryOp(op: Token, value: Any) extends InterpreterError(s"Undefined unary operator $op$value")
 
 case class UndefinedBinaryOp(left: Any, op: Token, right: Any) extends InterpreterError(s"Undefined operator $left $op $right")
+
+case class TypeMismatch(cause: String) extends InterpreterError(s"Type mismatch $cause")
 
