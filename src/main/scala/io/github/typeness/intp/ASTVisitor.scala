@@ -19,20 +19,20 @@ trait ASTVisitor {
     case a: WhileAST => whileAST(a)
     case a: ReturnAST => returnAST(a)
   }
-  def binOp(ast: BinOp): Any
-  def number(ast: Number): Any
-  def booleanLiteral(ast: BooleanLiteral): Any
-  def charLiteral(ast: CharLiteral): Any
-  def unaryOp(ast: UnaryOp): Any
-  def assignAST(ast: AssignAST): Any
-  def arrayAssignAST(ast: ArrayAssignAST): Any
-  def varAST(ast: VarAST): Any
-  def program(ast: Program): Any
-  def functionCall(ast: FunctionCall): Any
-  def functionDefinition(ast: FunctionDefinition): Any
-  def arrayAccess(ast: ArrayAccess): Any
-  def arrayLiteral(ast: ArrayLiteral): Any
-  def ifAST(ast: IfAST): Any
-  def whileAST(ast: WhileAST): Any
-  def returnAST(ast: ReturnAST): Any
+  protected def binOp(ast: BinOp): Any
+  protected def number(ast: Number): Any
+  protected def booleanLiteral(ast: BooleanLiteral): Any
+  protected def charLiteral(ast: CharLiteral): Any
+  protected def unaryOp(ast: UnaryOp): Any
+  protected def assignAST(ast: AssignAST): Any
+  protected def arrayAssignAST(ast: ArrayAssignAST): Any
+  protected def varAST(ast: VarAST): Any
+  protected def program(ast: Program): Any
+  protected def functionCall(ast: FunctionCall): Any
+  protected def functionDefinition(ast: FunctionDefinition): Any
+  protected def arrayAccess(ast: ArrayAccess): Any
+  protected def arrayLiteral(ast: ArrayLiteral): Any
+  protected def ifAST(ast: IfAST): Any
+  protected def whileAST(ast: WhileAST): Any
+  protected def returnAST(ast: ReturnAST): Any
 }

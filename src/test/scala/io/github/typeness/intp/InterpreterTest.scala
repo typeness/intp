@@ -81,4 +81,13 @@ class InterpreterTest extends FunSuite {
     val interpreter = new Interpreter()
     assert(interpreter.visit(ast) == 10)
   }
+  test("Numeric variable assign and read") {
+    val parser = Parser.fromResource("interpreter/variables.intp")
+    val ast = parser.parse().children
+    val interpreter = new Interpreter()
+    ast.foreach(interpreter.visit)
+    assert(
+      interpreter.globalScope == Map("x" -> 2, "y" -> 8, "z" -> 10)
+    )
+  }
 }
