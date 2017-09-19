@@ -114,4 +114,13 @@ class InterpreterTest extends FunSuite {
       interpreter.globalScope == Map("x" -> 2, "c" -> true)
     )
   }
+  test("While statement") {
+    val parser = Parser.fromResource("interpreter/while.intp")
+    val ast = parser.parse()
+    val interpreter = new Interpreter()
+    interpreter.visit(ast)
+    assert(
+      interpreter.globalScope == Map("x" -> 1000000)
+    )
+  }
 }

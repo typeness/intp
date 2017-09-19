@@ -1,5 +1,6 @@
 package io.github.typeness.intp
 
+import scala.annotation.tailrec
 import scala.collection.mutable
 
 class Interpreter extends ASTVisitor {
@@ -99,7 +100,14 @@ class Interpreter extends ASTVisitor {
     case value => throw TypeMismatch(s"excepted boolean expression in if statement not $value")
   }
 
-  override protected def whileAST(ast: WhileAST): Any = ???
+  @tailrec
+  final override protected def whileAST(ast: WhileAST): Any = visit(ast.condition) match {
+    case true =>
+      visit(ast.whileBlock)
+      whileAST(ast)
+    case false => ()
+    case value => throw TypeMismatch(s"excepted boolean expression in if statement not $value")
+  }
 
   override protected def returnAST(ast: ReturnAST): Any = ???
 }
