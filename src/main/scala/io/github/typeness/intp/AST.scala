@@ -9,10 +9,10 @@ case class BinOp(left: AST, op: Token, right: AST) extends AST {
   override def token: Token = op
 }
 
-case class Number(token: Token) extends AST {
+case class Number(token: NumberToken) extends AST {
 }
 
-case class BooleanLiteral(token: Token) extends AST {
+case class BooleanLiteral(token: TrueOrElseToken) extends AST {
 }
 
 case class CharLiteral(token: CharToken) extends AST {
@@ -45,7 +45,7 @@ case class FunctionCall(source: AST, actualParameters: List[AST]) extends AST {
 }
 
 case class FunctionDefinition(formalParameters: List[IdToken],
-body: Program) extends AST {
+                              body: Program) extends AST {
   override def token: Token = FuncToken
 }
 

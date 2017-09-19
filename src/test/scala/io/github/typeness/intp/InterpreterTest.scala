@@ -90,4 +90,10 @@ class InterpreterTest extends FunSuite {
       interpreter.globalScope == Map("x" -> 2, "y" -> 8, "z" -> 10)
     )
   }
+  test("Boolean expression") {
+    val parser = new Parser("true or false and not true")
+    val ast = parser.parse().children.head
+    val interpreter = new Interpreter()
+    assert(interpreter.visit(ast) == true)
+  }
 }

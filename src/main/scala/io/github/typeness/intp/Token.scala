@@ -6,13 +6,15 @@ sealed trait Token {
   def value: String
 }
 
-case class IntegerConstToken(intValue: Int) extends Token {
+sealed trait NumberToken extends Token
+
+case class IntegerConstToken(intValue: Int) extends NumberToken {
   override def tokenType: TokenType = INTEGER_CONST
 
   override def value: String = intValue.toString
 }
 
-case class RealConstToken(doubleValue: Double) extends Token {
+case class RealConstToken(doubleValue: Double) extends NumberToken {
   override def tokenType: TokenType = REAL_CONST
 
   override def value: String = doubleValue.toString
@@ -201,13 +203,15 @@ case object ElseToken extends Token {
   override def value: String = "else"
 }
 
-case object TrueToken extends Token {
+sealed trait TrueOrElseToken extends Token
+
+case object TrueToken extends TrueOrElseToken {
   override def tokenType: TokenType = TRUE
 
   override def value: String = "true"
 }
 
-case object FalseToken extends Token {
+case object FalseToken extends TrueOrElseToken {
   override def tokenType: TokenType = FALSE
 
   override def value: String = "false"
