@@ -9,7 +9,6 @@ libraryDependencies ++= Seq(
 scalacOptions ++= Seq(
   "-target:jvm-1.8",
   "-encoding", "UTF-8",
-  "-unchecked",
   "-deprecation",
   "-Xfuture",
   "-Yno-adapted-args",

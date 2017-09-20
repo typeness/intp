@@ -1,6 +1,7 @@
 package io.github.typeness.intp
 
 import scala.annotation.tailrec
+import scala.collection.mutable
 
 class Interpreter extends ASTVisitor {
 
@@ -40,7 +41,7 @@ class Interpreter extends ASTVisitor {
     case (left: Double, right: Int) => numericOperands(left, ast.op, right)
     case (left: Double, right: Double) => numericOperands(left, ast.op, right)
     case (left: Boolean, right: Boolean) => booleanOperands(left, ast.op, right)
-    case (left: Vector[_], right: Vector[_]) => left ++ right
+    case (left: mutable.ArrayBuffer[_], right: mutable.ArrayBuffer[_]) => left ++ right
     case (left, right) => throw UndefinedBinaryOp(left, ast.op, right)
   }
 
@@ -80,8 +81,14 @@ class Interpreter extends ASTVisitor {
     }
     ()
   }
-
-  override protected def arrayAssignAST(ast: ArrayAssignAST): Any = ???
+  override protected def arrayAssignAST(ast: ArrayAssignAST): Any = visit(ast.source) match {
+    case arr: mutable.ArrayBuffer[Any] =>
+      visit(ast.index) match {
+        case index: Int => arr(index) = visit(ast.expr)
+        case value => throw TypeMismatch(s"excepted integer expression as array index. Not $value")
+      }
+    case value => throw TypeMismatch(s"not an array $value")
+  }
 
   override protected def varAST(ast: VarAST): Any = memory.get(ast.name.value) match {
     case Some(variable) => variable
@@ -111,14 +118,14 @@ class Interpreter extends ASTVisitor {
   override protected def functionLiteral(ast: FunctionLiteral): Any = ast
 
   override protected def arrayAccess(ast: ArrayAccess): Any = visit(ast.source) match {
-    case ls: Vector[_] => visit(ast.index) match {
+    case ls: mutable.ArrayBuffer[_] => visit(ast.index) match {
       case i: Int => ls(i)
       case value => throw TypeMismatch(s"excepted integer expression as array index. Not $value")
     }
     case value => throw new InterpreterError(s"Not an array $value") {}
   }
 
-  override protected def arrayLiteral(ast: ArrayLiteral): Any = ast.elements.map(visit).toVector
+  override protected def arrayLiteral(ast: ArrayLiteral): Any = ast.elements.map(visit).to[mutable.ArrayBuffer]
 
   override protected def ifAST(ast: IfAST): Any = visit(ast.condition) match {
     case true => visit(ast.ifBlock)

@@ -254,4 +254,14 @@ class InterpreterTest extends FunSuite {
       )
     )
   }
+  test("Assignment for array indexed object") {
+    val parser = Parser.fromResource("interpreter/assignment-array-indexed.intp")
+    val ast = parser.parse()
+    val interpreter = new Interpreter()
+    interpreter.visit(ast)
+    assert(
+      interpreter.memory.getAll == Map("x" -> Vector(1, 2, 10))
+
+    )
+  }
 }
