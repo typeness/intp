@@ -40,4 +40,13 @@ class MemoryTest extends FunSuite {
     assert(memory.get("localInNestedFunction").isEmpty)
     assert(memory.get("localInFunction").isEmpty)
   }
+  test("Overriding global variables and changing them") {
+    val memory = new Memory()
+    memory.define("var" -> true)
+    memory.pushNewStack()
+    memory.define("var" -> false)
+    assert(memory.get("var").contains(false))
+    memory.popStack()
+    assert(memory.get("var").contains(true))
+  }
 }
