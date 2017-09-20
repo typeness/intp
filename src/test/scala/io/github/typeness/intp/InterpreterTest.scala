@@ -130,7 +130,7 @@ class InterpreterTest extends FunSuite {
     interpreter.visit(ast)
     val x = interpreter.globalScope.get("x")
     assert(
-      interpreter.globalScope == Map("x" -> List(1, 2, 3))
+      interpreter.globalScope == Map("x" -> Vector(1, 2, 3))
     )
   }
   test("Assignment of multi-dimension array literal") {
@@ -140,7 +140,7 @@ class InterpreterTest extends FunSuite {
     interpreter.visit(ast)
     val x = interpreter.globalScope.get("x")
     assert(
-      interpreter.globalScope == Map("x" -> List(List(1, 2), List(3, 4), List(5)))
+      interpreter.globalScope == Map("x" -> Vector(Vector(1, 2), Vector(3, 4), Vector(5)))
     )
   }
   test("Concat of array literal") {
@@ -149,7 +149,7 @@ class InterpreterTest extends FunSuite {
     val interpreter = new Interpreter()
     interpreter.visit(ast)
     assert(
-      interpreter.globalScope == Map("x" -> (List(1, 2, 3) ::: List(4, 5, 6)))
+      interpreter.globalScope == Map("x" -> (Vector(1, 2, 3) ++ Vector(4, 5, 6)))
     )
   }
   test("Push 10 elements to array in loop") {
@@ -158,7 +158,16 @@ class InterpreterTest extends FunSuite {
     val interpreter = new Interpreter()
     interpreter.visit(ast)
     assert(
-      interpreter.globalScope == Map("arr" -> List.range(0, 10), "x" -> 10)
+      interpreter.globalScope == Map("arr" -> Vector.range(0, 10), "x" -> 10)
+    )
+  }
+  test("Array access") {
+    val parser = Parser.fromResource("interpreter/array-access.intp")
+    val ast = parser.parse()
+    val interpreter = new Interpreter()
+    interpreter.visit(ast)
+    assert(
+      interpreter.globalScope == Map("arr" -> Vector(-100, 33, 55, 56, 234), "middle" -> 55)
     )
   }
 }
