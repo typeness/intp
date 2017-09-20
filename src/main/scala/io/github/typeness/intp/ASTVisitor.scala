@@ -12,7 +12,7 @@ trait ASTVisitor {
     case a: VarAST => varAST(a)
     case a: Program => program(a)
     case a: FunctionCall => functionCall(a)
-    case a: FunctionDefinition => functionDefinition(a)
+    case a: FunctionLiteral => functionLiteral(a)
     case a: ArrayAccess => arrayAccess(a)
     case a: ArrayLiteral => arrayLiteral(a)
     case a: IfAST => ifAST(a)
@@ -29,7 +29,7 @@ trait ASTVisitor {
   protected def varAST(ast: VarAST): Any
   protected def program(ast: Program): Any
   protected def functionCall(ast: FunctionCall): Any
-  protected def functionDefinition(ast: FunctionDefinition): Any
+  protected def functionLiteral(ast: FunctionLiteral): Any
   protected def arrayAccess(ast: ArrayAccess): Any
   protected def arrayLiteral(ast: ArrayLiteral): Any
   protected def ifAST(ast: IfAST): Any

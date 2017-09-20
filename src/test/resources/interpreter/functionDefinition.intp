@@ -1,0 +1,4 @@
+f = func(a, b) {
+  x = a * 2
+  var = [a, b, x]
+}

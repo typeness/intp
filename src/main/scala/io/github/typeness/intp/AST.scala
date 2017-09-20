@@ -44,8 +44,8 @@ case class FunctionCall(source: AST, actualParameters: List[AST]) extends AST {
   override def token: Token = source.token
 }
 
-case class FunctionDefinition(formalParameters: List[IdToken],
-                              body: Program) extends AST {
+case class FunctionLiteral(formalParameters: List[IdToken],
+                           body: Program) extends AST {
   override def token: Token = FuncToken
 }
 

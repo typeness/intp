@@ -170,7 +170,7 @@ class ParserTest extends FunSuite {
     val parser = Parser.fromResource("parser/functionDefinition.intp")
     val ast = parser.parse().children
     assert(ast == List(
-      AssignAST(IdToken("f"), FunctionDefinition(List(IdToken("a"), IdToken("b")),
+      AssignAST(IdToken("f"), FunctionLiteral(List(IdToken("a"), IdToken("b")),
         Program(List(
           AssignAST(
             IdToken("x"), BinOp(VarAST(IdToken("a")), MultiplicationToken, Number(IntegerConstToken(2)))),
@@ -227,8 +227,8 @@ class ParserTest extends FunSuite {
     val parser = Parser.fromResource("parser/nestedFunctions.intp")
     val ast = parser.parse().children.head
     assert(ast ==
-      AssignAST(IdToken("f"), FunctionDefinition(List(IdToken("a"), IdToken("b")),
-        Program(List(AssignAST(IdToken("g"), FunctionDefinition(List(IdToken("c"), IdToken("d")),
+      AssignAST(IdToken("f"), FunctionLiteral(List(IdToken("a"), IdToken("b")),
+        Program(List(AssignAST(IdToken("g"), FunctionLiteral(List(IdToken("c"), IdToken("d")),
           Program(List(FunctionCall(VarAST(IdToken("f")), List(VarAST(IdToken("c")), VarAST(IdToken("d"))))
           )))),
           FunctionCall(VarAST(IdToken("g")), List(VarAST(IdToken("a")), VarAST(IdToken("b"))))))
@@ -240,7 +240,7 @@ class ParserTest extends FunSuite {
     val ast = parser.parse().children.head
     assert(ast ==
       AssignAST(IdToken("f"),
-        FunctionDefinition(
+        FunctionLiteral(
           List(IdToken("a")),
           Program(List(
             IfAST(BinOp(VarAST(IdToken("a")), GreaterToken, Number(IntegerConstToken(10))),

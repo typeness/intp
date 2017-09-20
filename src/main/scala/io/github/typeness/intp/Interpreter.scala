@@ -73,7 +73,11 @@ class Interpreter extends ASTVisitor {
 
   override protected def assignAST(ast: AssignAST): Any = {
     val name = ast.name.value
-    memory.define(name -> visit(ast.expr))
+    ast.expr match {
+      // do not evaluate function definition
+      case fl: FunctionLiteral => memory.define(name -> fl)
+      case _ => memory.define(name -> visit(ast.expr))
+    }
     ()
   }
 
@@ -84,11 +88,27 @@ class Interpreter extends ASTVisitor {
     case None => throw new InterpreterError(s"Variable not found ${ast.name.value}") {}
   }
 
-  override protected def program(ast: Program): Any = ast.children.foreach(visit)
+  override protected def program(ast: Program): Any = {
+    for (child <- ast.children if memory.get("return").isEmpty) visit(child)
+  }
 
-  override protected def functionCall(ast: FunctionCall): Any = ???
+  override protected def functionCall(ast: FunctionCall): Any = visit(ast.source) match {
+    case FunctionLiteral(formalParameters, body) =>
+      if (formalParameters.size != ast.actualParameters.size)
+        throw new InterpreterError(s"Wrong number of arguments for function ${ast.source.token.value}") {}
+      val parameters = formalParameters.zip(ast.actualParameters).map({
+        case (idToken, expr) => (idToken.value, visit(expr))
+      })
+      memory.pushNewStack()
+      parameters.foreach(memory.define)
+      visit(body)
+      val result = memory.get("return").orElse(Some(())).get
+      memory.popStack()
+      result
+    case value => throw TypeMismatch(s"not a function $value")
+  }
 
-  override protected def functionDefinition(ast: FunctionDefinition): Any = ???
+  override protected def functionLiteral(ast: FunctionLiteral): Any = ast
 
   override protected def arrayAccess(ast: ArrayAccess): Any = visit(ast.source) match {
     case ls: Vector[_] => visit(ast.index) match {
@@ -115,7 +135,7 @@ class Interpreter extends ASTVisitor {
     case value => throw TypeMismatch(s"excepted boolean expression in if statement not $value")
   }
 
-  override protected def returnAST(ast: ReturnAST): Any = ???
+  override protected def returnAST(ast: ReturnAST): Any = visit(AssignAST(IdToken("return"), ast.result))
 }
 
 abstract class InterpreterError(cause: String) extends Exception(cause)

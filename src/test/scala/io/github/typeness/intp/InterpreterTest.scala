@@ -179,4 +179,48 @@ class InterpreterTest extends FunSuite {
       interpreter.memory.getAll == Map("x" -> 'c')
     )
   }
+  test("Define a function") {
+    val parser = Parser.fromResource("interpreter/functionDefinition.intp")
+    val ast = parser.parse()
+    val interpreter = new Interpreter()
+    interpreter.visit(ast)
+  }
+  test("Call a function") {
+    val parser = Parser.fromResource("interpreter/function-call.intp")
+    val ast = parser.parse()
+    val interpreter = new Interpreter()
+    interpreter.visit(ast)
+    interpreter.memory.getAll == Map(
+      "arr" -> Vector(44, 88, 132, 176),
+      "x" -> 44,
+      "f" -> FunctionLiteral(
+        List(IdToken("a")),
+        Program(
+          List(
+            ReturnAST(
+              ArrayLiteral(
+                List(
+                  VarAST(IdToken("a")),
+                  BinOp(
+                    Number(IntegerConstToken(2)),
+                    MultiplicationToken,
+                    VarAST(IdToken("a"))
+                  ),
+                  BinOp(
+                    Number(IntegerConstToken(3)),
+                    MultiplicationToken, VarAST(IdToken("a"))
+                  ),
+                  BinOp(
+                    Number(IntegerConstToken(4)),
+                    MultiplicationToken,
+                    VarAST(IdToken("a"))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  }
 }

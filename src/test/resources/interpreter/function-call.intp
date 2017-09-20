@@ -1,0 +1,5 @@
+x = 44
+f = func(a) {
+  return [a, 2 * a, 3 * a, 4 * a]
+}
+arr = f(x)

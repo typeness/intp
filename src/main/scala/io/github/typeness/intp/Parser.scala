@@ -145,7 +145,7 @@ class Parser(text: String) {
     eat(L_CURLY_BRACKET)
     val root = program()
     eat(R_CURLY_BRACKET)
-    FunctionDefinition(parameters, root)
+    FunctionLiteral(parameters, root)
   }
 
   /*
