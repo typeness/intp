@@ -55,7 +55,7 @@ class Interpreter extends ASTVisitor {
     case BooleanLiteral(FalseToken) => false
   }
 
-  override protected def charLiteral(ast: CharLiteral): Any = ???
+  override protected def charLiteral(ast: CharLiteral): Any = ast.token.c
 
   override protected def unaryOp(ast: UnaryOp): Any = visit(ast.expr) match {
     case value: Double => ast.op match {

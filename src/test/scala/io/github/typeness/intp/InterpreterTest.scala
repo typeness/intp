@@ -170,4 +170,13 @@ class InterpreterTest extends FunSuite {
       interpreter.globalScope == Map("arr" -> Vector(-100, 33, 55, 56, 234), "middle" -> 55)
     )
   }
+  test("Character assignment") {
+    val parser = new Parser("x = 'c'")
+    val ast = parser.parse()
+    val interpreter = new Interpreter()
+    interpreter.visit(ast)
+    assert(
+      interpreter.globalScope == Map("x" -> 'c')
+    )
+  }
 }
