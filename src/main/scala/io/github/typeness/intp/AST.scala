@@ -35,7 +35,7 @@ case class VarAST(name: IdToken) extends AST {
 }
 
 case class Program(children: List[AST]) extends AST {
-  override def token: Token = ???
+  override def token: Token = children.head.token
 
   override def toString: String = s"Program(${children.map(_.toString).mkString("\n")})"
 }

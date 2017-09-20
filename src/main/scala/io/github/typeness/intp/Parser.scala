@@ -250,6 +250,7 @@ class Parser(text: String) {
         arrrayLiteral()
       case APOSTROPHE => characterLiteral()
       case QUOTATION => stringLiteral()
+      case _ => throw ParserError(token)
     }
   }
 
@@ -363,8 +364,6 @@ class Parser(text: String) {
         | character_literal
         | string_literal
    */
-  def literal(): AST = ???
-
   /*
   unary_operator: PLUS
                 | MINUS
