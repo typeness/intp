@@ -1,0 +1,6 @@
+f = func() {
+  return func() {
+    return 3
+  }
+}
+x = f()()

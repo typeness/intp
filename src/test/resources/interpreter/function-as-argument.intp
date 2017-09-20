@@ -1,0 +1,7 @@
+f = func(x) {
+  return x()
+}
+g = func() {
+  return true
+}
+result = f(g)

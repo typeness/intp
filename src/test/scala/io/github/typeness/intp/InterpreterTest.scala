@@ -223,4 +223,18 @@ class InterpreterTest extends FunSuite {
       )
     )
   }
+  test("Return function from function and call it") {
+    val parser = Parser.fromResource("interpreter/return-function.intp")
+    val ast = parser.parse()
+    val interpreter = new Interpreter()
+    interpreter.visit(ast)
+    println(interpreter.memory.getAll)
+  }
+  test("Call function with another function as argument") {
+    val parser = Parser.fromResource("interpreter/function-as-argument.intp")
+    val ast = parser.parse()
+    val interpreter = new Interpreter()
+    interpreter.visit(ast)
+    println(interpreter.memory.getAll)
+  }
 }
