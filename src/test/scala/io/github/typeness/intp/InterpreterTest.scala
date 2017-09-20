@@ -123,4 +123,42 @@ class InterpreterTest extends FunSuite {
       interpreter.globalScope == Map("x" -> 1000000)
     )
   }
+  test("Assignment of array literal") {
+    val parser = new Parser("x = [1, 2, 3]")
+    val ast = parser.parse()
+    val interpreter = new Interpreter()
+    interpreter.visit(ast)
+    val x = interpreter.globalScope.get("x")
+    assert(
+      interpreter.globalScope == Map("x" -> List(1, 2, 3))
+    )
+  }
+  test("Assignment of multi-dimension array literal") {
+    val parser = new Parser("x = [[1, 2], [3, 4], [5]]")
+    val ast = parser.parse()
+    val interpreter = new Interpreter()
+    interpreter.visit(ast)
+    val x = interpreter.globalScope.get("x")
+    assert(
+      interpreter.globalScope == Map("x" -> List(List(1, 2), List(3, 4), List(5)))
+    )
+  }
+  test("Concat of array literal") {
+    val parser = new Parser("x = [1, 2, 3] + [4, 5, 6]")
+    val ast = parser.parse()
+    val interpreter = new Interpreter()
+    interpreter.visit(ast)
+    assert(
+      interpreter.globalScope == Map("x" -> (List(1, 2, 3) ::: List(4, 5, 6)))
+    )
+  }
+  test("Push 10 elements to array in loop") {
+    val parser = Parser.fromResource("interpreter/array-loop.intp")
+    val ast = parser.parse()
+    val interpreter = new Interpreter()
+    interpreter.visit(ast)
+    assert(
+      interpreter.globalScope == Map("arr" -> List.range(0, 10), "x" -> 10)
+    )
+  }
 }

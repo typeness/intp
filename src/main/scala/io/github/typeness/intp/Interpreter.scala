@@ -41,6 +41,7 @@ class Interpreter extends ASTVisitor {
     case (left: Double, right: Int) => numericOperands(left, ast.op, right)
     case (left: Double, right: Double) => numericOperands(left, ast.op, right)
     case (left: Boolean, right: Boolean) => booleanOperands(left, ast.op, right)
+    case (left: List[_], right: List[_]) => left ::: right
     case (left, right) => throw UndefinedBinaryOp(left, ast.op, right)
   }
 
@@ -92,7 +93,7 @@ class Interpreter extends ASTVisitor {
 
   override protected def arrayAccess(ast: ArrayAccess): Any = ???
 
-  override protected def arrayLiteral(ast: ArrayLiteral): Any = ???
+  override protected def arrayLiteral(ast: ArrayLiteral): Any = ast.elements.map(visit)
 
   override protected def ifAST(ast: IfAST): Any = visit(ast.condition) match {
     case true => visit(ast.ifBlock)
