@@ -264,4 +264,18 @@ class InterpreterTest extends FunSuite {
 
     )
   }
+  test("Strings manipulation") {
+    val parser = Parser.fromResource("interpreter/strings-manipulation.intp")
+    val ast = parser.parse()
+    val interpreter = new Interpreter()
+    interpreter.visit(ast)
+    assert(
+      interpreter.memory.getAll == Map(
+        "z" -> Vector('A', 'l', 'a', ' ', 'm', 'a', ' ', 'k', 'o', 't', 'a', '.'),
+        "y" -> Vector(' ', 'm', 'a'),
+        "x" -> Vector('A', 'l', 'a'),
+        "c" -> 'A'
+      )
+    )
+  }
 }

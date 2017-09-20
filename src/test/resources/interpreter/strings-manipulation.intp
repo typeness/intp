@@ -1,0 +1,4 @@
+x = "Ala"
+y = " ma"
+z = x + y + " kota."
+c = z[0]
