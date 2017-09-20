@@ -1,11 +1,10 @@
 package io.github.typeness.intp
 
 import scala.annotation.tailrec
-import scala.collection.mutable
 
 class Interpreter extends ASTVisitor {
 
-  val globalScope: mutable.Map[String, Any] = mutable.Map.empty
+  val memory: Memory = new Memory()
 
   private def numericOperands[T](left: T, op: Token, right: T)(implicit num: Fractional[T]): Any = {
     import num._
@@ -74,13 +73,13 @@ class Interpreter extends ASTVisitor {
 
   override protected def assignAST(ast: AssignAST): Any = {
     val name = ast.name.value
-    globalScope.put(name, visit(ast.expr))
+    memory.define(name -> visit(ast.expr))
     ()
   }
 
   override protected def arrayAssignAST(ast: ArrayAssignAST): Any = ???
 
-  override protected def varAST(ast: VarAST): Any = globalScope.get(ast.name.value) match {
+  override protected def varAST(ast: VarAST): Any = memory.get(ast.name.value) match {
     case Some(variable) => variable
     case None => throw new InterpreterError(s"Variable not found ${ast.name.value}") {}
   }
