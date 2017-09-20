@@ -228,13 +228,30 @@ class InterpreterTest extends FunSuite {
     val ast = parser.parse()
     val interpreter = new Interpreter()
     interpreter.visit(ast)
-    println(interpreter.memory.getAll)
+    assert(
+      interpreter.memory.getAll == Map(
+        "x" -> 3,
+        "f" -> FunctionLiteral(
+          List(),
+          Program(List(ReturnAST(FunctionLiteral(List(), Program(List(ReturnAST(Number(IntegerConstToken(3)))))))))
+        )
+      )
+    )
   }
   test("Call function with another function as argument") {
     val parser = Parser.fromResource("interpreter/function-as-argument.intp")
     val ast = parser.parse()
     val interpreter = new Interpreter()
     interpreter.visit(ast)
-    println(interpreter.memory.getAll)
+    assert(
+      interpreter.memory.getAll == Map(
+        "result" -> true,
+        "g" -> FunctionLiteral(
+          List(),
+          Program(List(ReturnAST(BooleanLiteral(TrueToken))))),
+        "f" -> FunctionLiteral(List(IdToken("x")),
+          Program(List(ReturnAST(FunctionCall(VarAST(IdToken("x")), List())))))
+      )
+    )
   }
 }
