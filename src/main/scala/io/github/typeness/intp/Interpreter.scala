@@ -82,9 +82,10 @@ class Interpreter extends ASTVisitor {
     ()
   }
   override protected def arrayAssignAST(ast: ArrayAssignAST): Any = visit(ast.source) match {
-    case arr: mutable.ArrayBuffer[Any] =>
+    case arr: mutable.ArrayBuffer[_] =>
       visit(ast.index) match {
-        case index: Int => arr(index) = visit(ast.expr)
+        // need this ugly casting to silence compiler warning about erasure on pattern matching
+        case index: Int => arr.asInstanceOf[mutable.ArrayBuffer[Any]](index) = visit(ast.expr)
         case value => throw TypeMismatch(s"excepted integer expression as array index. Not $value")
       }
     case value => throw TypeMismatch(s"not an array $value")
