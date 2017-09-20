@@ -26,6 +26,18 @@ class Interpreter extends ASTVisitor {
   private def booleanOperands(left: Boolean, op: Token, right: Boolean): Any = op match {
     case AndToken => left && right
     case OrToken => left || right
+    case EqualsToken => left == right
+    case _ => throw UndefinedBinaryOp(left, op, right)
+  }
+
+  private def charOperands(left: Char, op: Token, right: Char): Any = op match {
+    case EqualsToken => left == right
+    case _ => throw UndefinedBinaryOp(left, op, right)
+  }
+
+  private def arrayOperands(left: mutable.ArrayBuffer[_], op: Token, right: mutable.ArrayBuffer[_]): Any = op match {
+    case AdditionToken => left ++ right
+    case EqualsToken => left == right
     case _ => throw UndefinedBinaryOp(left, op, right)
   }
 
@@ -41,7 +53,8 @@ class Interpreter extends ASTVisitor {
     case (left: Double, right: Int) => numericOperands(left, ast.op, right)
     case (left: Double, right: Double) => numericOperands(left, ast.op, right)
     case (left: Boolean, right: Boolean) => booleanOperands(left, ast.op, right)
-    case (left: mutable.ArrayBuffer[_], right: mutable.ArrayBuffer[_]) => left ++ right
+    case (left: mutable.ArrayBuffer[_], right: mutable.ArrayBuffer[_]) => arrayOperands(left, ast.op, right)
+    case (left: Char, right: Char) => charOperands(left, ast.op, right)
     case (left, right) => throw UndefinedBinaryOp(left, ast.op, right)
   }
 

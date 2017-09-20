@@ -278,4 +278,15 @@ class InterpreterTest extends FunSuite {
       )
     )
   }
+  test("Operator == for all possible types") {
+    val parser = Parser.fromResource("interpreter/equals.intp")
+    val ast = parser.parse()
+    val interpreter = new Interpreter()
+    interpreter.visit(ast)
+    assert(
+      interpreter.memory.getAll == Map(
+        "e" -> false, "j" -> false, "f" -> true, "a" -> true, "i" -> true, "b" -> false, "g" -> true, "c" -> true, "h" -> true, "d" -> false
+      )
+    )
+  }
 }
