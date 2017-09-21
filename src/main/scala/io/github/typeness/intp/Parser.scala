@@ -85,7 +85,7 @@ class Parser(text: String) {
     var result = expression()
     while (currentToken.tokenType == GREATER || currentToken.tokenType == LESS
       || currentToken.tokenType == GREATER_OR_EQUALS || currentToken.tokenType == LESS_OR_EQUALS
-      || currentToken.tokenType == EQUALS) {
+      || currentToken.tokenType == EQUALS || currentToken.tokenType == NOT_EQUALS) {
       val op = currentToken
       eat(op.tokenType)
       result = BinOp(left = result, op = op, right = expression())

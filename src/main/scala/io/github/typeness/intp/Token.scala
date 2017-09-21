@@ -108,6 +108,12 @@ case object EqualsToken extends Token {
   override def value: String = "=="
 }
 
+case object NotEqualsToken extends Token {
+  override def tokenType: NOT_EQUALS.type = NOT_EQUALS
+
+  override def value: String = "!="
+}
+
 
 case object LRoundBracketToken extends Token {
   override def tokenType: TokenType = L_ROUND_BRACKET

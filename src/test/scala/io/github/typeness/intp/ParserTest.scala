@@ -250,4 +250,11 @@ class ParserTest extends FunSuite {
       )
     )
   }
+  test("Parse not equals") {
+    val parser = new Parser("true != false")
+    val ast = parser.parse().children.head
+    assert(
+      ast == BinOp(BooleanLiteral(TrueToken), NotEqualsToken, BooleanLiteral(FalseToken))
+    )
+  }
 }

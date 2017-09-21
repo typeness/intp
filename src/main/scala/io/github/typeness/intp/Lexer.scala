@@ -48,6 +48,10 @@ class Lexer(text: String) {
         advance()
         advance()
         LessOrEqualsToken
+      } else if (currentChar.contains('!') && peek().contains('=')) {
+        advance()
+        advance()
+        NotEqualsToken
       } else if (currentChar.contains('=')) {
         advance()
         AssignToken

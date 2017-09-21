@@ -57,6 +57,9 @@ case object LESS_OR_EQUALS extends TokenType
 // ==
 case object EQUALS extends TokenType
 
+// !=
+case object NOT_EQUALS extends TokenType
+
 // Parenthesis
 
 // (

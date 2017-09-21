@@ -19,6 +19,7 @@ class Interpreter extends ASTVisitor {
       case LessOrEqualsToken => left <= right
       case GreaterToken => left > right
       case LessToken => left < right
+      case NotEqualsToken => left != right
       case _ => throw UndefinedBinaryOp(left, op, right)
     }
   }
@@ -27,17 +28,20 @@ class Interpreter extends ASTVisitor {
     case AndToken => left && right
     case OrToken => left || right
     case EqualsToken => left == right
+    case NotEqualsToken => left != right
     case _ => throw UndefinedBinaryOp(left, op, right)
   }
 
   private def charOperands(left: Char, op: Token, right: Char): Any = op match {
     case EqualsToken => left == right
+    case NotEqualsToken => left != right
     case _ => throw UndefinedBinaryOp(left, op, right)
   }
 
   private def arrayOperands(left: mutable.ArrayBuffer[_], op: Token, right: mutable.ArrayBuffer[_]): Any = op match {
     case AdditionToken => left ++ right
     case EqualsToken => left == right
+    case NotEqualsToken => left != right
     case _ => throw UndefinedBinaryOp(left, op, right)
   }
 
