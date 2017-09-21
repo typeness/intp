@@ -289,4 +289,11 @@ class InterpreterTest extends FunSuite {
       )
     )
   }
+  test("Compute recursion factorial") {
+    val parser = Parser.fromResource("interpreter/factorial.intp")
+    val ast = parser.parse()
+    val interpreter = new Interpreter()
+    interpreter.visit(ast)
+    assert(interpreter.memory.get("result").contains(120))
+  }
 }
