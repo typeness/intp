@@ -2,7 +2,7 @@ package io.github.typeness.intp
 
 class Lexer(text: String) {
   private var currentPosition: Int = 0
-  private var currentChar: Option[Char] = Some(text.charAt(currentPosition))
+  private var currentChar: Option[Char] = if (text.nonEmpty) Some(text.charAt(currentPosition)) else None
   private var isOpeningQuote: Boolean = false
   private var isClosingQuote: Boolean = false
   private var isOpeningApostrophe: Boolean = false

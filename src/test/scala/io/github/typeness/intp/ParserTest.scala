@@ -257,4 +257,11 @@ class ParserTest extends FunSuite {
       ast == BinOp(BooleanLiteral(TrueToken), NotEqualsToken, BooleanLiteral(FalseToken))
     )
   }
+  test("Parse empty program") {
+    val parser = new Parser("")
+    val ast = parser.parse()
+    assert(
+      ast == Program(List.empty)
+    )
+  }
 }

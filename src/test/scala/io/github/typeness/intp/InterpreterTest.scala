@@ -307,4 +307,13 @@ class InterpreterTest extends FunSuite {
       )
     )
   }
+  test("Run empty program") {
+    val parser = new Parser("")
+    val ast = parser.parse()
+    val interpreter = new Interpreter()
+    interpreter.visit(ast)
+    assert(
+      interpreter.memory.getAll == Map.empty
+    )
+  }
 }

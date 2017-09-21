@@ -71,4 +71,8 @@ class LexerTest extends FunSuite {
     assert(lexer.getNextToken == QuotationToken)
     assert(lexer.getNextToken == EOFToken)
   }
+  test("Tokenize empty input") {
+    val lexer = new Lexer("")
+    assert(lexer.getNextToken == EOFToken)
+  }
 }
