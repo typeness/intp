@@ -60,6 +60,9 @@ case object EQUALS extends TokenType
 // !=
 case object NOT_EQUALS extends TokenType
 
+// %
+case object MODULO extends TokenType
+
 // Parenthesis
 
 // (

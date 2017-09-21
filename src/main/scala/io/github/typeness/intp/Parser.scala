@@ -73,7 +73,8 @@ class Parser(text: String) {
    */
   def term(): AST = {
     var result = factor()
-    while (currentToken.tokenType == MULTIPLICATION || currentToken.tokenType == DIV) {
+    while (currentToken.tokenType == MULTIPLICATION
+      || currentToken.tokenType == DIV || currentToken.tokenType == MODULO) {
       val op = currentToken
       eat(op.tokenType)
       result = BinOp(left = result, op = op, right = factor())

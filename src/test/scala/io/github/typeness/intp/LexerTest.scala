@@ -6,7 +6,7 @@ class LexerTest extends FunSuite {
   test("Tokenize all possible tokens") {
     val lexer = new Lexer("+ * / - { } [ ] ( ) 1234 12.34 'f' \"\" ," +
       " < <= >= > == or while true false if else and not return break . import = identifier" +
-      " func !=")
+      " func != %")
     assert(lexer.getNextToken == AdditionToken)
     assert(lexer.getNextToken == MultiplicationToken)
     assert(lexer.getNextToken == DivisionToken)
@@ -47,6 +47,7 @@ class LexerTest extends FunSuite {
     assert(lexer.getNextToken == IdToken("identifier"))
     assert(lexer.getNextToken == FuncToken)
     assert(lexer.getNextToken == NotEqualsToken)
+    assert(lexer.getNextToken == ModuloToken)
     assert(lexer.getNextToken == EOFToken)
   }
   test("Tokenize string with special character and id") {

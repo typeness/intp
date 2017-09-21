@@ -55,6 +55,9 @@ class Lexer(text: String) {
       } else if (currentChar.contains('=')) {
         advance()
         AssignToken
+      } else if (currentChar.contains('%')) {
+        advance()
+        ModuloToken
       } else if (currentChar.contains(',')) {
         advance()
         CommaToken

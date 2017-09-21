@@ -20,6 +20,8 @@ class Interpreter extends ASTVisitor {
       case GreaterToken => left > right
       case LessToken => left < right
       case NotEqualsToken => left != right
+      // Fractional typeclass have no defined modulo operator
+      case ModuloToken => left.toDouble() % right.toDouble()
       case _ => throw UndefinedBinaryOp(left, op, right)
     }
   }
@@ -165,9 +167,9 @@ class Interpreter extends ASTVisitor {
 
 abstract class InterpreterError(cause: String) extends Exception(cause)
 
-case class UndefinedUnaryOp(op: Token, value: Any) extends InterpreterError(s"Undefined unary operator $op$value")
+case class UndefinedUnaryOp(op: Token, value: Any) extends InterpreterError(s"Undefined unary operator ${op.value}$value")
 
-case class UndefinedBinaryOp(left: Any, op: Token, right: Any) extends InterpreterError(s"Undefined operator $left $op $right")
+case class UndefinedBinaryOp(left: Any, op: Token, right: Any) extends InterpreterError(s"Undefined operator $left ${op.value} $right")
 
 case class TypeMismatch(cause: String) extends InterpreterError(s"Type mismatch $cause")
 

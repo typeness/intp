@@ -264,4 +264,11 @@ class ParserTest extends FunSuite {
       ast == Program(List.empty)
     )
   }
+  test("Parse modulo operator") {
+    val parser = new Parser("10 % 3")
+    val ast = parser.parse().children.head
+    assert(
+      ast == BinOp(Number(IntegerConstToken(10)), ModuloToken, Number(IntegerConstToken(3)))
+    )
+  }
 }

@@ -316,4 +316,12 @@ class InterpreterTest extends FunSuite {
       interpreter.memory.getAll == Map.empty
     )
   }
+  test("Calculate with modulo operator") {
+    val parser = new Parser("10 % 3")
+    val ast = parser.parse().children.head
+    val interpreter = new Interpreter()
+    assert(
+      interpreter.visit(ast) == 10 % 3
+    )
+  }
 }
