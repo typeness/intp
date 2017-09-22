@@ -82,10 +82,8 @@ class InterpreterTest extends FunSuite {
     assert(interpreter.visit(ast) == 10)
   }
   test("Numeric variable assign and read") {
-    val parser = Parser.fromResource("interpreter/variables.intp")
-    val ast = parser.parse()
     val interpreter = new Interpreter()
-    interpreter.visit(ast)
+    interpreter.runFromResource("interpreter/variables.intp")
     assert(
       interpreter.memory.getAll == Map("x" -> 2, "y" -> 8, "z" -> 10)
     )
@@ -97,99 +95,83 @@ class InterpreterTest extends FunSuite {
     assert(interpreter.visit(ast) == true)
   }
   test("If statement") {
-    val parser = Parser.fromResource("interpreter/if.intp")
-    val ast = parser.parse()
     val interpreter = new Interpreter()
-    interpreter.visit(ast)
+    interpreter.runFromResource("interpreter/if.intp")
     assert(
       interpreter.memory.getAll == Map("is" -> true, "d" -> 1000)
     )
   }
   test("If-else statements") {
-    val parser = Parser.fromResource("interpreter/if-else.intp")
-    val ast = parser.parse()
     val interpreter = new Interpreter()
-    interpreter.visit(ast)
+    interpreter.runFromResource("interpreter/if-else.intp")
     assert(
       interpreter.memory.getAll == Map("x" -> 2, "c" -> true)
     )
   }
   test("While statement") {
-    val parser = Parser.fromResource("interpreter/while.intp")
-    val ast = parser.parse()
     val interpreter = new Interpreter()
-    interpreter.visit(ast)
+    interpreter.runFromResource("interpreter/while.intp")
     assert(
       interpreter.memory.getAll == Map("x" -> 1000000)
     )
   }
   test("Assignment of array literal") {
-    val parser = new Parser("x = [1, 2, 3]")
-    val ast = parser.parse()
     val interpreter = new Interpreter()
-    interpreter.visit(ast)
-    val x = interpreter.memory.getAll.get("x")
+    interpreter.runFromString("x = [1, 2, 3]")
     assert(
       interpreter.memory.getAll == Map("x" -> Vector(1, 2, 3))
     )
   }
   test("Assignment of multi-dimension array literal") {
-    val parser = new Parser("x = [[1, 2], [3, 4], [5]]")
-    val ast = parser.parse()
     val interpreter = new Interpreter()
-    interpreter.visit(ast)
-    val x = interpreter.memory.getAll.get("x")
+    interpreter.runFromString("x = [[1, 2], [3, 4], [5]]")
     assert(
       interpreter.memory.getAll == Map("x" -> Vector(Vector(1, 2), Vector(3, 4), Vector(5)))
     )
   }
   test("Concat of array literal") {
-    val parser = new Parser("x = [1, 2, 3] + [4, 5, 6]")
-    val ast = parser.parse()
     val interpreter = new Interpreter()
-    interpreter.visit(ast)
+    interpreter.runFromString("x = [1, 2, 3] + [4, 5, 6]")
     assert(
       interpreter.memory.getAll == Map("x" -> (Vector(1, 2, 3) ++ Vector(4, 5, 6)))
     )
   }
   test("Push 10 elements to array in loop") {
-    val parser = Parser.fromResource("interpreter/array-loop.intp")
-    val ast = parser.parse()
     val interpreter = new Interpreter()
-    interpreter.visit(ast)
+    interpreter.runFromResource("interpreter/array-loop.intp")
     assert(
       interpreter.memory.getAll == Map("arr" -> Vector.range(0, 10), "x" -> 10)
     )
   }
   test("Array access") {
-    val parser = Parser.fromResource("interpreter/array-access.intp")
-    val ast = parser.parse()
     val interpreter = new Interpreter()
-    interpreter.visit(ast)
+    interpreter.runFromResource("interpreter/array-access.intp")
     assert(
       interpreter.memory.getAll == Map("arr" -> Vector(-100, 33, 55, 56, 234), "middle" -> 55)
     )
   }
   test("Character assignment") {
-    val parser = new Parser("x = 'c'")
-    val ast = parser.parse()
     val interpreter = new Interpreter()
-    interpreter.visit(ast)
+    interpreter.runFromString("x = 'c'")
     assert(
       interpreter.memory.getAll == Map("x" -> 'c')
     )
   }
   test("Define a function") {
-    val parser = Parser.fromResource("interpreter/functionDefinition.intp")
-    val ast = parser.parse()
     val interpreter = new Interpreter()
-    interpreter.visit(ast)
+    interpreter.runFromResource("interpreter/functionDefinition.intp")
+    assert(
+      interpreter.memory.getAll == Map(
+        "f" -> FunctionLiteral(List(IdToken("a"), IdToken("b")),
+          Program(List(AssignAST(IdToken("x"),
+            BinOp(VarAST(IdToken("a")), MultiplicationToken, Number(IntegerConstToken(2)))),
+            AssignAST(IdToken("var"),
+              ArrayLiteral(List(VarAST(IdToken("a")), VarAST(IdToken("b")), VarAST(IdToken("x")))))))))
+    )
   }
   test("Call a function") {
-    val parser = Parser.fromResource("interpreter/function-call.intp")
-    val ast = parser.parse()
     val interpreter = new Interpreter()
-    interpreter.visit(ast)
+    interpreter.runFromResource("interpreter/function-call.intp")
     interpreter.memory.getAll == Map(
       "arr" -> Vector(44, 88, 132, 176),
       "x" -> 44,
@@ -224,10 +206,8 @@ class InterpreterTest extends FunSuite {
     )
   }
   test("Return function from function and call it") {
-    val parser = Parser.fromResource("interpreter/return-function.intp")
-    val ast = parser.parse()
     val interpreter = new Interpreter()
-    interpreter.visit(ast)
+    interpreter.runFromResource("interpreter/return-function.intp")
     assert(
       interpreter.memory.getAll == Map(
         "x" -> 3,
@@ -239,10 +219,8 @@ class InterpreterTest extends FunSuite {
     )
   }
   test("Call function with another function as argument") {
-    val parser = Parser.fromResource("interpreter/function-as-argument.intp")
-    val ast = parser.parse()
     val interpreter = new Interpreter()
-    interpreter.visit(ast)
+    interpreter.runFromResource("interpreter/function-as-argument.intp")
     assert(
       interpreter.memory.getAll == Map(
         "result" -> true,
@@ -255,20 +233,16 @@ class InterpreterTest extends FunSuite {
     )
   }
   test("Assignment for array indexed object") {
-    val parser = Parser.fromResource("interpreter/assignment-array-indexed.intp")
-    val ast = parser.parse()
     val interpreter = new Interpreter()
-    interpreter.visit(ast)
+    interpreter.runFromResource("interpreter/assignment-array-indexed.intp")
     assert(
       interpreter.memory.getAll == Map("x" -> Vector(1, 2, 10))
 
     )
   }
   test("Strings manipulation") {
-    val parser = Parser.fromResource("interpreter/strings-manipulation.intp")
-    val ast = parser.parse()
     val interpreter = new Interpreter()
-    interpreter.visit(ast)
+    interpreter.runFromResource("interpreter/strings-manipulation.intp")
     assert(
       interpreter.memory.getAll == Map(
         "z" -> Vector('A', 'l', 'a', ' ', 'm', 'a', ' ', 'k', 'o', 't', 'a', '.'),
@@ -279,10 +253,8 @@ class InterpreterTest extends FunSuite {
     )
   }
   test("Operator == for all possible types") {
-    val parser = Parser.fromResource("interpreter/equals.intp")
-    val ast = parser.parse()
     val interpreter = new Interpreter()
-    interpreter.visit(ast)
+    interpreter.runFromResource("interpreter/equals.intp")
     assert(
       interpreter.memory.getAll == Map(
         "e" -> false, "j" -> false, "f" -> true, "a" -> true, "i" -> true, "b" -> false, "g" -> true, "c" -> true, "h" -> true, "d" -> false
@@ -290,17 +262,13 @@ class InterpreterTest extends FunSuite {
     )
   }
   test("Compute recursion factorial") {
-    val parser = Parser.fromResource("interpreter/factorial.intp")
-    val ast = parser.parse()
     val interpreter = new Interpreter()
-    interpreter.visit(ast)
+    interpreter.runFromResource("interpreter/factorial.intp")
     assert(interpreter.memory.get("result").contains(120))
   }
   test("Operator != for all possible types") {
-    val parser = Parser.fromResource("interpreter/not-equals.intp")
-    val ast = parser.parse()
     val interpreter = new Interpreter()
-    interpreter.visit(ast)
+    interpreter.runFromResource("interpreter/not-equals.intp")
     assert(
       interpreter.memory.getAll == Map(
         "e" -> true, "j" -> true, "f" -> false, "a" -> false, "i" -> false, "b" -> true, "g" -> false, "c" -> false, "h" -> false, "d" -> true
@@ -308,10 +276,8 @@ class InterpreterTest extends FunSuite {
     )
   }
   test("Run empty program") {
-    val parser = new Parser("")
-    val ast = parser.parse()
     val interpreter = new Interpreter()
-    interpreter.visit(ast)
+    interpreter.runFromString("")
     assert(
       interpreter.memory.getAll == Map.empty
     )
@@ -325,14 +291,12 @@ class InterpreterTest extends FunSuite {
     )
   }
   test("Allow reuse of functions literal") {
-    val parser = Parser.fromResource("interpreter/f-literal-reuse.intp")
-    val ast = parser.parse()
     val interpreter = new Interpreter()
-    interpreter.visit(ast)
+    interpreter.runFromResource("interpreter/f-literal-reuse.intp")
     assert(
       interpreter.memory.getAll == Map(
-        "f1" -> FunctionLiteral(List(IdToken("a")),Program(List(ReturnAST(VarAST(IdToken("a")))))),
-        "f2" -> FunctionLiteral(List(IdToken("a")),Program(List(ReturnAST(VarAST(IdToken("a")))))),
+        "f1" -> FunctionLiteral(List(IdToken("a")), Program(List(ReturnAST(VarAST(IdToken("a")))))),
+        "f2" -> FunctionLiteral(List(IdToken("a")), Program(List(ReturnAST(VarAST(IdToken("a")))))),
         "test" -> true
       )
     )

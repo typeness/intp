@@ -168,4 +168,16 @@ class Interpreter extends ASTVisitor {
   }
 
   override protected def returnAST(ast: ReturnAST): Any = visit(AssignAST(IdToken("return"), ast.result))
+
+  def runFromResource(res: String): Any = {
+    val parser = Parser.fromResource(res)
+    val ast = parser.parse()
+    visit(ast)
+  }
+
+  def runFromString(source: String): Any = {
+    val parser = new Parser(source)
+    val ast = parser.parse()
+    visit(ast)
+  }
 }

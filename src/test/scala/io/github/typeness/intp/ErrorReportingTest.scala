@@ -4,59 +4,45 @@ import org.scalatest.FunSuite
 
 class ErrorReportingTest extends FunSuite {
   test("Type mismatch: indexing non-array object") {
-    val parser = Parser.fromResource("errors/array-object.intp")
-    val ast = parser.parse()
-    val interpreter = new Interpreter()
     intercept[TypeMismatch] {
-      interpreter.visit(ast)
+      val interpreter = new Interpreter()
+      interpreter.runFromResource("errors/array-object.intp")
     }
   }
   test("Type mismatch: non-boolean in while loop condition") {
-    val parser = Parser.fromResource("errors/loop-condition.intp")
-    val ast = parser.parse()
-    val interpreter = new Interpreter()
     intercept[TypeMismatch] {
-      interpreter.visit(ast)
+      val interpreter = new Interpreter()
+      interpreter.runFromResource("errors/loop-condition.intp")
     }
   }
   test("Type mismatch: non-boolean in if condition") {
-    val parser = Parser.fromResource("errors/if-condition.intp")
-    val ast = parser.parse()
-    val interpreter = new Interpreter()
     intercept[TypeMismatch] {
-      interpreter.visit(ast)
+      val interpreter = new Interpreter()
+      interpreter.runFromResource("errors/if-condition.intp")
     }
   }
   test("Type mismatch: calling non-function object") {
-    val parser = Parser.fromResource("errors/function-call.intp")
-    val ast = parser.parse()
-    val interpreter = new Interpreter()
     intercept[TypeMismatch] {
-      interpreter.visit(ast)
+      val interpreter = new Interpreter()
+      interpreter.runFromResource("errors/function-call.intp")
     }
   }
   test("Type mismatch: indexing array with non-integer object") {
-    val parser = Parser.fromResource("errors/array-index.intp")
-    val ast = parser.parse()
-    val interpreter = new Interpreter()
     intercept[TypeMismatch] {
-      interpreter.visit(ast)
+      val interpreter = new Interpreter()
+      interpreter.runFromResource("errors/array-index.intp")
     }
   }
   test("Type mismatch: assign to not array like it's array") {
-    val parser = Parser.fromResource("errors/array-assign.intp")
-    val ast = parser.parse()
-    val interpreter = new Interpreter()
     intercept[TypeMismatch] {
-      interpreter.visit(ast)
+      val interpreter = new Interpreter()
+      interpreter.runFromResource("errors/array-assign.intp")
     }
   }
   test("Type mismatch: assign array by wrong index") {
-    val parser = Parser.fromResource("errors/array-assign-index.intp")
-    val ast = parser.parse()
-    val interpreter = new Interpreter()
     intercept[TypeMismatch] {
-      interpreter.visit(ast)
+      val interpreter = new Interpreter()
+      interpreter.runFromResource("errors/array-assign-index.intp")
     }
   }
   test("Invalid syntax: use invalid operator &") {
@@ -66,43 +52,33 @@ class ErrorReportingTest extends FunSuite {
     }
   }
   test("Wrong unary operator: type mismatch") {
-    val parser = Parser.fromResource("errors/unary-op-mismatch.intp")
-    val ast = parser.parse()
-    val interpreter = new Interpreter()
     intercept[WrongUnaryOperator] {
-      interpreter.visit(ast)
+      val interpreter = new Interpreter()
+      interpreter.runFromResource("errors/unary-op-mismatch.intp")
     }
   }
   test("Wrong binary operator: type mismatch") {
-    val parser = Parser.fromResource("errors/binary-op-mismatch.intp")
-    val ast = parser.parse()
-    val interpreter = new Interpreter()
     intercept[WrongBinaryOperator] {
-      interpreter.visit(ast)
+      val interpreter = new Interpreter()
+      interpreter.runFromResource("errors/binary-op-mismatch.intp")
     }
   }
   test("Use undefined variable") {
-    val parser = new Parser("a = b")
-    val ast = parser.parse()
-    val interpreter = new Interpreter()
     intercept[UndefinedVariable] {
-      interpreter.visit(ast)
+      val interpreter = new Interpreter()
+      interpreter.runFromString("a = b")
     }
   }
   test("Provide wrong number of arguments for function call") {
-    val parser = Parser.fromResource("errors/wrong-function-call.intp")
-    val ast = parser.parse()
-    val interpreter = new Interpreter()
     intercept[WrongFunctionCall] {
-      interpreter.visit(ast)
+      val interpreter = new Interpreter()
+      interpreter.runFromResource("errors/wrong-function-call.intp")
     }
   }
   test("Provide wrong number of for anonymous function call") {
-    val parser = Parser.fromResource("errors/wrong-anon-function-call.intp")
-    val ast = parser.parse()
-    val interpreter = new Interpreter()
     intercept[WrongFunctionCall] {
-      interpreter.visit(ast)
+      val interpreter = new Interpreter()
+      interpreter.runFromResource("errors/wrong-anon-function-call.intp")
     }
   }
 }
