@@ -1,0 +1,7 @@
+f  = func(a) {
+  g = func(a, b) {
+    return 1
+  }
+  return g
+}
+f(1)(2)

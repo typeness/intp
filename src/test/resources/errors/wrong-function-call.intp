@@ -1,0 +1,4 @@
+sum = func(a, b) {
+  return a + b
+}
+sum(9)
