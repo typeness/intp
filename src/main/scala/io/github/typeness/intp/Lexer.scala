@@ -113,8 +113,7 @@ class Lexer(text: String) {
         advance()
         DotToken
       } else {
-        //        throw new Exception(s"Error parsing input $currentChar")
-        EOFToken
+        throw SyntaxError(currentChar.getOrElse("<EOF>").toString)
       }
     } else {
       EOFToken
