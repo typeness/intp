@@ -324,4 +324,17 @@ class InterpreterTest extends FunSuite {
       interpreter.visit(ast) == 10 % 3
     )
   }
+  test("Allow reuse of functions literal") {
+    val parser = Parser.fromResource("interpreter/f-literal-reuse.intp")
+    val ast = parser.parse()
+    val interpreter = new Interpreter()
+    interpreter.visit(ast)
+    assert(
+      interpreter.memory.getAll == Map(
+        "f1" -> FunctionLiteral(List(IdToken("a")),Program(List(ReturnAST(VarAST(IdToken("a")))))),
+        "f2" -> FunctionLiteral(List(IdToken("a")),Program(List(ReturnAST(VarAST(IdToken("a")))))),
+        "test" -> true
+      )
+    )
+  }
 }
