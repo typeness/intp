@@ -34,6 +34,7 @@ class Lexer(text: String) {
       character()
     } else if (currentChar.isDefined) {
       skipWhitespaces()
+      skipComments()
       if (currentChar.isDefined && currentChar.get.isDigit) {
         number()
       } else if (currentChar.contains('=') && peek().contains('=')) {
@@ -112,6 +113,8 @@ class Lexer(text: String) {
       } else if (currentChar.contains('.')) {
         advance()
         DotToken
+      } else if(currentChar.isEmpty) {
+        EOFToken
       } else {
         throw SyntaxError(currentChar.getOrElse("<EOF>").toString)
       }
@@ -126,6 +129,17 @@ class Lexer(text: String) {
       currentChar = None
     } else {
       currentChar = Some(text.charAt(currentPosition))
+    }
+  }
+
+  private def skipComments(): Unit = {
+    if (currentChar.contains('/') && peek().contains('/')) {
+      advance()
+      advance()
+      while(!currentChar.contains('\n') && currentChar.isDefined) {
+        advance()
+      }
+      advance()
     }
   }
 

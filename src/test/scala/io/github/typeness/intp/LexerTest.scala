@@ -76,4 +76,8 @@ class LexerTest extends FunSuite {
     val lexer = new Lexer("")
     assert(lexer.getNextToken == EOFToken)
   }
+  test("Do not tokenize comment") {
+    val lexer = new Lexer("// do not tokenize")
+    assert(lexer.getNextToken == EOFToken)
+  }
 }

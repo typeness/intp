@@ -271,4 +271,19 @@ class ParserTest extends FunSuite {
       ast == BinOp(Number(IntegerConstToken(10)), ModuloToken, Number(IntegerConstToken(3)))
     )
   }
+  test("Parse source code with comments") {
+    val parser = Parser.fromResource("parser/comments.intp")
+    val ast = parser.parse()
+    assert(
+      ast == Program(List(
+        AssignAST(IdToken("x"),
+          ArrayLiteral(List(CharLiteral(CharToken('t')),
+            CharLiteral(CharToken('e')),
+            CharLiteral(CharToken('s')), CharLiteral(CharToken('t'))))),
+        AssignAST(IdToken("y"),
+          BinOp(VarAST(IdToken("x")),
+            AdditionToken, ArrayLiteral(List(
+              CharLiteral(CharToken(' ')), CharLiteral(CharToken('.'))))))))
+    )
+  }
 }
