@@ -286,4 +286,15 @@ class ParserTest extends FunSuite {
               CharLiteral(CharToken(' ')), CharLiteral(CharToken('.'))))))))
     )
   }
+  test("Parse else-if statement") {
+    val parser = Parser.fromResource("parser/else-if.intp")
+    val ast = parser.parse()
+    assert(
+      ast == Program(List(
+        IfAST(BooleanLiteral(FalseToken),
+          Program(List.empty),
+          Some(IfAST(BooleanLiteral(TrueToken), Program(List.empty), None)))
+      ))
+    )
+  }
 }

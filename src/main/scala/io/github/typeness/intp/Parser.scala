@@ -58,10 +58,19 @@ class Parser(text: String) {
     val elseBlock = currentToken.tokenType match {
       case ELSE =>
         eat(ELSE)
-        eat(L_CURLY_BRACKET)
-        val elseBlock = program()
-        eat(R_CURLY_BRACKET)
-        Some(elseBlock)
+        currentToken.tokenType match {
+          case L_CURLY_BRACKET =>
+            eat(L_CURLY_BRACKET)
+            val elseBlock = program()
+            eat(R_CURLY_BRACKET)
+            Some(elseBlock)
+          case IF => Some(ifStatement())
+          case _ => throw SyntaxError(currentToken.value)
+        }
+//        eat(L_CURLY_BRACKET)
+//        val elseBlock = program()
+//        eat(R_CURLY_BRACKET)
+//        Some(elseBlock)
       case _ => None
     }
     IfAST(condition, ifBlock, elseBlock)
