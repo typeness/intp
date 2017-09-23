@@ -1,0 +1,5 @@
+// comment0
+x = "test"
+// comment1
+y = x + " ."
+// last comment
