@@ -156,7 +156,10 @@ class Interpreter extends ASTVisitor {
 
   override protected def ifAST(ast: IfAST): Any = visit(ast.condition) match {
     case true => visit(ast.ifBlock)
-    case false => ast.elseBlock.foreach(visit)
+    case false => ast.elseBlock match {
+      case Some(p) => visit(p)
+      case None => ()
+    }
     case value => throw TypeMismatch(value, BooleanType, compilationUnit, ast.condition.token.position)
   }
 

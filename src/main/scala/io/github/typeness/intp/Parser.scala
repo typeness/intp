@@ -68,13 +68,10 @@ class Parser(text: String)(val compilationUnit: CompilationUnit = CompilationUni
           case IF => Some(ifStatement())
           case _ => throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
         }
-//        eat(L_CURLY_BRACKET)
-//        val elseBlock = program()
-//        eat(R_CURLY_BRACKET)
-//        Some(elseBlock)
       case _ => None
     }
     IfAST(condition, ifBlock, elseBlock, IfToken(ifTokenPos))
+
   }
 
   /*
@@ -204,7 +201,8 @@ class Parser(text: String)(val compilationUnit: CompilationUnit = CompilationUni
         | L_ROUND_BRACKET disjunction R_ROUND_BRACKET
         | array_literal
         | char_literal
-        | string_literal ;
+        | string_literal
+        | if_then_else ;
    */
   private def factor(): AST = {
     val token = currentToken
@@ -222,6 +220,7 @@ class Parser(text: String)(val compilationUnit: CompilationUnit = CompilationUni
       case L_SQUARE_BRACKET => arrayLiteral()
       case APOSTROPHE => characterLiteral()
       case QUOTATION => stringLiteral()
+      case IF => ifThenElse()
       case _ => throw ParserError(token)
     }
   }
@@ -367,6 +366,26 @@ class Parser(text: String)(val compilationUnit: CompilationUnit = CompilationUni
         result
       case _ => throw new ParserError(currentToken)
     }
+  }
+
+  /*
+  if_then_else = IF L_ROUND_BRACKET disjunction R_ROUND_BRACKET THEN disjunction [ELSE disjunction];
+   */
+  private def ifThenElse(): AST = {
+    val ifTokenPos = currentToken.position
+    eat(IF)
+    eat(L_ROUND_BRACKET)
+    val condition = disjunction()
+    eat(R_ROUND_BRACKET)
+    eat(THEN)
+    val ifBlock = disjunction()
+    val elseBlock = currentToken.tokenType match {
+      case ELSE =>
+        eat(ELSE)
+        Some(disjunction())
+      case _ => None
+    }
+    IfAST(condition, ifBlock, elseBlock, IfToken(ifTokenPos))
   }
 
   /*

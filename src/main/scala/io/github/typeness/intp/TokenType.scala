@@ -130,3 +130,6 @@ case object RETURN extends TokenType
 
 // func
 case object FUNC extends TokenType
+
+// then
+case object THEN extends TokenType

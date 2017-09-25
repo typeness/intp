@@ -23,6 +23,7 @@ class Lexer(text: String)(val compilationUnit: CompilationUnit = CompilationUnit
     case "break" => Some(BreakToken(pos))
     case "return" => Some(ReturnToken(pos))
     case "func" => Some(FuncToken(pos))
+    case "then" => Some(ThenToken(pos))
     case _ => None
   }
 

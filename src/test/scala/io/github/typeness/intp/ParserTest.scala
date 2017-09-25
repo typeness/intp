@@ -316,4 +316,15 @@ class ParserTest extends FunSuite {
       (1, 1)))))
     )
   }
+  test("Parse if-then-else") {
+    val parser = Parser.fromResource("parser/if-then-else.intp")
+    val ast = parser.parse()
+    assert(
+      ast == Program(List(AssignAST(IdToken("x", Position(1, 1)), Number(IntegerConstToken(10, Position(1, 5))),
+        AssignToken(Position(1, 3))),
+        AssignAST(IdToken("y", Position(2, 1)), IfAST(BinOp(VarAST(IdToken("x", Position(2, 9))), LessToken(Position
+        (2, 11)), Number(IntegerConstToken(5, Position(2, 13)))), Number(IntegerConstToken(11, Position(2, 21))),
+          Some(Number(IntegerConstToken(12, Position(2, 29)))), IfToken(Position(2, 5))), AssignToken(Position(2, 3)))))
+    )
+  }
 }

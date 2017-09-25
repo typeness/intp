@@ -277,4 +277,9 @@ class InterpreterTest extends FunSuite {
           Position(2, 10))), ReturnToken(Position(2, 3))))), FuncToken(Position(1, 6))), "test" -> true)
     )
   }
+  test("Expression if-then-else return value") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/if-then-else.intp")
+    println(interpreter.memory.getAll)
+  }
 }

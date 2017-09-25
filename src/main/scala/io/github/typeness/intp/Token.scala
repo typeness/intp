@@ -251,3 +251,9 @@ case class FuncToken(position: Position) extends Token {
 
   override def value: String = "func"
 }
+
+case class ThenToken(position: Position) extends Token {
+  override def tokenType: TokenType = THEN
+
+  override def value: String = "then"
+}
