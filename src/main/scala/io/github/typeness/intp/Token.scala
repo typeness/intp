@@ -1,215 +1,220 @@
 package io.github.typeness.intp
 
+case class Position(row: Int, col: Int)
+
 sealed trait Token {
   def tokenType: TokenType
 
   def value: String
+
+  def position: Position
 }
 
 sealed trait NumberToken extends Token
 
-case class IntegerConstToken(intValue: Int) extends NumberToken {
+case class IntegerConstToken(intValue: Int, position: Position) extends NumberToken {
   override def tokenType: TokenType = INTEGER_CONST
 
   override def value: String = intValue.toString
 }
 
-case class RealConstToken(doubleValue: Double) extends NumberToken {
+case class RealConstToken(doubleValue: Double, position: Position) extends NumberToken {
   override def tokenType: TokenType = REAL_CONST
 
   override def value: String = doubleValue.toString
 }
 
-case class StringToken(value: String) extends Token {
+case class StringToken(value: String, position: Position) extends Token {
   override def tokenType: STRING.type = STRING
 }
 
-case class CharToken(c: Char) extends Token {
+case class CharToken(c: Char, position: Position) extends Token {
   override def tokenType: CHARACTER.type = CHARACTER
 
   override def value: String = c.toString
 }
 
-case object SubtractionToken extends Token {
+case class SubtractionToken(position: Position) extends Token {
   override def tokenType: TokenType = MINUS
 
   override def value: String = "-"
 }
 
-case object AdditionToken extends Token {
+case class AdditionToken(position: Position) extends Token {
   override def tokenType: TokenType = PLUS
 
   override def value: String = "+"
 }
 
-case object MultiplicationToken extends Token {
+case class MultiplicationToken(position: Position) extends Token {
   override def tokenType: TokenType = MULTIPLICATION
 
   override def value: String = "*"
 }
 
-case object DivisionToken extends Token {
+case class DivisionToken(position: Position) extends Token {
   override def tokenType: TokenType = DIV
 
   override def value: String = "/"
 }
 
-case object NotToken extends Token {
+case class NotToken(position: Position) extends Token {
   override def tokenType: TokenType = NOT
 
   override def value: String = "not"
 }
 
-case object OrToken extends Token {
+case class OrToken(position: Position) extends Token {
   override def tokenType: TokenType = OR
 
   override def value: String = "or"
 }
 
-case object AndToken extends Token {
+case class AndToken(position: Position) extends Token {
   override def tokenType: TokenType = AND
 
   override def value: String = "and"
 }
 
-case object AssignToken extends Token {
+case class AssignToken(position: Position) extends Token {
   override def tokenType: TokenType = ASSIGN
 
   override def value: String = "="
 }
 
-case object GreaterToken extends Token {
+case class GreaterToken(position: Position) extends Token {
   override def tokenType: TokenType = GREATER
 
   override def value: String = ">"
 }
 
-case object GreaterOrEqualsToken extends Token {
+case class GreaterOrEqualsToken(position: Position) extends Token {
   override def tokenType: TokenType = GREATER_OR_EQUALS
 
   override def value: String = ">="
 }
 
-case object LessToken extends Token {
+case class LessToken(position: Position) extends Token {
   override def tokenType: TokenType = LESS
 
   override def value: String = "<"
 }
 
-case object LessOrEqualsToken extends Token {
+case class LessOrEqualsToken(position: Position) extends Token {
   override def tokenType: TokenType = LESS_OR_EQUALS
 
   override def value: String = "<="
 }
 
-case object EqualsToken extends Token {
+case class EqualsToken(position: Position) extends Token {
   override def tokenType: TokenType = EQUALS
 
   override def value: String = "=="
 }
 
-case object NotEqualsToken extends Token {
+case class NotEqualsToken(position: Position) extends Token {
   override def tokenType: TokenType = NOT_EQUALS
 
   override def value: String = "!="
 }
 
-case object ModuloToken extends Token {
+case class ModuloToken(position: Position) extends Token {
   override def tokenType: TokenType = MODULO
 
   override def value: String = "%"
 }
 
 
-case object LRoundBracketToken extends Token {
+case class LRoundBracketToken(position: Position) extends Token {
   override def tokenType: TokenType = L_ROUND_BRACKET
 
   override def value: String = "("
 }
 
-case object RRoundBracketToken extends Token {
+case class RRoundBracketToken(position: Position) extends Token {
   override def tokenType: TokenType = R_ROUND_BRACKET
 
   override def value: String = ")"
 }
 
-case object LSquareBracketToken extends Token {
+case class LSquareBracketToken(position: Position) extends Token {
   override def tokenType: TokenType = L_SQUARE_BRACKET
 
   override def value: String = "["
 }
 
-case object RSquareBracketToken extends Token {
+case class RSquareBracketToken(position: Position) extends Token {
   override def tokenType: TokenType = R_SQUARE_BRACKET
 
   override def value: String = "]"
 }
 
-case object RCurlyBracketToken extends Token {
+case class RCurlyBracketToken(position: Position) extends Token {
   override def tokenType: TokenType = R_CURLY_BRACKET
 
   override def value: String = "}"
 }
 
-case object LCurlyBracketToken extends Token {
+case class LCurlyBracketToken(position: Position) extends Token {
   override def tokenType: TokenType = L_CURLY_BRACKET
 
   override def value: String = "{"
 }
 
-case object EOFToken extends Token {
+case class EOFToken(position: Position) extends Token {
   override def tokenType: TokenType = EOF
 
   override def value: String = "EOF"
 }
 
-case class IdToken(value: String) extends Token {
+case class IdToken(value: String, position: Position) extends Token {
   override def tokenType: TokenType = ID
+  override def toString: String = "IdToken(" + "\"" + value + "\", " + position.toString + ")"
 }
 
-case object CommaToken extends Token {
+case class CommaToken(position: Position) extends Token {
   override def tokenType: TokenType = COMMA
 
   override def value: String = ","
 }
 
-case object ApostropheToken extends Token {
+case class ApostropheToken(position: Position) extends Token {
   override def tokenType: TokenType = APOSTROPHE
 
   override def value: String = "'"
 }
 
-case object DotToken extends Token {
+case class DotToken(position: Position) extends Token {
   override def tokenType: TokenType = DOT
 
   override def value: String = "."
 }
 
-case object QuotationToken extends Token {
+case class QuotationToken(position: Position) extends Token {
   override def tokenType: TokenType = QUOTATION
 
   override def value: String = "\""
 }
 
-case object ImportToken extends Token {
+case class ImportToken(position: Position) extends Token {
   override def tokenType: TokenType = IMPORT
 
   override def value: String = "import"
 }
 
-case object WhileToken extends Token {
+case class WhileToken(position: Position) extends Token {
   override def tokenType: TokenType = WHILE
 
   override def value: String = "while"
 }
 
-case object IfToken extends Token {
+case class IfToken(position: Position) extends Token {
   override def tokenType: TokenType = IF
 
   override def value: String = "if"
 }
 
-case object ElseToken extends Token {
+case class ElseToken(position: Position) extends Token {
   override def tokenType: TokenType = ELSE
 
   override def value: String = "else"
@@ -217,31 +222,31 @@ case object ElseToken extends Token {
 
 sealed trait TrueOrElseToken extends Token
 
-case object TrueToken extends TrueOrElseToken {
+case class TrueToken(position: Position) extends TrueOrElseToken {
   override def tokenType: TokenType = TRUE
 
   override def value: String = "true"
 }
 
-case object FalseToken extends TrueOrElseToken {
+case class FalseToken(position: Position) extends TrueOrElseToken {
   override def tokenType: TokenType = FALSE
 
   override def value: String = "false"
 }
 
-case object BreakToken extends Token {
+case class BreakToken(position: Position) extends Token {
   override def tokenType: TokenType = BREAK
 
   override def value: String = "break"
 }
 
-case object ReturnToken extends Token {
+case class ReturnToken(position: Position) extends Token {
   override def tokenType: TokenType = RETURN
 
   override def value: String = "return"
 }
 
-case object FuncToken extends Token {
+case class FuncToken(position: Position) extends Token {
   override def tokenType: TokenType = FUNC
 
   override def value: String = "func"

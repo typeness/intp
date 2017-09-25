@@ -3,8 +3,8 @@ package io.github.typeness.intp
 import scala.collection.mutable.ListBuffer
 import scala.io.Source
 
-class Parser(text: String) {
-  private val lexer: Lexer = new Lexer(text)
+class Parser(text: String)(val compilationUnit: CompilationUnit = CompilationUnit("<console>", text)) {
+  private val lexer: Lexer = new Lexer(text)(compilationUnit)
   private var currentToken: Token = lexer.getNextToken
 
   def parse(): Program = {
@@ -48,6 +48,7 @@ class Parser(text: String) {
       R_CURLY_BRACKET [ELSE (L_CURLY_BRACKET program R_CURLY_BRACKET) | if_statement] ;
   */
   private def ifStatement(): AST = {
+    val ifTokenPos = currentToken.position
     eat(IF)
     eat(L_ROUND_BRACKET)
     val condition = disjunction()
@@ -65,7 +66,7 @@ class Parser(text: String) {
             eat(R_CURLY_BRACKET)
             Some(elseBlock)
           case IF => Some(ifStatement())
-          case _ => throw SyntaxError(currentToken.value)
+          case _ => throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
         }
 //        eat(L_CURLY_BRACKET)
 //        val elseBlock = program()
@@ -73,7 +74,7 @@ class Parser(text: String) {
 //        Some(elseBlock)
       case _ => None
     }
-    IfAST(condition, ifBlock, elseBlock)
+    IfAST(condition, ifBlock, elseBlock, IfToken(ifTokenPos))
   }
 
   /*
@@ -81,6 +82,7 @@ class Parser(text: String) {
       R_CURLY_BRACKET ;
   */
   private def whileStatement(): AST = {
+    val pos = currentToken.position
     eat(WHILE)
     eat(L_ROUND_BRACKET)
     val condition = disjunction()
@@ -88,15 +90,16 @@ class Parser(text: String) {
     eat(L_CURLY_BRACKET)
     val whileBlock = program()
     eat(R_CURLY_BRACKET)
-    WhileAST(condition, whileBlock)
+    WhileAST(condition, whileBlock, WhileToken(pos))
   }
 
   /*
   return_statement = RETURN disjunction ;
    */
   private def returnStatement(): AST = {
+    val pos = currentToken.position
     eat(RETURN)
-    ReturnAST(result = disjunction())
+    ReturnAST(result = disjunction(), ReturnToken(pos))
   }
 
   /*
@@ -107,11 +110,12 @@ class Parser(text: String) {
     var result = conjunction()
     // assignment
     if (currentToken.tokenType == ASSIGN) {
+      val pos = currentToken.position
       eat(ASSIGN)
       result match {
         case ArrayAccess(name, index) =>
           ArrayAssignAST(name, index, disjunction())
-        case VarAST(name) => AssignAST(name, disjunction())
+        case VarAST(name) => AssignAST(name, disjunction(), AssignToken(pos))
         case _ => throw new ParserError(result.token)
       }
     } else {
@@ -229,22 +233,23 @@ class Parser(text: String) {
   */
   private def variable(): AST = {
     val name = currentToken.value
+    val pos = currentToken.position
     eat(ID)
     currentToken.tokenType match {
       case L_ROUND_BRACKET =>
-        var functionCall = FunctionCall(VarAST(IdToken(name)), actualParametersList())
+        var functionCall = FunctionCall(VarAST(IdToken(name, pos)), actualParametersList())
         while (currentToken.tokenType == L_ROUND_BRACKET) {
           functionCall = FunctionCall(source = functionCall, actualParametersList())
         }
         functionCall
       //        FunctionCall(source = VarAST(IdToken(name)), actualParametersList())
       case L_SQUARE_BRACKET =>
-        var arrayAccess = ArrayAccess(VarAST(IdToken(name)), arrayIndexing())
+        var arrayAccess = ArrayAccess(VarAST(IdToken(name, pos)), arrayIndexing())
         while (currentToken.tokenType == L_SQUARE_BRACKET) {
           arrayAccess = ArrayAccess(source = arrayAccess, arrayIndexing())
         }
         arrayAccess
-      case _ => VarAST(name = IdToken(name))
+      case _ => VarAST(name = IdToken(name, pos))
     }
   }
 
@@ -253,12 +258,13 @@ class Parser(text: String) {
     FUNC formal_parameters_list L_CURLY_BRACKET program R_CURLY_BRACKET ;
    */
   private def functionLiteral(): AST = {
+    val pos = currentToken.position
     eat(FUNC)
     val parameters = formalParametersList()
     eat(L_CURLY_BRACKET)
     val root = program()
     eat(R_CURLY_BRACKET)
-    FunctionLiteral(parameters, root)
+    FunctionLiteral(parameters, root, FuncToken(pos))
   }
 
   /*
@@ -284,10 +290,10 @@ class Parser(text: String) {
     currentToken.tokenType match {
       case INTEGER_CONST =>
         eat(INTEGER_CONST)
-        Number(IntegerConstToken(token.value.toInt))
+        Number(IntegerConstToken(token.value.toInt, token.position))
       case REAL_CONST =>
         eat(REAL_CONST)
-        Number(RealConstToken(token.value.toDouble))
+        Number(RealConstToken(token.value.toDouble, token.position))
       case _ => throw new ParserError(currentToken)
     }
   }
@@ -296,13 +302,14 @@ class Parser(text: String) {
   boolean_literal = TRUE | FALSE ;
    */
   private def booleanLiteral(): AST = {
+    val pos = currentToken.position
     currentToken.tokenType match {
       case TRUE =>
         eat(TRUE)
-        BooleanLiteral(TrueToken)
+        BooleanLiteral(TrueToken(pos))
       case FALSE =>
         eat(FALSE)
-        BooleanLiteral(FalseToken)
+        BooleanLiteral(FalseToken(pos))
       case _ => throw new ParserError(currentToken)
     }
   }
@@ -312,11 +319,12 @@ class Parser(text: String) {
                    | L_SQUARE_BRACKET R_SQUARE_BRACKET ;
    */
   private def arrayLiteral(): AST = {
+    val pos = currentToken.position
     eat(L_SQUARE_BRACKET)
     currentToken.tokenType match {
       case R_SQUARE_BRACKET =>
         eat(R_SQUARE_BRACKET)
-        ArrayLiteral(List.empty)
+        ArrayLiteral(List.empty, LSquareBracketToken(pos))
       case _ =>
         val result: ListBuffer[AST] = ListBuffer(disjunction())
         while (currentToken.tokenType == COMMA) {
@@ -324,7 +332,7 @@ class Parser(text: String) {
           result.append(disjunction())
         }
         eat(R_SQUARE_BRACKET)
-        ArrayLiteral(result.toList)
+        ArrayLiteral(result.toList, LSquareBracketToken(pos))
     }
   }
 
@@ -349,10 +357,11 @@ class Parser(text: String) {
    */
 
   private def stringLiteral(): AST = {
+    val pos = currentToken.position
     eat(QUOTATION)
     currentToken match {
       case str: StringToken =>
-        val result = ArrayLiteral(stringToListOfChars(str))
+        val result = ArrayLiteral(stringToListOfChars(str), LSquareBracketToken(pos))
         eat(STRING)
         eat(QUOTATION)
         result
@@ -419,7 +428,7 @@ class Parser(text: String) {
   }
 
   private def stringToListOfChars(str: StringToken): List[AST] =
-    str.value.map(c => CharLiteral(CharToken(c))).toList
+    str.value.map(c => CharLiteral(CharToken(c, str.position))).toList
 
   private def eat(tokenType: TokenType): Unit = {
     if (currentToken.tokenType == tokenType) {
@@ -433,12 +442,12 @@ class Parser(text: String) {
 object Parser {
   def fromFile(filename: String): Parser = {
     val src = Source.fromFile(filename).mkString
-    new Parser(src)
+    new Parser(src)(CompilationUnit(filename, src))
   }
 
   def fromResource(filename: String): Parser = {
     val src = Source.fromResource(filename).mkString
-    new Parser(src)
+    new Parser(src)(CompilationUnit(filename, src))
   }
 }
 
