@@ -44,15 +44,13 @@ class Parser(text: String)(val compilationUnit: CompilationUnit = CompilationUni
   }
 
   /*
- if_statement = IF L_ROUND_BRACKET disjunction R_ROUND_BRACKET L_CURLY_BRACKET program
+ if_statement = IF disjunction L_CURLY_BRACKET program
       R_CURLY_BRACKET [ELSE (L_CURLY_BRACKET program R_CURLY_BRACKET) | if_statement] ;
   */
   private def ifStatement(): AST = {
     val ifTokenPos = currentToken.position
     eat(IF)
-    eat(L_ROUND_BRACKET)
     val condition = disjunction()
-    eat(R_ROUND_BRACKET)
     eat(L_CURLY_BRACKET)
     val ifBlock = program()
     eat(R_CURLY_BRACKET)
@@ -75,15 +73,13 @@ class Parser(text: String)(val compilationUnit: CompilationUnit = CompilationUni
   }
 
   /*
- while_statement = WHILE L_ROUND_BRACKET disjunction R_ROUND_BRACKET L_CURLY_BRACKET program
+ while_statement = WHILE disjunction L_CURLY_BRACKET program
       R_CURLY_BRACKET ;
   */
   private def whileStatement(): AST = {
     val pos = currentToken.position
     eat(WHILE)
-    eat(L_ROUND_BRACKET)
     val condition = disjunction()
-    eat(R_ROUND_BRACKET)
     eat(L_CURLY_BRACKET)
     val whileBlock = program()
     eat(R_CURLY_BRACKET)
@@ -369,14 +365,12 @@ class Parser(text: String)(val compilationUnit: CompilationUnit = CompilationUni
   }
 
   /*
-  if_then_else = IF L_ROUND_BRACKET disjunction R_ROUND_BRACKET THEN disjunction [ELSE disjunction];
+  if_then_else = IF disjunction THEN disjunction [ELSE disjunction];
    */
   private def ifThenElse(): AST = {
     val ifTokenPos = currentToken.position
     eat(IF)
-    eat(L_ROUND_BRACKET)
     val condition = disjunction()
-    eat(R_ROUND_BRACKET)
     eat(THEN)
     val ifBlock = disjunction()
     val elseBlock = currentToken.tokenType match {

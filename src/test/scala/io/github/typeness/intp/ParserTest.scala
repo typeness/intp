@@ -226,21 +226,19 @@ class ParserTest extends FunSuite {
     val parser = Parser.fromResource("parser/if-else.intp")
     val ast = parser.parse().children.head
     assert(
-      ast == IfAST(BinOp(VarAST(IdToken("x", Position(1, 5))), EqualsToken(Position(1, 7)), Number(IntegerConstToken
-      (2, Position(1, 10)))), Program(List(AssignAST(IdToken("c", Position(2, 3)), BooleanLiteral(TrueToken(Position
+      ast == IfAST(BinOp(VarAST(IdToken("x", Position(1, 4))), EqualsToken(Position(1, 6)), Number(IntegerConstToken
+      (2, Position(1, 9)))), Program(List(AssignAST(IdToken("c", Position(2, 3)), BooleanLiteral(TrueToken(Position
       (2, 7))), AssignToken(Position(2, 5))))), Some(Program(List(AssignAST(IdToken("c", Position(4, 3)),
         BooleanLiteral(FalseToken(Position(4, 7))), AssignToken(Position(4, 5)))))), IfToken(Position(1, 1)))
-
     )
   }
   test("Parse while statement") {
     val parser = Parser.fromResource("parser/while.intp")
     val ast = parser.parse().children.head
     assert(
-      ast == WhileAST(BooleanLiteral(TrueToken(Position(1, 8))), Program(List(AssignAST(IdToken("x", Position(2, 3)),
+      ast == WhileAST(BooleanLiteral(TrueToken(Position(1, 7))), Program(List(AssignAST(IdToken("x", Position(2, 3)),
         BinOp(VarAST(IdToken("x", Position(2, 7))), AdditionToken(Position(2, 9)), Number(IntegerConstToken(1,
           Position(2, 11)))), AssignToken(Position(2, 5))))), WhileToken(Position(1, 1)))
-
     )
   }
   test("Parse function definition inside another function") {
@@ -261,8 +259,8 @@ class ParserTest extends FunSuite {
     val ast = parser.parse().children.head
     assert(
       ast == AssignAST(IdToken("f", Position(1, 1)), FunctionLiteral(List(IdToken("a", Position(1, 10))), Program
-      (List(IfAST(BinOp(VarAST(IdToken("a", Position(2, 8))), GreaterToken(Position(2, 10)), Number(IntegerConstToken
-      (10, Position(2, 12)))), Program(List(ReturnAST(BooleanLiteral(TrueToken(Position(3, 12))), ReturnToken
+      (List(IfAST(BinOp(VarAST(IdToken("a", Position(2, 6))), GreaterToken(Position(2, 8)), Number(IntegerConstToken
+      (10, Position(2, 10)))), Program(List(ReturnAST(BooleanLiteral(TrueToken(Position(3, 12))), ReturnToken
       (Position(3, 5))))), None, IfToken(Position(2, 3))),
         ReturnAST(BooleanLiteral(FalseToken(Position(5, 10))), ReturnToken(Position(5, 3))))), FuncToken(Position(1,
         5))), AssignToken(Position(1, 3)))
@@ -311,20 +309,18 @@ class ParserTest extends FunSuite {
     val parser = Parser.fromResource("parser/else-if.intp")
     val ast = parser.parse()
     assert(
-      ast == Program(List(IfAST(BooleanLiteral(FalseToken(Position(1, 5))), Program(List()), Some(IfAST
-      (BooleanLiteral(TrueToken(Position(3, 12))), Program(List()), None, IfToken(Position(3, 8)))), IfToken(Position
+      ast == Program(List(IfAST(BooleanLiteral(FalseToken(Position(1, 4))), Program(List()), Some(IfAST
+      (BooleanLiteral(TrueToken(Position(3, 11))), Program(List()), None, IfToken(Position(3, 8)))), IfToken(Position
       (1, 1)))))
     )
   }
   test("Parse if-then-else") {
     val parser = Parser.fromResource("parser/if-then-else.intp")
     val ast = parser.parse()
-    assert(
-      ast == Program(List(AssignAST(IdToken("x", Position(1, 1)), Number(IntegerConstToken(10, Position(1, 5))),
-        AssignToken(Position(1, 3))),
-        AssignAST(IdToken("y", Position(2, 1)), IfAST(BinOp(VarAST(IdToken("x", Position(2, 9))), LessToken(Position
-        (2, 11)), Number(IntegerConstToken(5, Position(2, 13)))), Number(IntegerConstToken(11, Position(2, 21))),
-          Some(Number(IntegerConstToken(12, Position(2, 29)))), IfToken(Position(2, 5))), AssignToken(Position(2, 3)))))
-    )
+    Program(List(AssignAST(IdToken("x", Position(1, 1)), Number(IntegerConstToken(10, Position(1, 5))), AssignToken
+    (Position(1, 3))),
+      AssignAST(IdToken("y", Position(2, 1)), IfAST(BinOp(VarAST(IdToken("x", Position(2, 8))), LessToken(Position(2,
+        10)), Number(IntegerConstToken(5, Position(2, 12)))), Number(IntegerConstToken(11, Position(2, 19))), Some
+      (Number(IntegerConstToken(12, Position(2, 27)))), IfToken(Position(2, 5))), AssignToken(Position(2, 3)))))
   }
 }

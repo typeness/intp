@@ -1,5 +1,5 @@
 x = 2
-if (x == 2) {
+if x == 2 {
   c = true
 } else {
   c = false

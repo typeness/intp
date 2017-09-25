@@ -1,5 +1,5 @@
 f = func(a) {
-  if ( a > 10) {
+  if a > 10 {
     return true
   }
   return false

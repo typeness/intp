@@ -1,4 +1,4 @@
 is = true
-if (is) {
+if is {
   d = 1000
 }
