@@ -119,6 +119,7 @@ case object ELSE extends TokenType
 
 // true
 case object TRUE extends TokenType
+
 // false
 case object FALSE extends TokenType
 

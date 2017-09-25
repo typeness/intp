@@ -4,9 +4,10 @@ import org.scalatest.FunSuite
 
 class LexerTest extends FunSuite {
   test("Tokenize all possible tokens") {
-    val lexer = new Lexer("+ * / - { } [ ] ( ) 1234 12.34 'f' \"\" ," +
-      " < <= >= > == or while true false if else and not return break . import = identifier" +
-      " func != % then")()
+    val lexer = new Lexer(
+      "+ * / - { } [ ] ( ) 1234 12.34 'f' \"\" ," +
+        " < <= >= > == or while true false if else and not return break . import = identifier" +
+        " func != % then")()
     assert(lexer.getNextToken == AdditionToken(Position(1, 1)))
     assert(lexer.getNextToken == MultiplicationToken(Position(1, 3)))
     assert(lexer.getNextToken == DivisionToken(Position(1, 5)))
@@ -54,7 +55,10 @@ class LexerTest extends FunSuite {
   test("Tokenize string with special character and id") {
     val lexer = new Lexer("\"this is some string with special \n char\" id")()
     assert(lexer.getNextToken == QuotationToken(Position(1, 1)))
-    assert(lexer.getNextToken == StringToken("this is some string with special \n char", Position(1, 2)))
+    assert(
+      lexer.getNextToken == StringToken(
+        "this is some string with special \n char",
+        Position(1, 2)))
     assert(lexer.getNextToken == QuotationToken(Position(1, 41)))
     assert(lexer.getNextToken == IdToken("id", Position(1, 43)))
     assert(lexer.getNextToken == EOFToken(Position(1, 44)))

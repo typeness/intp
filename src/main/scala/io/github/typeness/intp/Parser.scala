@@ -3,7 +3,9 @@ package io.github.typeness.intp
 import scala.collection.mutable.ListBuffer
 import scala.io.Source
 
-class Parser(text: String)(val compilationUnit: CompilationUnit = CompilationUnit("<console>", text)) {
+class Parser(text: String)(
+  val compilationUnit: CompilationUnit = CompilationUnit("<console>", text)
+) {
   private val lexer: Lexer = new Lexer(text)(compilationUnit)
   private var currentToken: Token = lexer.getNextToken
 
@@ -36,17 +38,17 @@ class Parser(text: String)(val compilationUnit: CompilationUnit = CompilationUni
    */
   private def statement(): AST = {
     currentToken.tokenType match {
-      case IF => ifStatement()
-      case WHILE => whileStatement()
+      case IF     => ifStatement()
+      case WHILE  => whileStatement()
       case RETURN => returnStatement()
-      case _ => disjunction()
+      case _      => disjunction()
     }
   }
 
   /*
  if_statement = IF disjunction L_CURLY_BRACKET program
       R_CURLY_BRACKET [ELSE (L_CURLY_BRACKET program R_CURLY_BRACKET) | if_statement] ;
-  */
+   */
   private def ifStatement(): AST = {
     val ifTokenPos = currentToken.position
     eat(IF)
@@ -64,7 +66,8 @@ class Parser(text: String)(val compilationUnit: CompilationUnit = CompilationUni
             eat(R_CURLY_BRACKET)
             Some(elseBlock)
           case IF => Some(ifStatement())
-          case _ => throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
+          case _ =>
+            throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
         }
       case _ => None
     }
@@ -75,7 +78,7 @@ class Parser(text: String)(val compilationUnit: CompilationUnit = CompilationUni
   /*
  while_statement = WHILE disjunction L_CURLY_BRACKET program
       R_CURLY_BRACKET ;
-  */
+   */
   private def whileStatement(): AST = {
     val pos = currentToken.position
     eat(WHILE)
@@ -109,7 +112,7 @@ class Parser(text: String)(val compilationUnit: CompilationUnit = CompilationUni
         case ArrayAccess(name, index) =>
           ArrayAssignAST(name, index, disjunction())
         case VarAST(name) => AssignAST(name, disjunction(), AssignToken(pos))
-        case _ => throw new ParserError(result.token)
+        case _            => throw new ParserError(result.token)
       }
     } else {
       while (currentToken.tokenType == OR) {
@@ -147,8 +150,8 @@ class Parser(text: String)(val compilationUnit: CompilationUnit = CompilationUni
   private def boolean(): AST = {
     var result = expression()
     while (currentToken.tokenType == GREATER || currentToken.tokenType == LESS
-      || currentToken.tokenType == GREATER_OR_EQUALS || currentToken.tokenType == LESS_OR_EQUALS
-      || currentToken.tokenType == EQUALS || currentToken.tokenType == NOT_EQUALS) {
+           || currentToken.tokenType == GREATER_OR_EQUALS || currentToken.tokenType == LESS_OR_EQUALS
+           || currentToken.tokenType == EQUALS || currentToken.tokenType == NOT_EQUALS) {
       val op = currentToken
       eat(op.tokenType)
       result = BinOp(left = result, op = op, right = expression())
@@ -180,7 +183,7 @@ class Parser(text: String)(val compilationUnit: CompilationUnit = CompilationUni
   private def term(): AST = {
     var result = factor()
     while (currentToken.tokenType == MULTIPLICATION
-      || currentToken.tokenType == DIV || currentToken.tokenType == MODULO) {
+           || currentToken.tokenType == DIV || currentToken.tokenType == MODULO) {
       val op = currentToken
       eat(op.tokenType)
       result = BinOp(left = result, op = op, right = factor())
@@ -203,21 +206,21 @@ class Parser(text: String)(val compilationUnit: CompilationUnit = CompilationUni
   private def factor(): AST = {
     val token = currentToken
     currentToken.tokenType match {
-      case ID => variable()
-      case FUNC => functionLiteral()
-      case PLUS | MINUS | NOT => unaryOperator()
+      case ID                         => variable()
+      case FUNC                       => functionLiteral()
+      case PLUS | MINUS | NOT         => unaryOperator()
       case INTEGER_CONST | REAL_CONST => numberLiteral()
-      case TRUE | FALSE => booleanLiteral()
+      case TRUE | FALSE               => booleanLiteral()
       case L_ROUND_BRACKET =>
         eat(L_ROUND_BRACKET)
         val result = disjunction()
         eat(R_ROUND_BRACKET)
         result
       case L_SQUARE_BRACKET => arrayLiteral()
-      case APOSTROPHE => characterLiteral()
-      case QUOTATION => stringLiteral()
-      case IF => ifThenElse()
-      case _ => throw ParserError(token)
+      case APOSTROPHE       => characterLiteral()
+      case QUOTATION        => stringLiteral()
+      case IF               => ifThenElse()
+      case _                => throw ParserError(token)
     }
   }
 
@@ -225,21 +228,23 @@ class Parser(text: String)(val compilationUnit: CompilationUnit = CompilationUni
   variable = ID (actual_parameters_list)*
           | ID (array_indexing)*
           | ID ;
-  */
+   */
   private def variable(): AST = {
     val name = currentToken.value
     val pos = currentToken.position
     eat(ID)
     currentToken.tokenType match {
       case L_ROUND_BRACKET =>
-        var functionCall = FunctionCall(VarAST(IdToken(name, pos)), actualParametersList())
+        var functionCall =
+          FunctionCall(VarAST(IdToken(name, pos)), actualParametersList())
         while (currentToken.tokenType == L_ROUND_BRACKET) {
           functionCall = FunctionCall(source = functionCall, actualParametersList())
         }
         functionCall
       //        FunctionCall(source = VarAST(IdToken(name)), actualParametersList())
       case L_SQUARE_BRACKET =>
-        var arrayAccess = ArrayAccess(VarAST(IdToken(name, pos)), arrayIndexing())
+        var arrayAccess =
+          ArrayAccess(VarAST(IdToken(name, pos)), arrayIndexing())
         while (currentToken.tokenType == L_SQUARE_BRACKET) {
           arrayAccess = ArrayAccess(source = arrayAccess, arrayIndexing())
         }
@@ -266,7 +271,7 @@ class Parser(text: String)(val compilationUnit: CompilationUnit = CompilationUni
  unary_operator = PLUS factor
                | MINUS factor
                | NOT factor ;
-  */
+   */
   private def unaryOperator(): AST = {
     currentToken.tokenType match {
       case PLUS | MINUS | NOT =>
@@ -356,7 +361,8 @@ class Parser(text: String)(val compilationUnit: CompilationUnit = CompilationUni
     eat(QUOTATION)
     currentToken match {
       case str: StringToken =>
-        val result = ArrayLiteral(stringToListOfChars(str), LSquareBracketToken(pos))
+        val result =
+          ArrayLiteral(stringToListOfChars(str), LSquareBracketToken(pos))
         eat(STRING)
         eat(QUOTATION)
         result

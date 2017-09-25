@@ -1,6 +1,5 @@
 package io.github.typeness.intp
 
-
 sealed trait AST {
   def token: Token
 }
@@ -32,7 +31,8 @@ case class VarAST(name: IdToken) extends AST {
 case class Program(children: List[AST]) extends AST {
   override def token: Token = children.head.token
 
-  override def toString: String = s"Program(List(${children.map(_.toString).mkString(",\n")}))"
+  override def toString: String =
+    s"Program(List(${children.map(_.toString).mkString(",\n")}))"
 }
 
 case class FunctionCall(source: AST, actualParameters: List[AST]) extends AST {
@@ -40,16 +40,24 @@ case class FunctionCall(source: AST, actualParameters: List[AST]) extends AST {
 }
 
 case class FunctionLiteral(formalParameters: List[IdToken],
-                           body: Program, token: FuncToken) extends AST
+                           body: Program,
+                           token: FuncToken)
+    extends AST
 
 case class ArrayAccess(source: AST, index: AST) extends AST {
   override def token: Token = source.token
 }
 
-case class ArrayLiteral(elements: List[AST], token: LSquareBracketToken) extends AST
+case class ArrayLiteral(elements: List[AST], token: LSquareBracketToken)
+    extends AST
 
-case class IfAST(condition: AST, ifBlock: AST, elseBlock: Option[AST], token: IfToken) extends AST
+case class IfAST(condition: AST,
+                 ifBlock: AST,
+                 elseBlock: Option[AST],
+                 token: IfToken)
+    extends AST
 
-case class WhileAST(condition: AST, whileBlock: AST, token: WhileToken) extends AST
+case class WhileAST(condition: AST, whileBlock: AST, token: WhileToken)
+    extends AST
 
 case class ReturnAST(result: AST, token: ReturnToken) extends AST

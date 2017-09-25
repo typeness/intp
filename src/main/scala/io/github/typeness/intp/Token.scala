@@ -124,7 +124,6 @@ case class ModuloToken(position: Position) extends Token {
   override def value: String = "%"
 }
 
-
 case class LRoundBracketToken(position: Position) extends Token {
   override def tokenType: TokenType = L_ROUND_BRACKET
 
@@ -169,7 +168,9 @@ case class EOFToken(position: Position) extends Token {
 
 case class IdToken(value: String, position: Position) extends Token {
   override def tokenType: TokenType = ID
-  override def toString: String = "IdToken(" + "\"" + value + "\", " + position.toString + ")"
+
+  override def toString: String =
+    "IdToken(" + "\"" + value + "\", " + position.toString + ")"
 }
 
 case class CommaToken(position: Position) extends Token {

@@ -1,9 +1,12 @@
 package io.github.typeness.intp
 
-class Lexer(text: String)(val compilationUnit: CompilationUnit = CompilationUnit("<console>", text)) {
+class Lexer(text: String)(
+  val compilationUnit: CompilationUnit = CompilationUnit("<console>", text)
+) {
 
   private var iterator: Int = 0
-  private var currentChar: Option[Char] = if (text.nonEmpty) Some(text.charAt(iterator)) else None
+  private var currentChar: Option[Char] =
+    if (text.nonEmpty) Some(text.charAt(iterator)) else None
   private var isOpeningQuote: Boolean = false
   private var isClosingQuote: Boolean = false
   private var isOpeningApostrophe: Boolean = false
@@ -11,20 +14,20 @@ class Lexer(text: String)(val compilationUnit: CompilationUnit = CompilationUnit
   private var currentPosition: Position = Position(1, 0)
 
   private def keywords(str: String, pos: Position): Option[Token] = str match {
-    case "if" => Some(IfToken(pos))
-    case "else" => Some(ElseToken(pos))
-    case "while" => Some(WhileToken(pos))
+    case "if"     => Some(IfToken(pos))
+    case "else"   => Some(ElseToken(pos))
+    case "while"  => Some(WhileToken(pos))
     case "import" => Some(ImportToken(pos))
-    case "or" => Some(OrToken(pos))
-    case "and" => Some(AndToken(pos))
-    case "not" => Some(NotToken(pos))
-    case "true" => Some(TrueToken(pos))
-    case "false" => Some(FalseToken(pos))
-    case "break" => Some(BreakToken(pos))
+    case "or"     => Some(OrToken(pos))
+    case "and"    => Some(AndToken(pos))
+    case "not"    => Some(NotToken(pos))
+    case "true"   => Some(TrueToken(pos))
+    case "false"  => Some(FalseToken(pos))
+    case "break"  => Some(BreakToken(pos))
     case "return" => Some(ReturnToken(pos))
-    case "func" => Some(FuncToken(pos))
-    case "then" => Some(ThenToken(pos))
-    case _ => None
+    case "func"   => Some(FuncToken(pos))
+    case "then"   => Some(ThenToken(pos))
+    case _        => None
   }
 
   def getNextToken: Token = {
@@ -32,7 +35,7 @@ class Lexer(text: String)(val compilationUnit: CompilationUnit = CompilationUnit
       isOpeningQuote = false
       isClosingQuote = true
       str()
-    } else if(isOpeningApostrophe) {
+    } else if (isOpeningApostrophe) {
       isOpeningApostrophe = false
       isClosingApostrophe = true
       character()
@@ -103,7 +106,7 @@ class Lexer(text: String)(val compilationUnit: CompilationUnit = CompilationUnit
         advance()
         LessToken(currentPosition)
       } else if (currentChar.contains('\'')) {
-        if(!isClosingApostrophe) isOpeningApostrophe = true
+        if (!isClosingApostrophe) isOpeningApostrophe = true
         else isClosingApostrophe = false
         advance()
         ApostropheToken(currentPosition)
@@ -117,7 +120,7 @@ class Lexer(text: String)(val compilationUnit: CompilationUnit = CompilationUnit
       } else if (currentChar.contains('.')) {
         advance()
         DotToken(currentPosition)
-      } else if(currentChar.isEmpty) {
+      } else if (currentChar.isEmpty) {
         EOFToken(currentPosition)
       } else {
         throw SyntaxError(currentChar.getOrElse("<EOF>").toString, compilationUnit, currentPosition)
@@ -141,7 +144,7 @@ class Lexer(text: String)(val compilationUnit: CompilationUnit = CompilationUnit
     if (currentChar.contains('/') && peek().contains('/')) {
       advance()
       advance()
-      while(!currentChar.contains('\n') && currentChar.isDefined) {
+      while (!currentChar.contains('\n') && currentChar.isDefined) {
         advance()
       }
       advance()
@@ -151,7 +154,7 @@ class Lexer(text: String)(val compilationUnit: CompilationUnit = CompilationUnit
 
   private def skipWhitespaces(): Unit = {
     while (currentChar.isDefined && (text.charAt(iterator) == ' '
-      || text.charAt(iterator) == '\n')) {
+           || text.charAt(iterator) == '\n')) {
       if (text.charAt(iterator) == '\n') {
         currentPosition = Position(currentPosition.row + 1, -1)
       }
@@ -218,7 +221,7 @@ class Lexer(text: String)(val compilationUnit: CompilationUnit = CompilationUnit
     val result = sb.toString
     keywords(result.toLowerCase, pos) match {
       case Some(keyword) => keyword
-      case None => IdToken(result, pos)
+      case None          => IdToken(result, pos)
     }
   }
 
