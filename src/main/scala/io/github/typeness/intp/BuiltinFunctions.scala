@@ -10,12 +10,13 @@ object BuiltinFunctions {
                       //                      case seq: Seq[Char] => println(seq)
                       case x => println(x)
                     }),
-    "size" -> ((arg: Any, compilationUnit: CompilationUnit, position: Position) => {
-      arg match {
-        case seq: Seq[_] => seq.size
-        case value       => throw TypeMismatch(value, ArrayType, compilationUnit, position)
-      }
-    }),
+    "size" -> ((arg: Any,
+                compilationUnit: CompilationUnit,
+                position: Position) =>
+                 arg match {
+                   case seq: Seq[_] => seq.size
+                   case value       => throw TypeMismatch(value, ArrayType, compilationUnit, position)
+                 }),
     "print" -> ((arg: Any,
                  compilationUnit: CompilationUnit,
                  position: Position) =>
@@ -58,7 +59,14 @@ object BuiltinFunctions {
                        position,
                        "readLine",
                        () => scala.io.StdIn.readLine()
-                     ))
+                     )),
+    "assert" -> ((arg: Any,
+                  compilationUnit: CompilationUnit,
+                  position: Position) =>
+                   arg match {
+                     case bool: Boolean => assert(bool)
+                     case value         => throw TypeMismatch(value, BooleanType, compilationUnit, position)
+                   })
   )
 
   private object ZeroArgumentFunction {
