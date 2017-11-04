@@ -424,4 +424,10 @@ class InterpreterTest extends FunSuite {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/print.intp")
   }
+  test("Builtin string function2") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/string.intp")
+    println(interpreter.memory.getAll)
+  }
+
 }

@@ -23,5 +23,11 @@ object BuiltinFunctions {
                     case seq: Seq[_] => print("[" + seq.mkString(", ") + "]")
                     case x           => println(x)
                   }),
+    "string" -> ((arg: Any, compilationUnit: CompilationUnit, position: Position) => {
+      arg match {
+        case seq: Seq[_] => "[" + seq.mkString(", ") + "]"
+        case value       => value.toString
+      }
+    })
   )
 }
