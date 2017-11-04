@@ -413,4 +413,11 @@ class InterpreterTest extends FunSuite {
     interpreter.runFromResource("interpreter/println.intp")
     println(interpreter.memory.getAll)
   }
+  test("Builtin size function") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/size.intp")
+    assert(
+      interpreter.memory.getAll == Map("z" -> 0, "y" -> 1, "x" -> 3)
+    )
+  }
 }
