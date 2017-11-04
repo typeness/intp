@@ -242,6 +242,16 @@ class Interpreter extends ASTVisitor {
       AssignAST(IdToken("return", ast.token.position), ast.result, AssignToken(ast.token.position))
     )
 
+  override protected def builtinFunctionCall(ast: BuiltinFunctionCall): Any = {
+    val name = ast.name.value
+    BuiltinFunctions.map.get(name) match {
+      case Some(fn) =>
+        val params = ast.actualParameters.map(visit)
+        fn(if (params.size == 1) params.head else params, compilationUnit, ast.token.position)
+      case None => throw UndefinedVariable(name, compilationUnit, ast.token.position)
+    }
+  }
+
   def runFromResource(res: String): Any = {
     fileName = res
     val parser = Parser.fromResource(res)
@@ -257,4 +267,5 @@ class Interpreter extends ASTVisitor {
     val ast = parser.parse()
     visit(ast)
   }
+
 }

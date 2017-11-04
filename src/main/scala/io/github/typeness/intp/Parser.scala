@@ -235,13 +235,16 @@ class Parser(text: String)(
     eat(ID)
     currentToken.tokenType match {
       case L_ROUND_BRACKET =>
-        var functionCall =
-          FunctionCall(VarAST(IdToken(name, pos)), actualParametersList())
-        while (currentToken.tokenType == L_ROUND_BRACKET) {
-          functionCall = FunctionCall(source = functionCall, actualParametersList())
+        // builtin functions
+        if (BuiltinFunctions.map.contains(name)) {
+          BuiltinFunctionCall(IdToken(name, pos), actualParametersList())
+        } else {
+          var functionCall = FunctionCall(VarAST(IdToken(name, pos)), actualParametersList())
+          while (currentToken.tokenType == L_ROUND_BRACKET) {
+            functionCall = FunctionCall(source = functionCall, actualParametersList())
+          }
+          functionCall
         }
-        functionCall
-      //        FunctionCall(source = VarAST(IdToken(name)), actualParametersList())
       case L_SQUARE_BRACKET =>
         var arrayAccess =
           ArrayAccess(VarAST(IdToken(name, pos)), arrayIndexing())

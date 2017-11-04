@@ -408,4 +408,9 @@ class InterpreterTest extends FunSuite {
     interpreter.runFromResource("interpreter/if-then-else.intp")
     println(interpreter.memory.getAll)
   }
+  test("Builtin println function") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/println.intp")
+    println(interpreter.memory.getAll)
+  }
 }

@@ -1,0 +1,6 @@
+println(1, 2)
+println(true, false, "lol")
+println(1+2)
+println([1, 2] + [3, true])
+println("test")
+x = size([1, 2, 3])
