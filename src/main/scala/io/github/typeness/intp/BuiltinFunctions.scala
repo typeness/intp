@@ -15,6 +15,13 @@ object BuiltinFunctions {
         case seq: Seq[_] => seq.size
         case value       => throw TypeMismatch(value, ArrayType, compilationUnit, position)
       }
-    })
+    }),
+    "print" -> ((arg: Any,
+                 compilationUnit: CompilationUnit,
+                 position: Position) =>
+                  arg match {
+                    case seq: Seq[_] => print("[" + seq.mkString(", ") + "]")
+                    case x           => println(x)
+                  }),
   )
 }

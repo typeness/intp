@@ -420,4 +420,8 @@ class InterpreterTest extends FunSuite {
       interpreter.memory.getAll == Map("z" -> 0, "y" -> 1, "x" -> 3)
     )
   }
+  test("Builtin print function") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/print.intp")
+  }
 }
