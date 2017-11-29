@@ -1,0 +1,23 @@
+fizzBuzz = func() {
+  result = ""
+  i = 1
+  while (i <= 100) {
+    if (i % 3 == 0 and i % 5 == 0) {
+      result = result + "fizz buzz"
+    } else if (i % 5 == 0) {
+      result = result + "buzz"
+    } else if (i % 3 == 0) {
+      result = result + "fizz"
+    } else {
+      result = result + string(i)
+    }
+    if (i != 100) {
+      result = result + " "
+    }
+    i = i + 1
+  }
+  return result
+}
+
+a = fizzBuzz()
+println(a)
