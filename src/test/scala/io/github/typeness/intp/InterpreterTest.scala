@@ -433,4 +433,8 @@ class InterpreterTest extends FunSuite {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/assert.intp")
   }
+  test("FizzBuzz function") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/fizzBuzz.intp")
+  }
 }

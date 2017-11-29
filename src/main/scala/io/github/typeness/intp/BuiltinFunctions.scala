@@ -1,5 +1,7 @@
 package io.github.typeness.intp
 
+import scala.collection.mutable
+
 object BuiltinFunctions {
   val map: Map[String, (Any, CompilationUnit, Position) => Any] = Map(
     "println" -> ((arg: Any,
@@ -26,8 +28,7 @@ object BuiltinFunctions {
                   }),
     "string" -> ((arg: Any, compilationUnit: CompilationUnit, position: Position) => {
       arg match {
-        case seq: Seq[_] => "[" + seq.mkString(", ") + "]"
-        case value       => value.toString
+        case value => value.toString.to[mutable.ArrayBuffer]
       }
     }),
     "readInt" -> ((arg: Any,
