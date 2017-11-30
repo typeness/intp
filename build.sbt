@@ -1,6 +1,11 @@
+import AssemblyKeys._
+
+
 name := "intp"
 
-version := "1.0"
+version := "0.1"
+assemblySettings
+jarName in assembly := name.value + "-" + version.value+ ".jar"
 
 scalaVersion := "2.12.2"
 libraryDependencies ++= Seq(
