@@ -1,4 +1,4 @@
-selectionSort = func(array) {
+bubbleSort = func(array) {
   i = 0
   while (i < size(array)) {
     j = 1
@@ -16,5 +16,5 @@ selectionSort = func(array) {
 }
 
 unsorted = [1, 5, 0, 4, 9, 2, 3, 8, 7, 6]
-sorted = selectionSort(unsorted)
+sorted = bubbleSort(unsorted)
 println(sorted)
