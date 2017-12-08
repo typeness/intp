@@ -7,4 +7,8 @@ class RuntimeTest extends FunSuite {
     val interpreter = new Interpreter()
     interpreter.runFromResource("runtime/bubbleSort.intp")
   }
+  test("Binary search") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("runtime/binSearch.intp")
+  }
 }
