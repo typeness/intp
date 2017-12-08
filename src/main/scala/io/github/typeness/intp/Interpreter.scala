@@ -268,4 +268,12 @@ class Interpreter extends ASTVisitor {
     visit(ast)
   }
 
+  def runFromFile(filename: String): Any = {
+    this.fileName = filename
+    val parser = Parser.fromFile(filename)
+    compilationUnit = parser.compilationUnit
+    val ast = parser.parse()
+    visit(ast)
+  }
+
 }

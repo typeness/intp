@@ -4,12 +4,11 @@ object Main {
   def main(args: Array[String]): Unit = {
     if (args.isEmpty) println("No input file given")
     else {
-      val source = scala.io.Source.fromFile(args(0)).mkString
-      val intp = new Interpreter()
       try {
-        intp.runFromString(source)
+        val intp = new Interpreter()
+        intp.runFromFile(args(0))
       } catch {
-        case e: Exception => println(e.getMessage)
+        case e: Throwable => println(e.getMessage)
       }
     }
   }
