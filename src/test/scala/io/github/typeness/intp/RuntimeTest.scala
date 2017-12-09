@@ -11,4 +11,8 @@ class RuntimeTest extends FunSuite {
     val interpreter = new Interpreter()
     interpreter.runFromResource("runtime/binSearch.intp")
   }
+  test("Union, intersection and difference on sets") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("runtime/sets.intp")
+  }
 }

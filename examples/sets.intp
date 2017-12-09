@@ -1,0 +1,66 @@
+contains = func(array, elem) {
+  i = 0
+  while (i < size(array)) {
+    if (array[i] == elem) {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+setUnion = func(a, b) {
+  result = []
+  i = 0
+  while (i < size(a)) {
+    if (not contains(result, a[i])) {
+      result = result + [a[i]]
+    }
+    i = i + 1
+  }
+  i = 0
+  while (i < size(b)) {
+    if (not contains(result, b[i])) {
+      result = result + [b[i]]
+    }
+    i = i + 1
+  }
+  return result
+}
+
+setIntersection = func(a, b) {
+  result = []
+  i = 0
+  while (i < size(a)) {
+    if (contains(b, a[i]) and not contains(result, a[i])) {
+      result = result + [a[i]]
+    }
+    i = i + 1
+  }
+  i = 0
+  while (i < size(b)) {
+    if (contains(a, b[i]) and not contains(result, b[i])) {
+      result = result + [b[i]]
+    }
+    i = i + 1
+  }
+  return result
+}
+
+setDifference = func(a, b) {
+  result = []
+  i = 0
+  while (i < size(a)) {
+    if (not contains(b, a[i]) and not contains(result, a[i])) {
+      result = result + [a[i]]
+    }
+    i = i + 1
+  }
+  return result
+}
+
+a = [1, 2, 3, 4, 5, 2]
+b = [3, 4, 5, 6, 7, -1]
+assert(setUnion(a, b) == [1, 2, 3, 4, 5, 6, 7, -1])
+assert(setIntersection(a, b) == [3, 4, 5])
+assert(setDifference(a, b) == [1, 2])
