@@ -12,17 +12,17 @@ class Interpreter extends ASTVisitor {
   private def numericOperands[T](left: T, op: Token, right: T)(implicit num: Fractional[T]): Any = {
     import num._
     op.tokenType match {
-      case PLUS              => left + right
-      case MINUS             => left - right
-      case MULTIPLICATION    => left * right
-      case DIV               => left / right
-      case EQUALS            => left == right
+      case PLUS => left + right
+      case MINUS => left - right
+      case MULTIPLICATION => left * right
+      case DIV => left / right
+      case EQUALS => left == right
       case GREATER_OR_EQUALS => left >= right
-      case LESS_OR_EQUALS    => left <= right
-      case GREATER           => left > right
-      case LESS              => left < right
-      case NOT_EQUALS        => left != right
-      case L_ROUND_BRACKET   => ()
+      case LESS_OR_EQUALS => left <= right
+      case GREATER => left > right
+      case LESS => left < right
+      case NOT_EQUALS => left != right
+      case L_ROUND_BRACKET => ()
       // Fractional typeclass have no defined modulo operator
       case MODULO => left.toDouble() % right.toDouble()
       case _ =>
@@ -32,9 +32,9 @@ class Interpreter extends ASTVisitor {
 
   private def booleanOperands(left: Boolean, op: Token, right: Boolean): Any =
     op.tokenType match {
-      case AND        => left && right
-      case OR         => left || right
-      case EQUALS     => left == right
+      case AND => left && right
+      case OR => left || right
+      case EQUALS => left == right
       case NOT_EQUALS => left != right
       case _ =>
         throw WrongBinaryOperator(left, op, right, compilationUnit, op.position)
@@ -42,7 +42,7 @@ class Interpreter extends ASTVisitor {
 
   private def charOperands(left: Char, op: Token, right: Char): Any =
     op.tokenType match {
-      case EQUALS     => left == right
+      case EQUALS => left == right
       case NOT_EQUALS => left != right
       case _ =>
         throw WrongBinaryOperator(left, op, right, compilationUnit, op.position)
@@ -51,8 +51,8 @@ class Interpreter extends ASTVisitor {
   private def arrayOperands(left: mutable.ArrayBuffer[_],
                             op: Token,
                             right: mutable.ArrayBuffer[_]): Any = op.tokenType match {
-    case PLUS       => left ++ right
-    case EQUALS     => left == right
+    case PLUS => left ++ right
+    case EQUALS => left == right
     case NOT_EQUALS => left != right
     case _ =>
       throw WrongBinaryOperator(
@@ -72,10 +72,10 @@ class Interpreter extends ASTVisitor {
       case (left: Int, right: Int) =>
         numericOperands(left.toDouble, ast.op, right) match {
           case value: Double => value.toInt
-          case value         => value
+          case value => value
         }
-      case (left: Int, right: Double)    => numericOperands(left, ast.op, right)
-      case (left: Double, right: Int)    => numericOperands(left, ast.op, right)
+      case (left: Int, right: Double) => numericOperands(left, ast.op, right)
+      case (left: Double, right: Int) => numericOperands(left, ast.op, right)
       case (left: Double, right: Double) => numericOperands(left, ast.op, right)
       case (left: Boolean, right: Boolean) =>
         booleanOperands(left, ast.op, right)
@@ -92,7 +92,7 @@ class Interpreter extends ASTVisitor {
   }
 
   override protected def booleanLiteral(ast: BooleanLiteral): Any = ast match {
-    case BooleanLiteral(TrueToken(_))  => true
+    case BooleanLiteral(TrueToken(_)) => true
     case BooleanLiteral(FalseToken(_)) => false
   }
 
@@ -101,7 +101,7 @@ class Interpreter extends ASTVisitor {
   override protected def unaryOp(ast: UnaryOp): Any = visit(ast.expr) match {
     case value: Double =>
       ast.op.tokenType match {
-        case PLUS  => value
+        case PLUS => value
         case MINUS => -value
         case _ =>
           throw WrongUnaryOperator(
@@ -113,7 +113,7 @@ class Interpreter extends ASTVisitor {
       }
     case value: Int =>
       ast.op.tokenType match {
-        case PLUS  => value
+        case PLUS => value
         case MINUS => -value
         case _ =>
           throw WrongUnaryOperator(
@@ -138,7 +138,7 @@ class Interpreter extends ASTVisitor {
     ast.expr match {
       // do not evaluate function definition
       case fl: FunctionLiteral => memory.define(name -> fl)
-      case _                   => memory.define(name -> visit(ast.expr))
+      case _ => memory.define(name -> visit(ast.expr))
     }
     ()
   }
@@ -173,7 +173,7 @@ class Interpreter extends ASTVisitor {
         if (formalParameters.size != ast.actualParameters.size) {
           val fnName = ast.source match {
             case VarAST(name) => name.value
-            case _            => "<anonymous>"
+            case _ => "<anonymous>"
           }
           throw WrongFunctionCall(
             fnName,
@@ -220,7 +220,7 @@ class Interpreter extends ASTVisitor {
     case false =>
       ast.elseBlock match {
         case Some(p) => visit(p)
-        case None    => ()
+        case None => ()
       }
     case value =>
       throw TypeMismatch(value, BooleanType, compilationUnit, ast.condition.token.position)
@@ -228,13 +228,16 @@ class Interpreter extends ASTVisitor {
 
   @tailrec
   final override protected def whileAST(ast: WhileAST): Any =
-    visit(ast.condition) match {
-      case true =>
-        visit(ast.whileBlock)
-        whileAST(ast)
-      case false => ()
-      case value =>
-        throw TypeMismatch(value, BooleanType, compilationUnit, ast.whileBlock.token.position)
+    if (memory.get("return").nonEmpty) ()
+    else {
+      visit(ast.condition) match {
+        case true =>
+          visit(ast.whileBlock)
+          whileAST(ast)
+        case false => ()
+        case value =>
+          throw TypeMismatch(value, BooleanType, compilationUnit, ast.whileBlock.token.position)
+      }
     }
 
   override protected def returnAST(ast: ReturnAST): Any =

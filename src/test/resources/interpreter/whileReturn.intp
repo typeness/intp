@@ -1,0 +1,6 @@
+f = func() {
+  while(true) {
+    return false
+  }
+}
+f()

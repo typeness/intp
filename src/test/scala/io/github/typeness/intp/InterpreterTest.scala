@@ -437,4 +437,8 @@ class InterpreterTest extends FunSuite {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/fizzBuzz.intp")
   }
+  test("Return instruction break while loop") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/whileReturn.intp")
+  }
 }
