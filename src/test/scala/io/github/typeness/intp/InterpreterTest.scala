@@ -441,4 +441,26 @@ class InterpreterTest extends FunSuite {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/whileReturn.intp")
   }
+  test("Using object literal") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/objectLiteral.intp")
+    assert(interpreter.memory.getAll ==
+      Map("person" -> Map("surname" -> ArrayBuffer('S', 'm', 'i', 't', 'h'),
+        "name" -> ArrayBuffer('J', 'o', 'h', 'n')))
+    )
+  }
+  test("Object literal property access") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/propertyAccess.intp")
+    assert(
+      interpreter.memory.getAll == Map("f" -> 2, "obj" -> Map("x" -> 1, "z" -> 3, "y" -> 2))
+    )
+  }
+  test("Object literal as property") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/objectLiteralAsProperty.intp")
+    assert(interpreter.memory.getAll ==
+      Map("f" -> 'y', "obj" -> Map("x" -> Map("g" -> 'y'), "y" -> -4))
+    )
+  }
 }

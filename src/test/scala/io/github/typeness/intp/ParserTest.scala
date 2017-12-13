@@ -688,4 +688,41 @@ class ParserTest extends FunSuite {
             Number(IntegerConstToken(2, Position(4, 13))))))))
     )
   }
+  test("Parse object literal") {
+    val parser = Parser.fromResource("parser/objectLiteral.intp")
+    val ast = parser.parse()
+    assert(ast ==
+      Program(
+        List(AssignAST(IdToken("person", Position(1, 1)),
+          ObjectLiteral(Map(IdToken("name", Position(1, 11)) -> ArrayLiteral(
+            List(CharLiteral(CharToken('J', Position(1, 19))),
+              CharLiteral(CharToken('o', Position(1, 19))),
+              CharLiteral(CharToken('h', Position(1, 19))),
+              CharLiteral(CharToken('n', Position(1, 19)))),
+            LSquareBracketToken(Position(1, 18))),
+            IdToken("surname", Position(1, 26)) -> ArrayLiteral(
+              List(CharLiteral(CharToken('S', Position(1, 37))),
+                CharLiteral(CharToken('m', Position(1, 37))),
+                CharLiteral(CharToken('i', Position(1, 37))),
+                CharLiteral(CharToken('t', Position(1, 37))),
+                CharLiteral(CharToken('h', Position(1, 37)))),
+              LSquareBracketToken(Position(1, 36)))),
+            LCurlyBracketToken(Position(1, 10))), AssignToken(Position(1, 8)))))
+    )
+  }
+  test("Object literal property access") {
+    val parser = Parser.fromResource("parser/propertyAccess.intp")
+    val ast = parser.parse()
+    assert(ast ==
+      Program(List(AssignAST(
+        IdToken("obj", Position(1, 1)),
+        ObjectLiteral(Map(IdToken("x", Position(1, 8)) -> Number(
+          IntegerConstToken(1, Position(1, 12))), IdToken("z", Position(1, 22)) ->
+          Number(IntegerConstToken(3, Position(1, 26))), IdToken("y", Position(1, 15)) ->
+          Number(IntegerConstToken(2, Position(1, 19)))), LCurlyBracketToken(Position(1, 7))),
+        AssignToken(Position(1, 5))),
+        AssignAST(IdToken("f", Position(2, 1)), PropertyAccess(VarAST(IdToken("obj", Position(2, 5))),
+          IdToken("y", Position(2, 9))), AssignToken(Position(2, 3)))))
+    )
+  }
 }

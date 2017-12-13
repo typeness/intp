@@ -1,5 +1,6 @@
 package io.github.typeness.intp
 
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.io.Source
 
@@ -201,7 +202,8 @@ class Parser(text: String)(
         | array_literal
         | char_literal
         | string_literal
-        | if_then_else ;
+        | if_then_else
+        | object_literal ;
    */
   private def factor(): AST = {
     val token = currentToken
@@ -220,12 +222,13 @@ class Parser(text: String)(
       case APOSTROPHE => characterLiteral()
       case QUOTATION => stringLiteral()
       case IF => ifThenElse()
+      case L_CURLY_BRACKET => objectLiteral()
       case _ => throw ParserError(token)
     }
   }
 
   /*
-  variable = ID (actual_parameters_list | array_indexing)*
+  variable = ID (actual_parameters_list | array_indexing | property_access)*
           | ID ;
    */
   private def variable(): AST = {
@@ -233,7 +236,7 @@ class Parser(text: String)(
     val pos = currentToken.position
     eat(ID)
     currentToken.tokenType match {
-      case L_ROUND_BRACKET | L_SQUARE_BRACKET =>
+      case L_ROUND_BRACKET | L_SQUARE_BRACKET | DOT =>
         var varAST = currentToken.tokenType match {
           case L_ROUND_BRACKET =>
             if (BuiltinFunctions.map.contains(name)) {
@@ -241,13 +244,15 @@ class Parser(text: String)(
             } else {
               FunctionCall(VarAST(IdToken(name, pos)), actualParametersList())
             }
+          case DOT => PropertyAccess(VarAST(IdToken(name, pos)), propertyAccess().name)
           // actually L_SQUARE_BRACKET
           case _ => ArrayAccess(VarAST(IdToken(name, pos)), arrayIndexing())
         }
         while (currentToken.tokenType == L_ROUND_BRACKET
-          || currentToken.tokenType == L_SQUARE_BRACKET) {
+          || currentToken.tokenType == L_SQUARE_BRACKET || currentToken.tokenType == DOT) {
           currentToken.tokenType match {
             case L_ROUND_BRACKET => varAST = FunctionCall(varAST, actualParametersList())
+            case DOT => varAST = PropertyAccess(varAST, propertyAccess().name)
             // actually L_SQUARE_BRACKET
             case _ => varAST = ArrayAccess(varAST, arrayIndexing())
           }
@@ -393,7 +398,38 @@ class Parser(text: String)(
   }
 
   /*
-  actual_parameters_list = L_ROUND_BRACKET disjunction (COMMA disjunction)*
+  object_literal = L_CURLY_BRACKET ID ASSIGN disjunction (COMMA ID ASSIGN disjunction)*
+                                                                              R_CURLY_BRACKET
+                  | L_CURLY_BRACKET R_CURLY_BRACKET ;
+   */
+  def objectLiteral(): AST = {
+    val pos = currentToken.position
+    eat(L_CURLY_BRACKET)
+    currentToken.tokenType match {
+      case R_CURLY_BRACKET =>
+        eat(R_CURLY_BRACKET)
+        ObjectLiteral(Map.empty, LCurlyBracketToken(pos))
+      case ID =>
+        var idToken = currentToken
+        eat(ID)
+        eat(ASSIGN)
+        val elems = mutable.Map(IdToken(idToken.value, idToken.position) -> disjunction())
+        while (currentToken.tokenType == COMMA) {
+          eat(COMMA)
+          idToken = currentToken
+          eat(ID)
+          eat(ASSIGN)
+          elems.put(IdToken(idToken.value, idToken.position), disjunction())
+        }
+        eat(R_CURLY_BRACKET)
+        ObjectLiteral(elems.toMap, LCurlyBracketToken(pos))
+      case _ => throw ParserError(currentToken)
+
+    }
+  }
+
+  /*
+  actual_parameters_list = L_ROUND_BRACKET disjunction (COMMA disjunction)* R_ROUND_BRACKET
                   | L_ROUND_BRACKET R_ROUND_BRACKET ;
    */
   private def actualParametersList(): List[AST] = {
@@ -421,6 +457,16 @@ class Parser(text: String)(
     val index = expression()
     eat(R_SQUARE_BRACKET)
     index
+  }
+
+  /*
+  property_access = DOT ID
+   */
+  private def propertyAccess(): VarAST = {
+    eat(DOT)
+    val idToken = currentToken
+    eat(ID)
+    VarAST(IdToken(idToken.value, idToken.position))
   }
 
   /*

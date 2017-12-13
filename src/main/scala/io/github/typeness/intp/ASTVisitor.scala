@@ -19,6 +19,8 @@ trait ASTVisitor {
     case a: WhileAST            => whileAST(a)
     case a: ReturnAST           => returnAST(a)
     case a: BuiltinFunctionCall => builtinFunctionCall(a)
+    case a: ObjectLiteral       => objectLiteral(a)
+    case a: PropertyAccess      => propertyAccess(a)
   }
   protected def binOp(ast: BinOp): Any
   protected def number(ast: Number): Any
@@ -37,4 +39,6 @@ trait ASTVisitor {
   protected def whileAST(ast: WhileAST): Any
   protected def returnAST(ast: ReturnAST): Any
   protected def builtinFunctionCall(ast: BuiltinFunctionCall): Any
+  protected def objectLiteral(ast: ObjectLiteral): Any
+  protected def propertyAccess(ast: PropertyAccess): Any
 }

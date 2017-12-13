@@ -255,6 +255,19 @@ class Interpreter extends ASTVisitor {
     }
   }
 
+  override protected def objectLiteral(ast: ObjectLiteral): Map[String, Any] =
+  ast.elements.map{case (name, value) => (name.value, visit(value))}
+
+  override protected def propertyAccess(ast: PropertyAccess): Any = visit(ast.source) match {
+    case objectLiteral: Map[String @unchecked, _] =>
+      objectLiteral.get(ast.name.value) match {
+        case Some(x) => x
+        case None => throw UndefinedVariable(ast.name.value, compilationUnit, ast.token.position)
+      }
+    case value =>
+      throw TypeMismatch(value, ObjectType, compilationUnit, ast.source.token.position)
+  }
+
   def runFromResource(res: String): Any = {
     fileName = res
     val parser = Parser.fromResource(res)

@@ -25,3 +25,7 @@ case object CharType extends Type {
 case object BooleanType extends Type {
   override def toString: String = "Boolean"
 }
+
+case object ObjectType extends Type {
+  override def toString: String = "Object"
+}

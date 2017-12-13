@@ -57,3 +57,9 @@ case class ReturnAST(result: AST, token: ReturnToken) extends AST
 case class BuiltinFunctionCall(name: IdToken, actualParameters: List[AST]) extends AST {
   override def token: Token = name
 }
+
+case class ObjectLiteral(elements: Map[IdToken, AST], token: LCurlyBracketToken) extends AST
+
+case class PropertyAccess(source: AST, name: IdToken) extends AST {
+  override def token: IdToken = name
+}
