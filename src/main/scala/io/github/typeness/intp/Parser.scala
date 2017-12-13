@@ -38,10 +38,10 @@ class Parser(text: String)(
    */
   private def statement(): AST = {
     currentToken.tokenType match {
-      case IF     => ifStatement()
-      case WHILE  => whileStatement()
+      case IF => ifStatement()
+      case WHILE => whileStatement()
       case RETURN => returnStatement()
-      case _      => disjunction()
+      case _ => disjunction()
     }
   }
 
@@ -112,7 +112,7 @@ class Parser(text: String)(
         case ArrayAccess(name, index) =>
           ArrayAssignAST(name, index, disjunction())
         case VarAST(name) => AssignAST(name, disjunction(), AssignToken(pos))
-        case _            => throw new ParserError(result.token)
+        case _ => throw new ParserError(result.token)
       }
     } else {
       while (currentToken.tokenType == OR) {
@@ -150,8 +150,8 @@ class Parser(text: String)(
   private def boolean(): AST = {
     var result = expression()
     while (currentToken.tokenType == GREATER || currentToken.tokenType == LESS
-           || currentToken.tokenType == GREATER_OR_EQUALS || currentToken.tokenType == LESS_OR_EQUALS
-           || currentToken.tokenType == EQUALS || currentToken.tokenType == NOT_EQUALS) {
+      || currentToken.tokenType == GREATER_OR_EQUALS || currentToken.tokenType == LESS_OR_EQUALS
+      || currentToken.tokenType == EQUALS || currentToken.tokenType == NOT_EQUALS) {
       val op = currentToken
       eat(op.tokenType)
       result = BinOp(left = result, op = op, right = expression())
@@ -183,7 +183,7 @@ class Parser(text: String)(
   private def term(): AST = {
     var result = factor()
     while (currentToken.tokenType == MULTIPLICATION
-           || currentToken.tokenType == DIV || currentToken.tokenType == MODULO) {
+      || currentToken.tokenType == DIV || currentToken.tokenType == MODULO) {
       val op = currentToken
       eat(op.tokenType)
       result = BinOp(left = result, op = op, right = factor())
@@ -206,27 +206,26 @@ class Parser(text: String)(
   private def factor(): AST = {
     val token = currentToken
     currentToken.tokenType match {
-      case ID                         => variable()
-      case FUNC                       => functionLiteral()
-      case PLUS | MINUS | NOT         => unaryOperator()
+      case ID => variable()
+      case FUNC => functionLiteral()
+      case PLUS | MINUS | NOT => unaryOperator()
       case INTEGER_CONST | REAL_CONST => numberLiteral()
-      case TRUE | FALSE               => booleanLiteral()
+      case TRUE | FALSE => booleanLiteral()
       case L_ROUND_BRACKET =>
         eat(L_ROUND_BRACKET)
         val result = disjunction()
         eat(R_ROUND_BRACKET)
         result
       case L_SQUARE_BRACKET => arrayLiteral()
-      case APOSTROPHE       => characterLiteral()
-      case QUOTATION        => stringLiteral()
-      case IF               => ifThenElse()
-      case _                => throw ParserError(token)
+      case APOSTROPHE => characterLiteral()
+      case QUOTATION => stringLiteral()
+      case IF => ifThenElse()
+      case _ => throw ParserError(token)
     }
   }
 
   /*
-  variable = ID (actual_parameters_list)*
-          | ID (array_indexing)*
+  variable = ID (actual_parameters_list | array_indexing)*
           | ID ;
    */
   private def variable(): AST = {
@@ -234,24 +233,26 @@ class Parser(text: String)(
     val pos = currentToken.position
     eat(ID)
     currentToken.tokenType match {
-      case L_ROUND_BRACKET =>
-        // builtin functions
-        if (BuiltinFunctions.map.contains(name)) {
-          BuiltinFunctionCall(IdToken(name, pos), actualParametersList())
-        } else {
-          var functionCall = FunctionCall(VarAST(IdToken(name, pos)), actualParametersList())
-          while (currentToken.tokenType == L_ROUND_BRACKET) {
-            functionCall = FunctionCall(source = functionCall, actualParametersList())
+      case L_ROUND_BRACKET | L_SQUARE_BRACKET =>
+        var varAST = currentToken.tokenType match {
+          case L_ROUND_BRACKET =>
+            if (BuiltinFunctions.map.contains(name)) {
+              BuiltinFunctionCall(IdToken(name, pos), actualParametersList())
+            } else {
+              FunctionCall(VarAST(IdToken(name, pos)), actualParametersList())
+            }
+          // actually L_SQUARE_BRACKET
+          case _ => ArrayAccess(VarAST(IdToken(name, pos)), arrayIndexing())
+        }
+        while (currentToken.tokenType == L_ROUND_BRACKET
+          || currentToken.tokenType == L_SQUARE_BRACKET) {
+          currentToken.tokenType match {
+            case L_ROUND_BRACKET => varAST = FunctionCall(varAST, actualParametersList())
+            // actually L_SQUARE_BRACKET
+            case _ => varAST = ArrayAccess(varAST, arrayIndexing())
           }
-          functionCall
         }
-      case L_SQUARE_BRACKET =>
-        var arrayAccess =
-          ArrayAccess(VarAST(IdToken(name, pos)), arrayIndexing())
-        while (currentToken.tokenType == L_SQUARE_BRACKET) {
-          arrayAccess = ArrayAccess(source = arrayAccess, arrayIndexing())
-        }
-        arrayAccess
+        varAST
       case _ => VarAST(name = IdToken(name, pos))
     }
   }

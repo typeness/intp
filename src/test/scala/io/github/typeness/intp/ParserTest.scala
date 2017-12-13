@@ -655,4 +655,37 @@ class ParserTest extends FunSuite {
       )
     )
   }
+  test("Parse function call from array") {
+    val parser = Parser.fromResource("parser/functionCallFromArray.intp")
+    val ast = parser.parse()
+    assert(ast ==
+      Program(List(AssignAST(IdToken("x", Position(1, 1)),
+        ArrayLiteral(List(FunctionLiteral(List(IdToken("x", Position(1, 11))),
+          Program(List(ReturnAST(VarAST(IdToken("x", Position(1, 21))),
+            ReturnToken(Position(1, 14))))), FuncToken(Position(1, 6)))),
+          LSquareBracketToken(Position(1, 5))), AssignToken(Position(1, 3))),
+        BuiltinFunctionCall(IdToken("println", Position(2, 1)),
+          List(FunctionCall(ArrayAccess(VarAST(IdToken("x", Position(2, 9))),
+            Number(IntegerConstToken(0, Position(2, 11)))),
+            List(ArrayLiteral(List(CharLiteral(CharToken('t', Position(2, 15))),
+              CharLiteral(CharToken('e', Position(2, 15))),
+              CharLiteral(CharToken('s', Position(2, 15))),
+              CharLiteral(CharToken('t', Position(2, 15)))),
+              LSquareBracketToken(Position(2, 14)))))))))
+    )
+  }
+  test("Parse indexing of array returned from function") {
+    val parser = Parser.fromResource("parser/arrayIndexingFromFunction.intp")
+    val ast = parser.parse()
+    assert(ast ==
+      Program(List(AssignAST(IdToken("f", Position(1, 1)), FunctionLiteral(List(),
+        Program(List(ReturnAST(ArrayLiteral(List(Number(IntegerConstToken(1, Position(2, 11))),
+          Number(IntegerConstToken(2, Position(2, 14))),
+          Number(IntegerConstToken(15, Position(2, 17)))),
+          LSquareBracketToken(Position(2, 10))), ReturnToken(Position(2, 3))))), FuncToken(Position(1, 5))), AssignToken(Position(1, 3))),
+        BuiltinFunctionCall(IdToken("println", Position(4, 1)),
+          List(ArrayAccess(FunctionCall(VarAST(IdToken("f", Position(4, 9))), List()),
+            Number(IntegerConstToken(2, Position(4, 13))))))))
+    )
+  }
 }
