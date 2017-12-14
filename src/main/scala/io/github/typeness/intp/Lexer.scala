@@ -27,6 +27,7 @@ class Lexer(text: String)(
     case "return" => Some(ReturnToken(pos))
     case "func"   => Some(FuncToken(pos))
     case "then"   => Some(ThenToken(pos))
+    case "data"   => Some(DataToken(pos))
     case _        => None
   }
 

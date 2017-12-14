@@ -725,4 +725,26 @@ class ParserTest extends FunSuite {
           IdToken("y", Position(2, 9))), AssignToken(Position(2, 3)))))
     )
   }
+  test("Data keyword desugars to function") {
+    val parser = Parser.fromResource("parser/data.intp")
+    val ast = parser.parse()
+    assert(ast ==
+      Program(List(AssignAST(IdToken("Person", Position(1,1)),FunctionLiteral(
+        List(IdToken("name", Position(1,15)), IdToken("surname", Position(1,21))),
+        Program(List(ReturnAST(ObjectLiteral(Map(IdToken("name", Position(1,15)) -> VarAST(IdToken("name", Position(1,15))), IdToken("surname", Position(1,21)) -> VarAST(IdToken("surname", Position(1,21)))),LCurlyBracketToken(Position(1,10))),ReturnToken(Position(1,10))))),FuncToken(Position(1,10))),AssignToken(Position(1,8))),
+        AssignAST(IdToken("person", Position(2,1)),FunctionCall(VarAST(IdToken(
+          "Person", Position(2,10))),List(ArrayLiteral(List(CharLiteral(
+          CharToken('J',Position(2,18))), CharLiteral(CharToken('o',Position(2,18))),
+          CharLiteral(CharToken('h',Position(2,18))), CharLiteral(CharToken('n',Position(2,18)))),
+          LSquareBracketToken(Position(2,17))), ArrayLiteral(List(CharLiteral(
+          CharToken('S',Position(2,26))), CharLiteral(CharToken('m',Position(2,26))),
+          CharLiteral(CharToken('i',Position(2,26))), CharLiteral(CharToken('t',Position(2,26))),
+          CharLiteral(CharToken('h',Position(2,26)))),LSquareBracketToken(Position(2,25))))),
+          AssignToken(Position(2,8))),
+        AssignAST(IdToken("n", Position(3,1)),PropertyAccess(VarAST(IdToken("person", Position(3,5))),
+          IdToken("name", Position(3,12))),AssignToken(Position(3,3))),
+        AssignAST(IdToken("s", Position(4,1)),PropertyAccess(VarAST(IdToken("person", Position(4,5))),
+          IdToken("surname", Position(4,12))),AssignToken(Position(4,3)))))
+    )
+  }
 }

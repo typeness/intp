@@ -1,0 +1,4 @@
+Person = data(name, surname)
+person = Person("John", "Smith")
+n = person.name
+s = person.surname

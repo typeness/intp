@@ -134,3 +134,6 @@ case object FUNC extends TokenType
 
 // then
 case object THEN extends TokenType
+
+// data
+case object DATA extends TokenType

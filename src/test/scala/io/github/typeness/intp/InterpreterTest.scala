@@ -463,4 +463,12 @@ class InterpreterTest extends FunSuite {
       Map("f" -> 'y', "obj" -> Map("x" -> Map("g" -> 'y'), "y" -> -4))
     )
   }
+  test("Data keyword as syntax sugar over function returning object literal") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/data.intp")
+    assert(interpreter.memory.get("n").contains(ArrayBuffer('J', 'o', 'h', 'n')))
+    assert(interpreter.memory.get("s").contains(ArrayBuffer('S', 'm', 'i', 't', 'h')))
+    assert(interpreter.memory.get("n2").contains(ArrayBuffer('A', 'm', 'y')))
+    assert(interpreter.memory.get("s2").contains(ArrayBuffer('N', 'e', 'w')))
+  }
 }

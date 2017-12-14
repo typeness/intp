@@ -258,3 +258,9 @@ case class ThenToken(position: Position) extends Token {
 
   override def value: String = "then"
 }
+
+case class DataToken(position: Position) extends Token {
+  override def tokenType: DATA.type = DATA
+
+  override def value = "data"
+}

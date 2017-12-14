@@ -203,7 +203,8 @@ class Parser(text: String)(
         | char_literal
         | string_literal
         | if_then_else
-        | object_literal ;
+        | object_literal
+        | data ;
    */
   private def factor(): AST = {
     val token = currentToken
@@ -223,6 +224,7 @@ class Parser(text: String)(
       case QUOTATION => stringLiteral()
       case IF => ifThenElse()
       case L_CURLY_BRACKET => objectLiteral()
+      case DATA => data()
       case _ => throw ParserError(token)
     }
   }
@@ -405,26 +407,59 @@ class Parser(text: String)(
   def objectLiteral(): AST = {
     val pos = currentToken.position
     eat(L_CURLY_BRACKET)
-    currentToken.tokenType match {
-      case R_CURLY_BRACKET =>
-        eat(R_CURLY_BRACKET)
-        ObjectLiteral(Map.empty, LCurlyBracketToken(pos))
-      case ID =>
-        var idToken = currentToken
+    currentToken match {
+      case token: IdToken =>
         eat(ID)
         eat(ASSIGN)
-        val elems = mutable.Map(IdToken(idToken.value, idToken.position) -> disjunction())
+        val elems = mutable.Map(token -> disjunction())
         while (currentToken.tokenType == COMMA) {
           eat(COMMA)
-          idToken = currentToken
-          eat(ID)
-          eat(ASSIGN)
-          elems.put(IdToken(idToken.value, idToken.position), disjunction())
+          currentToken match {
+            case token: IdToken =>
+              eat(ID)
+              eat(ASSIGN)
+              elems.put(token, disjunction())
+            case _ => throw ParserError
+          }
         }
         eat(R_CURLY_BRACKET)
         ObjectLiteral(elems.toMap, LCurlyBracketToken(pos))
-      case _ => throw ParserError(currentToken)
+      case _ =>
+        eat(R_CURLY_BRACKET)
+        ObjectLiteral(Map.empty, LCurlyBracketToken(pos))
 
+    }
+  }
+
+  /*
+  data = data L_ROUND_BRACKET ID (COMMA ID)* R_ROUND_BRACKET
+        | data L_ROUND_BRACKET R_ROUND_BRACKET
+   */
+  private def data(): AST = {
+    val pos = currentToken.position
+    eat(DATA)
+    eat(L_ROUND_BRACKET)
+    currentToken match {
+      case token: IdToken =>
+        val parameters: ListBuffer[IdToken] = ListBuffer(token)
+        eat(ID)
+        while (currentToken.tokenType == COMMA) {
+          eat(COMMA)
+          currentToken match {
+            case token: IdToken =>
+              parameters.append(token)
+              eat(ID)
+            case _ => throw ParserError
+          }
+        }
+        eat(R_ROUND_BRACKET)
+        val paramMap = parameters.map(p => (p, VarAST(p))).toMap
+        val returnAST = ReturnAST(ObjectLiteral(paramMap, LCurlyBracketToken(pos)), ReturnToken(pos))
+        FunctionLiteral(parameters.toList, Program(List(returnAST)), FuncToken(pos))
+      case _ =>
+        eat(R_ROUND_BRACKET)
+        val returnAST = ReturnAST(ObjectLiteral(Map.empty, LCurlyBracketToken(pos)), ReturnToken(pos))
+        FunctionLiteral(List.empty, Program(List(returnAST)), FuncToken(pos))
     }
   }
 
