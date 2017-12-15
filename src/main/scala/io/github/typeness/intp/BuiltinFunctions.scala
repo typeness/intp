@@ -10,6 +10,9 @@ object BuiltinFunctions {
                     arg match {
                       case seq: Seq[_] => println("[" + seq.mkString(", ") + "]")
                       //                      case seq: Seq[Char] => println(seq)
+                      case map: Map[_, _] => println(
+                        "{" + map.map{case(k, v) => s"$k = $v"}.mkString(", ") + "}"
+                      )
                       case x => println(x)
                     }),
     "size" -> ((arg: Any,
@@ -24,6 +27,9 @@ object BuiltinFunctions {
                  position: Position) =>
                   arg match {
                     case seq: Seq[_] => print("[" + seq.mkString(", ") + "]")
+                    case map: Map[_, _] => println(
+                      "{" + map.map{case(k, v) => s"$k = $v"}.mkString(", ") + "}"
+                    )
                     case x           => println(x)
                   }),
     "string" -> ((arg: Any, compilationUnit: CompilationUnit, position: Position) => {
