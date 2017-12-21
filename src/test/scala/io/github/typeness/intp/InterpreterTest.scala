@@ -444,9 +444,14 @@ class InterpreterTest extends FunSuite {
   test("Using object literal") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/objectLiteral.intp")
-    assert(interpreter.memory.getAll ==
-      Map("person" -> Map("surname" -> ArrayBuffer('S', 'm', 'i', 't', 'h'),
-        "name" -> ArrayBuffer('J', 'o', 'h', 'n')))
+    assert(
+      interpreter.memory.getAll ==
+        Map(
+          "person" -> Map(
+            "surname" -> ArrayBuffer('S', 'm', 'i', 't', 'h'),
+            "name" -> ArrayBuffer('J', 'o', 'h', 'n')
+          )
+        )
     )
   }
   test("Object literal property access") {
@@ -459,8 +464,9 @@ class InterpreterTest extends FunSuite {
   test("Object literal as property") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/objectLiteralAsProperty.intp")
-    assert(interpreter.memory.getAll ==
-      Map("f" -> 'y', "obj" -> Map("x" -> Map("g" -> 'y'), "y" -> -4))
+    assert(
+      interpreter.memory.getAll ==
+        Map("f" -> 'y', "obj" -> Map("x" -> Map("g" -> 'y'), "y" -> -4))
     )
   }
   test("Data keyword as syntax sugar over function returning object literal") {
@@ -470,5 +476,29 @@ class InterpreterTest extends FunSuite {
     assert(interpreter.memory.get("s").contains(ArrayBuffer('S', 'm', 'i', 't', 'h')))
     assert(interpreter.memory.get("n2").contains(ArrayBuffer('A', 'm', 'y')))
     assert(interpreter.memory.get("s2").contains(ArrayBuffer('N', 'e', 'w')))
+  }
+  test("Valid conversions via casting functions") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/castingFunctions.intp")
+    assert(
+      interpreter.memory.getAll == Map(
+        "int2int" -> 3,
+        "int2char" -> '1',
+        "int2double" -> 34.0,
+        "char2int" -> 97,
+        "char2char" -> 'x',
+        "char2double" -> 101.0,
+        "double2int" -> 2,
+        "double2char" -> 'B',
+        "double2double" -> 23.45
+      )
+    )
+
+  }
+  test("Invalid conversions via casting functions") {
+    val interpreter = new Interpreter()
+    intercept[CastError] {
+      interpreter.runFromResource("interpreter/invalidCasting.intp")
+    }
   }
 }

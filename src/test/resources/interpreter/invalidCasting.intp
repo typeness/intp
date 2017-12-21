@@ -1,0 +1,15 @@
+array2int = int([1, 2])
+array2double = double([3.4])
+array2char = char(['e', 'g', 'd'])
+
+func2int = int(func(a){return a})
+func2double = double(func(a){return a})
+func2char = char(func(a){return a})
+
+object2int = int({a=3})
+object2double = double({a=4.3})
+object2char = char({a='u'})
+
+bool2int = int(false)
+bool2double = double(true)
+bool2char = char(false)

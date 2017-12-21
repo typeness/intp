@@ -10,9 +10,10 @@ object BuiltinFunctions {
                     arg match {
                       case seq: Seq[_] => println("[" + seq.mkString(", ") + "]")
                       //                      case seq: Seq[Char] => println(seq)
-                      case map: Map[_, _] => println(
-                        "{" + map.map{case(k, v) => s"$k = $v"}.mkString(", ") + "}"
-                      )
+                      case map: Map[_, _] =>
+                        println(
+                          "{" + map.map { case (k, v) => s"$k = $v" }.mkString(", ") + "}"
+                        )
                       case x => println(x)
                     }),
     "size" -> ((arg: Any,
@@ -27,10 +28,11 @@ object BuiltinFunctions {
                  position: Position) =>
                   arg match {
                     case seq: Seq[_] => print("[" + seq.mkString(", ") + "]")
-                    case map: Map[_, _] => println(
-                      "{" + map.map{case(k, v) => s"$k = $v"}.mkString(", ") + "}"
-                    )
-                    case x           => println(x)
+                    case map: Map[_, _] =>
+                      println(
+                        "{" + map.map { case (k, v) => s"$k = $v" }.mkString(", ") + "}"
+                      )
+                    case x => println(x)
                   }),
     "string" -> ((arg: Any, compilationUnit: CompilationUnit, position: Position) => {
       arg match {
@@ -73,6 +75,36 @@ object BuiltinFunctions {
                    arg match {
                      case bool: Boolean => assert(bool)
                      case value         => throw TypeMismatch(value, BooleanType, compilationUnit, position)
+                   }),
+    "int" -> ((arg: Any,
+               compilationUnit: CompilationUnit,
+               position: Position) =>
+                arg match {
+                  case int: Int       => int
+                  case char: Char     => char.toInt
+                  case double: Double => double.toInt
+                  case value =>
+                    throw CastError(Type.getType(value), IntegerType, compilationUnit, position)
+                }),
+    "char" -> ((arg: Any,
+                compilationUnit: CompilationUnit,
+                position: Position) =>
+                 arg match {
+                   case int: Int       => int.toChar
+                   case char: Char     => char
+                   case double: Double => double.toChar
+                   case value =>
+                     throw CastError(Type.getType(value), CharType, compilationUnit, position)
+                 }),
+    "double" -> ((arg: Any,
+                  compilationUnit: CompilationUnit,
+                  position: Position) =>
+                   arg match {
+                     case int: Int       => int.toDouble
+                     case char: Char     => char.toDouble
+                     case double: Double => double
+                     case value =>
+                       throw CastError(Type.getType(value), DoubleType, compilationUnit, position)
                    })
   )
 

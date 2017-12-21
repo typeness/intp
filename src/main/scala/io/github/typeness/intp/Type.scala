@@ -29,3 +29,15 @@ case object BooleanType extends Type {
 case object ObjectType extends Type {
   override def toString: String = "Object"
 }
+
+object Type {
+  def getType(expr: Any): Type = expr match {
+    case _: Int       => IntegerType
+    case _: Seq[_]    => ArrayType
+    case _: Double    => DoubleType
+    case _: Char      => CharType
+    case _: Boolean   => BooleanType
+    case _: Map[_, _] => ObjectType
+    case _            => FunctionType
+  }
+}

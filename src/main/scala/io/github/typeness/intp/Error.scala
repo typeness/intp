@@ -2,9 +2,7 @@ package io.github.typeness.intp
 
 case class CompilationUnit(fileName: String, source: String)
 
-abstract class Error(msg: String,
-                     compilationUnit: CompilationUnit,
-                     position: Position)
+abstract class Error(msg: String, compilationUnit: CompilationUnit, position: Position)
     extends Exception(
       s"${if (compilationUnit.fileName.nonEmpty) compilationUnit.fileName
       else "<console>"}:\n" + Console.RED +
@@ -13,18 +11,16 @@ abstract class Error(msg: String,
         (" " * position.col) + "^"
     )
 
-abstract class InterpreterError(msg: String,
-                                compilationUnit: CompilationUnit,
-                                position: Position)
+abstract class InterpreterError(msg: String, compilationUnit: CompilationUnit, position: Position)
     extends Error(msg, compilationUnit, position)
 
-case class SyntaxError(msg: String,
-                       compilationUnit: CompilationUnit,
-                       position: Position)
-    extends Error("invalid " +
-                    "syntax " + msg + "\n",
-                  compilationUnit,
-                  position)
+case class SyntaxError(msg: String, compilationUnit: CompilationUnit, position: Position)
+    extends Error(
+      "invalid " +
+        "syntax " + msg + "\n",
+      compilationUnit,
+      position
+    )
 
 case class TypeMismatch(found: Any,
                         required: Type,
@@ -34,6 +30,15 @@ case class TypeMismatch(found: Any,
       "type mismatch\n" +
         s"found: $found\n" +
         s"required: $required\n",
+      compilationUnit,
+      position
+    )
+
+case class CastError(from: Type, to: Type, compilationUnit: CompilationUnit, position: Position)
+    extends InterpreterError(
+      "casting failed\n" +
+        s"from: $from\n" +
+        s"to: $to\n",
       compilationUnit,
       position
     )
@@ -59,9 +64,7 @@ case class WrongBinaryOperator(left: Any,
       position
     )
 
-case class UndefinedVariable(name: String,
-                             compilationUnit: CompilationUnit,
-                             position: Position)
+case class UndefinedVariable(name: String, compilationUnit: CompilationUnit, position: Position)
     extends InterpreterError(
       s"'$name' is not defined\n",
       compilationUnit,
