@@ -29,10 +29,10 @@ object BuiltinFunctions {
                   arg match {
                     case seq: Seq[_] => print("[" + seq.mkString(", ") + "]")
                     case map: Map[_, _] =>
-                      println(
+                      print(
                         "{" + map.map { case (k, v) => s"$k = $v" }.mkString(", ") + "}"
                       )
-                    case x => println(x)
+                    case x => print(x)
                   }),
     "string" -> ((arg: Any, compilationUnit: CompilationUnit, position: Position) => {
       arg match {
