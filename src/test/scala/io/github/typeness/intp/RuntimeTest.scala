@@ -15,4 +15,8 @@ class RuntimeTest extends FunSuite {
     val interpreter = new Interpreter()
     interpreter.runFromResource("runtime/sets.intp")
   }
+  test("Count occurrences in string") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("runtime/countOccurrences.intp")
+  }
 }

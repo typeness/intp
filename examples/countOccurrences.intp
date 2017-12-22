@@ -1,0 +1,25 @@
+count = func(text) {
+  result = []
+  i = 0
+  while (i < 256) {
+    result = result + [0]
+    i = i + 1
+  }
+  i = 0
+  while (i < size(text)) {
+    index = int(text[i])
+    result[index] = result[index] + 1
+    i = i + 1
+  }
+  return result
+}
+map = count("this is very long text!23.")
+i = 0
+while (i < size(map)) {
+  if (map[i] > 0) {
+    print(char(i))
+    print(' ')
+    println(map[i])
+  }
+  i = i + 1
+}
