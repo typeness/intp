@@ -19,4 +19,8 @@ class RuntimeTest extends FunSuite {
     val interpreter = new Interpreter()
     interpreter.runFromResource("runtime/countOccurrences.intp")
   }
+  test("Binary to decimal conversion") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("runtime/binToInt.intp")
+  }
 }
