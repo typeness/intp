@@ -3,7 +3,7 @@ import AssemblyKeys._
 
 name := "intp"
 
-version := "0.3.0"
+version := "0.3.1"
 assemblySettings
 jarName in assembly := name.value + "-" + version.value+ ".jar"
 
