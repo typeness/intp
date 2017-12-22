@@ -23,4 +23,8 @@ class RuntimeTest extends FunSuite {
     val interpreter = new Interpreter()
     interpreter.runFromResource("runtime/binToInt.intp")
   }
+  test("Checking for palindrome") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("runtime/palindrome.intp")
+  }
 }

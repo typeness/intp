@@ -1,0 +1,20 @@
+isPalindrome = func(word) {
+  i = 0
+  while (i < size(word) / 2) {
+    if (word[i] != word[size(word) - i - 1]) {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+assert(isPalindrome("sos"))
+assert(isPalindrome("sedes"))
+assert(isPalindrome("kajak"))
+assert(isPalindrome("abba"))
+assert(isPalindrome("1"))
+assert(isPalindrome("33"))
+assert(not isPalindrome("334"))
+assert(not isPalindrome("23"))
+assert(not isPalindrome("nie"))
