@@ -24,6 +24,10 @@ case class ArrayAssignAST(source: AST, index: AST, expr: AST) extends AST {
   override def token: Token = source.token
 }
 
+case class PropertyAssignAST(source: AST, name: IdToken, expr: AST) extends AST {
+  override def token: Token = source.token
+}
+
 case class VarAST(name: IdToken) extends AST {
   override def token: Token = name
 }

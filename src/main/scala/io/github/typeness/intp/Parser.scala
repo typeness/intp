@@ -110,8 +110,8 @@ class Parser(text: String)(
       val pos = currentToken.position
       eat(ASSIGN)
       result match {
-        case ArrayAccess(name, index) =>
-          ArrayAssignAST(name, index, disjunction())
+        case ArrayAccess(source, index) => ArrayAssignAST(source, index, disjunction())
+        case PropertyAccess(source, name) => PropertyAssignAST(source, name,  disjunction())
         case VarAST(name) => AssignAST(name, disjunction(), AssignToken(pos))
         case _ => throw new ParserError(result.token)
       }

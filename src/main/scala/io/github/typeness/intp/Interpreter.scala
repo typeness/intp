@@ -145,10 +145,10 @@ class Interpreter extends ASTVisitor {
 
   override protected def arrayAssignAST(ast: ArrayAssignAST): Any =
     visit(ast.source) match {
-      case arr: mutable.ArrayBuffer[_] =>
+      case arr: mutable.ArrayBuffer[Any@unchecked] =>
         visit(ast.index) match {
           case index: Int =>
-            arr.asInstanceOf[mutable.ArrayBuffer[Any]](index) = visit(ast.expr)
+            arr(index) = visit(ast.expr)
           case value =>
             throw TypeMismatch(value, IntegerType, compilationUnit, ast.source.token.position)
         }
@@ -255,11 +255,11 @@ class Interpreter extends ASTVisitor {
     }
   }
 
-  override protected def objectLiteral(ast: ObjectLiteral): Map[String, Any] =
-  ast.elements.map{case (name, value) => (name.value, visit(value))}
+  override protected def objectLiteral(ast: ObjectLiteral): mutable.Map[String, Any] =
+    mutable.Map(ast.elements.map { case (name, value) => (name.value, visit(value)) }.toSeq: _*)
 
   override protected def propertyAccess(ast: PropertyAccess): Any = visit(ast.source) match {
-    case objectLiteral: Map[String @unchecked, _] =>
+    case objectLiteral: mutable.Map[String@unchecked, _] =>
       objectLiteral.get(ast.name.value) match {
         case Some(x) => x
         case None => throw UndefinedVariable(ast.name.value, compilationUnit, ast.token.position)
@@ -267,6 +267,14 @@ class Interpreter extends ASTVisitor {
     case value =>
       throw TypeMismatch(value, ObjectType, compilationUnit, ast.source.token.position)
   }
+
+  override protected def propertyAssign(ast: PropertyAssignAST): Any =
+    visit(ast.source) match {
+      case map: mutable.Map[String@unchecked, Any@unchecked] =>
+        map(ast.name.value) = visit(ast.expr)
+      case value => throw TypeMismatch(value, ObjectType, compilationUnit, ast.source.token.position)
+
+    }
 
   def runFromResource(res: String): Any = {
     fileName = res

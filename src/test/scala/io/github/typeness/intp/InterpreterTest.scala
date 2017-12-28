@@ -521,4 +521,11 @@ class InterpreterTest extends FunSuite {
     interpreter.runFromResource("interpreter/fluentSyntax.intp")
     assert(interpreter.memory.getAll == Map("test" -> 3.14))
   }
+  test("Property assignment") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/propertyAssignment.intp")
+    assert(interpreter.memory.getAll == Map(
+      "test" -> Map("a" -> 'x')
+    ))
+  }
 }

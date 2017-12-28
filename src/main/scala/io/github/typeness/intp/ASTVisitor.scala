@@ -21,6 +21,7 @@ trait ASTVisitor {
     case a: BuiltinFunctionCall => builtinFunctionCall(a)
     case a: ObjectLiteral       => objectLiteral(a)
     case a: PropertyAccess      => propertyAccess(a)
+    case a: PropertyAssignAST   => propertyAssign(a)
   }
   protected def binOp(ast: BinOp): Any
   protected def number(ast: Number): Any
@@ -41,4 +42,5 @@ trait ASTVisitor {
   protected def builtinFunctionCall(ast: BuiltinFunctionCall): Any
   protected def objectLiteral(ast: ObjectLiteral): Any
   protected def propertyAccess(ast: PropertyAccess): Any
+  protected def propertyAssign(ast: PropertyAssignAST): Any
 }

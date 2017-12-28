@@ -747,4 +747,15 @@ class ParserTest extends FunSuite {
           IdToken("surname", Position(4,12))),AssignToken(Position(4,3)))))
     )
   }
+  test("Property assignment") {
+    val parser = Parser.fromResource("parser/propertyAssignment.intp")
+    val ast = parser.parse()
+    assert( ast ==
+      Program(List(AssignAST(IdToken("test", Position(1,1)),
+        ObjectLiteral(Map(IdToken("a", Position(1,9)) -> CharLiteral(CharToken('f',Position(1,14)))),
+          LCurlyBracketToken(Position(1,8))),AssignToken(Position(1,6))),
+        PropertyAssignAST(VarAST(IdToken("test", Position(2,1))),IdToken("a", Position(2,6)),
+          CharLiteral(CharToken('x',Position(2,11))))))
+    )
+  }
 }
