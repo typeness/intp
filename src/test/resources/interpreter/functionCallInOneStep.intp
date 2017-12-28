@@ -1,0 +1,1 @@
+p = func(){return -9}()

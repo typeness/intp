@@ -266,7 +266,8 @@ class Parser(text: String)(
 
   /*
   function_literal =
-    FUNC formal_parameters_list L_CURLY_BRACKET program R_CURLY_BRACKET ;
+    FUNC formal_parameters_list L_CURLY_BRACKET program
+      R_CURLY_BRACKET (actual_parameters_list | array_indexing | property_access)+ ;
    */
   private def functionLiteral(): AST = {
     val pos = currentToken.position
@@ -275,7 +276,7 @@ class Parser(text: String)(
     eat(L_CURLY_BRACKET)
     val root = program()
     eat(R_CURLY_BRACKET)
-    FunctionLiteral(parameters, root, FuncToken(pos))
+    fluentSyntax(FunctionLiteral(parameters, root, FuncToken(pos)))
   }
 
   /*
@@ -326,7 +327,8 @@ class Parser(text: String)(
   }
 
   /*
-  def array_literal = L_SQUARE_BRACKET disjunction (COMMA disjunction)* R_SQUARE_BRACKET
+  array_literal = L_SQUARE_BRACKET disjunction (COMMA disjunction)*
+                      R_SQUARE_BRACKET (actual_parameters_list | array_indexing | property_access)+
                    | L_SQUARE_BRACKET R_SQUARE_BRACKET ;
    */
   private def arrayLiteral(): AST = {
@@ -343,7 +345,7 @@ class Parser(text: String)(
           result.append(disjunction())
         }
         eat(R_SQUARE_BRACKET)
-        ArrayLiteral(result.toList, LSquareBracketToken(pos))
+        fluentSyntax(ArrayLiteral(result.toList, LSquareBracketToken(pos)))
     }
   }
 
@@ -401,7 +403,7 @@ class Parser(text: String)(
 
   /*
   object_literal = L_CURLY_BRACKET ID ASSIGN disjunction (COMMA ID ASSIGN disjunction)*
-                                                                              R_CURLY_BRACKET
+                     R_CURLY_BRACKET (actual_parameters_list | array_indexing | property_access)+
                   | L_CURLY_BRACKET R_CURLY_BRACKET ;
    */
   def objectLiteral(): AST = {
@@ -423,7 +425,7 @@ class Parser(text: String)(
           }
         }
         eat(R_CURLY_BRACKET)
-        ObjectLiteral(elems.toMap, LCurlyBracketToken(pos))
+        fluentSyntax(ObjectLiteral(elems.toMap, LCurlyBracketToken(pos)))
       case _ =>
         eat(R_CURLY_BRACKET)
         ObjectLiteral(Map.empty, LCurlyBracketToken(pos))
@@ -530,6 +532,32 @@ class Parser(text: String)(
         List.empty
     }
   }
+
+  private def fluentSyntax(source: AST): AST = {
+    currentToken.tokenType match {
+      case L_ROUND_BRACKET | L_SQUARE_BRACKET | DOT =>
+        var varAST = currentToken.tokenType match {
+          case L_ROUND_BRACKET => FunctionCall(source, actualParametersList())
+          case DOT => PropertyAccess(source, propertyAccess().name)
+          // actually L_SQUARE_BRACKET
+          case _ => ArrayAccess(source, arrayIndexing())
+        }
+        while (currentToken.tokenType == L_ROUND_BRACKET
+          || currentToken.tokenType == L_SQUARE_BRACKET || currentToken.tokenType == DOT) {
+          currentToken.tokenType match {
+            case L_ROUND_BRACKET => varAST = FunctionCall(varAST, actualParametersList())
+            case DOT => varAST = PropertyAccess(varAST, propertyAccess().name)
+            // actually L_SQUARE_BRACKET
+            case _ => varAST = ArrayAccess(varAST, arrayIndexing())
+          }
+        }
+        varAST
+      case _ => source
+    }
+  }
+
+
+
 
   private def stringToListOfChars(str: StringToken): List[AST] =
     str.value.map(c => CharLiteral(CharToken(c, str.position))).toList

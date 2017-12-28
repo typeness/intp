@@ -501,4 +501,24 @@ class InterpreterTest extends FunSuite {
       interpreter.runFromResource("interpreter/invalidCasting.intp")
     }
   }
+  test("Property access of in place defined object literal") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/accessObjectLiteralInPlace.intp")
+    assert(interpreter.memory.getAll == Map("y" -> 3, "z" -> true))
+  }
+  test("Defining array and indexing it in one place") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/arrayIndexingInOneStep.intp")
+    assert(interpreter.memory.getAll == Map("test" -> 123))
+  }
+  test("Defining function and calling it in one place") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/functionCallInOneStep.intp")
+    assert(interpreter.memory.getAll == Map("p" -> -9))
+  }
+  test("Combine definition of array, function and object with indexing, call and access") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/fluentSyntax.intp")
+    assert(interpreter.memory.getAll == Map("test" -> 3.14))
+  }
 }
