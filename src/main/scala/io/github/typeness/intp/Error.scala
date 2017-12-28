@@ -22,6 +22,13 @@ case class SyntaxError(msg: String, compilationUnit: CompilationUnit, position: 
       position
     )
 
+case class AssertionError(compilationUnit: CompilationUnit, position: Position)
+  extends InterpreterError(
+    "assertion failed\n",
+    compilationUnit,
+    position
+  )
+
 case class TypeMismatch(found: Any,
                         required: Type,
                         compilationUnit: CompilationUnit,

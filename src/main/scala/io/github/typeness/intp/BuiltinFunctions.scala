@@ -73,7 +73,7 @@ object BuiltinFunctions {
                   compilationUnit: CompilationUnit,
                   position: Position) =>
                    arg match {
-                     case bool: Boolean => assert(bool)
+                     case bool: Boolean => if(!bool) throw AssertionError(compilationUnit, position)
                      case value         => throw TypeMismatch(value, BooleanType, compilationUnit, position)
                    }),
     "int" -> ((arg: Any,

@@ -94,4 +94,11 @@ class ErrorReportingTest extends FunSuite {
     }
     println(error.getMessage)
   }
+  test("Failed assertion") {
+    val error = intercept[AssertionError] {
+      val interpreter = new Interpreter()
+      interpreter.runFromResource("errors/failed-assertion.intp")
+    }
+    println(error.getMessage)
+  }
 }
