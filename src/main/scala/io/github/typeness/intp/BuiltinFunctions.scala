@@ -1,7 +1,8 @@
 package io.github.typeness.intp
 
+
 import scala.collection.mutable
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 object BuiltinFunctions {
   val map: Map[String, (Any, CompilationUnit, Position) => Any] = Map(
@@ -48,7 +49,7 @@ object BuiltinFunctions {
                        compilationUnit,
                        position,
                        "read",
-                       () => scala.io.StdIn.readLine()
+                       () => scala.io.StdIn.readLine().to[mutable.ArrayBuffer]
                      )),
     "assert" -> ((arg: Any,
                   compilationUnit: CompilationUnit,
@@ -64,8 +65,9 @@ object BuiltinFunctions {
                   case int: Int       => int
                   case char: Char     => char.toInt
                   case double: Double => double.toInt
-                  case seq: Seq[_] => Try(seq.mkString.toInt) recover {
-                    case _: Throwable => throw TypeMismatch(seq.mkString, IntegerType, compilationUnit, position)
+                  case seq: Seq[_] => Try(seq.mkString.toInt) match {
+                    case Success(x) => x
+                    case Failure(_) =>  throw TypeMismatch(seq.mkString, IntegerType, compilationUnit, position)
                   }
                   case value =>
                     throw CastError(Type.getType(value), IntegerType, compilationUnit, position)
@@ -77,8 +79,9 @@ object BuiltinFunctions {
                    case int: Int       => int.toChar
                    case char: Char     => char
                    case double: Double => double.toChar
-                   case seq: Seq[_] => Try(seq.head.toString.charAt(0)) recover {
-                     case _: Throwable => throw TypeMismatch(seq.mkString, CharType, compilationUnit, position)
+                   case seq: Seq[_] => Try(seq.head.toString.charAt(0)) match {
+                     case Success(x) => x
+                     case Failure(_) =>  throw TypeMismatch(seq.mkString, CharType, compilationUnit, position)
                    }
                    case value =>
                      throw CastError(Type.getType(value), CharType, compilationUnit, position)
@@ -90,8 +93,9 @@ object BuiltinFunctions {
                      case int: Int       => int.toDouble
                      case char: Char     => char.toDouble
                      case double: Double => double
-                     case seq: Seq[_] => Try(seq.mkString.toDouble) recover {
-                       case _: Throwable => throw TypeMismatch(seq.mkString, IntegerType, compilationUnit, position)
+                     case seq: Seq[_] => Try(seq.mkString.toDouble) match {
+                       case Success(x) => x
+                       case Failure(_) =>  throw TypeMismatch(seq.mkString, DoubleType, compilationUnit, position)
                      }
                      case value =>
                        throw CastError(Type.getType(value), DoubleType, compilationUnit, position)
