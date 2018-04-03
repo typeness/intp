@@ -1,6 +1,7 @@
 package io.github.typeness.intp
 
 import scala.collection.mutable
+import scala.util.Try
 
 object BuiltinFunctions {
   val map: Map[String, (Any, CompilationUnit, Position) => Any] = Map(
@@ -63,7 +64,9 @@ object BuiltinFunctions {
                   case int: Int       => int
                   case char: Char     => char.toInt
                   case double: Double => double.toInt
-                  case seq: Seq[_] => seq.mkString.toInt
+                  case seq: Seq[_] => Try(seq.mkString.toInt) recover {
+                    case _: Throwable => throw TypeMismatch(seq.mkString, IntegerType, compilationUnit, position)
+                  }
                   case value =>
                     throw CastError(Type.getType(value), IntegerType, compilationUnit, position)
                 }),
@@ -74,7 +77,9 @@ object BuiltinFunctions {
                    case int: Int       => int.toChar
                    case char: Char     => char
                    case double: Double => double.toChar
-                   case seq: Seq[_] => seq.head.toString.charAt(0)
+                   case seq: Seq[_] => Try(seq.head.toString.charAt(0)) recover {
+                     case _: Throwable => throw TypeMismatch(seq.mkString, CharType, compilationUnit, position)
+                   }
                    case value =>
                      throw CastError(Type.getType(value), CharType, compilationUnit, position)
                  }),
@@ -85,7 +90,9 @@ object BuiltinFunctions {
                      case int: Int       => int.toDouble
                      case char: Char     => char.toDouble
                      case double: Double => double
-                     case seq: Seq[_] => seq.mkString.toDouble
+                     case seq: Seq[_] => Try(seq.mkString.toDouble) recover {
+                       case _: Throwable => throw TypeMismatch(seq.mkString, IntegerType, compilationUnit, position)
+                     }
                      case value =>
                        throw CastError(Type.getType(value), DoubleType, compilationUnit, position)
                    })
