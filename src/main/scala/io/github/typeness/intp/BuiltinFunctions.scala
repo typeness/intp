@@ -36,37 +36,17 @@ object BuiltinFunctions {
                   }),
     "string" -> ((arg: Any, compilationUnit: CompilationUnit, position: Position) => {
       arg match {
-        case value => value.toString.to[mutable.ArrayBuffer]
+          case value => value.toString.to[mutable.ArrayBuffer]
       }
     }),
-    "readInt" -> ((arg: Any,
-                   compilationUnit: CompilationUnit,
-                   position: Position) =>
-                    ZeroArgumentFunction(
-                      arg,
-                      compilationUnit,
-                      position,
-                      "readInt",
-                      () => scala.io.StdIn.readInt()
-                    )),
-    "readDouble" -> ((arg: Any,
-                      compilationUnit: CompilationUnit,
-                      position: Position) =>
-                       ZeroArgumentFunction(
-                         arg,
-                         compilationUnit,
-                         position,
-                         "readDouble",
-                         () => scala.io.StdIn.readDouble()
-                       )),
-    "readLine" -> ((arg: Any,
+    "read" -> ((arg: Any,
                     compilationUnit: CompilationUnit,
                     position: Position) =>
                      ZeroArgumentFunction(
                        arg,
                        compilationUnit,
                        position,
-                       "readLine",
+                       "read",
                        () => scala.io.StdIn.readLine()
                      )),
     "assert" -> ((arg: Any,
@@ -83,6 +63,7 @@ object BuiltinFunctions {
                   case int: Int       => int
                   case char: Char     => char.toInt
                   case double: Double => double.toInt
+                  case seq: Seq[_] => seq.mkString.toInt
                   case value =>
                     throw CastError(Type.getType(value), IntegerType, compilationUnit, position)
                 }),
@@ -93,6 +74,7 @@ object BuiltinFunctions {
                    case int: Int       => int.toChar
                    case char: Char     => char
                    case double: Double => double.toChar
+                   case seq: Seq[_] => seq.head.toString.charAt(0)
                    case value =>
                      throw CastError(Type.getType(value), CharType, compilationUnit, position)
                  }),
@@ -103,6 +85,7 @@ object BuiltinFunctions {
                      case int: Int       => int.toDouble
                      case char: Char     => char.toDouble
                      case double: Double => double
+                     case seq: Seq[_] => seq.mkString.toDouble
                      case value =>
                        throw CastError(Type.getType(value), DoubleType, compilationUnit, position)
                    })
