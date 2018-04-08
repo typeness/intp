@@ -52,3 +52,10 @@ Actually it's syntax sugar for array of characters i.e. `['t', 'e', 's', 't']`
 - Double: `3.14`
 - Boolean: `true`, `false`
 - Character: `c`
+
+### Builtin functions
+- `println(object)`
+- `print(object)`
+- `read()` (return single line from stdin)
+- `size(array)` (return size when used or arrays, otherwise throws error)
+- `assert(condtion)` (when condition is false throws error)
