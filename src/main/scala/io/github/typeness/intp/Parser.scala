@@ -13,7 +13,7 @@ class Parser(text: String)(
   def parse(): Program = {
     val node = program()
     if (currentToken.tokenType != EOF) {
-      throw ParserError
+      throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
     }
     //    val semanticAnalyzer = new SemanticAnalyzer()
     //    semanticAnalyzer.build(node)
@@ -113,7 +113,7 @@ class Parser(text: String)(
         case ArrayAccess(source, index) => ArrayAssignAST(source, index, disjunction())
         case PropertyAccess(source, name) => PropertyAssignAST(source, name,  disjunction())
         case VarAST(name) => AssignAST(name, disjunction(), AssignToken(pos))
-        case _ => throw new ParserError(result.token)
+        case _ => throw SyntaxError(result.token.value, compilationUnit, currentToken.position)
       }
     } else {
       while (currentToken.tokenType == OR) {
@@ -225,7 +225,7 @@ class Parser(text: String)(
       case IF => ifThenElse()
       case L_CURLY_BRACKET => objectLiteral()
       case DATA => data()
-      case _ => throw ParserError(token)
+      case _ => throw SyntaxError(token.value, compilationUnit, currentToken.position)
     }
   }
 
@@ -290,7 +290,7 @@ class Parser(text: String)(
         val token = currentToken
         eat(currentToken.tokenType)
         UnaryOp(op = token, expr = factor())
-      case _ => throw new ParserError(currentToken)
+      case _ => throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
     }
   }
 
@@ -306,7 +306,7 @@ class Parser(text: String)(
       case REAL_CONST =>
         eat(REAL_CONST)
         Number(RealConstToken(token.value.toDouble, token.position))
-      case _ => throw new ParserError(currentToken)
+      case _ => throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
     }
   }
 
@@ -322,7 +322,7 @@ class Parser(text: String)(
       case FALSE =>
         eat(FALSE)
         BooleanLiteral(FalseToken(pos))
-      case _ => throw new ParserError(currentToken)
+      case _ => throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
     }
   }
 
@@ -361,7 +361,7 @@ class Parser(text: String)(
         eat(CHARACTER)
         eat(APOSTROPHE)
         result
-      case _ => throw new ParserError(currentToken)
+      case _ => throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
     }
   }
 
@@ -379,7 +379,7 @@ class Parser(text: String)(
         eat(STRING)
         eat(QUOTATION)
         result
-      case _ => throw new ParserError(currentToken)
+      case _ => throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
     }
   }
 
@@ -421,7 +421,7 @@ class Parser(text: String)(
               eat(ID)
               eat(ASSIGN)
               elems.put(token, disjunction())
-            case _ => throw ParserError
+            case _ => throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
           }
         }
         eat(R_CURLY_BRACKET)
@@ -451,7 +451,7 @@ class Parser(text: String)(
             case token: IdToken =>
               parameters.append(token)
               eat(ID)
-            case _ => throw ParserError
+            case _ => throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
           }
         }
         eat(R_ROUND_BRACKET)
@@ -522,7 +522,7 @@ class Parser(text: String)(
             case token: IdToken =>
               parameters.append(token)
               eat(ID)
-            case _ => throw ParserError
+            case _ => throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
           }
         }
         eat(R_ROUND_BRACKET)
@@ -566,7 +566,7 @@ class Parser(text: String)(
     if (currentToken.tokenType == tokenType) {
       currentToken = lexer.getNextToken
     } else {
-      throw ParserError(currentToken)
+      throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
     }
   }
 }
@@ -583,10 +583,3 @@ object Parser {
   }
 }
 
-case object ParserError extends Exception {
-  override def getMessage: String = "Invalid syntax"
-}
-
-case class ParserError(token: Token) extends Exception {
-  override def getMessage: String = s"Invalid syntax: $token"
-}

@@ -1,7 +1,11 @@
 one = string(1)
-//eleven = "1" + one
+eleven = "1" + one
 arr = string([0, 10, 4])
 t = string(true)
 f = string(false)
 db = string(-12.34)
-//test = string(1) + string(2)
+test = string(1) + string(2)
+dat = string({a="1", c = true})
+str = string("lol")
+function = string(func(){})
+arrFunc = string([func(){}])

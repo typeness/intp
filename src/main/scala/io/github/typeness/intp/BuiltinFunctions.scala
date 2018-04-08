@@ -5,19 +5,29 @@ import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
 
 object BuiltinFunctions {
+
+  private val string =
+    (arg: Any, cu: CompilationUnit, pos: Position) => show(arg).to[mutable.ArrayBuffer]
+
+  private def show: Any => String =  (arg: Any) => {
+    val result = arg match {
+      case seq: Seq[_] => "[" + seq.map(show).mkString(", ") + "]"
+      case map: mutable.Map[_, _] =>
+          "{" + map.map { case (k, v) => s"$k = ${show(v)}" }.mkString(", ") + "}"
+      case FunctionLiteral(_, _, token) => token.value
+      case value => value.toString
+    }
+    result
+//    result.to[mutable.ArrayBuffer]
+  }
+
   val map: Map[String, (Any, CompilationUnit, Position) => Any] = Map(
     "println" -> ((arg: Any,
                    compilationUnit: CompilationUnit,
-                   position: Position) =>
-                    arg match {
-                      case seq: Seq[_] => println("[" + seq.mkString(", ") + "]")
-                      //                      case seq: Seq[Char] => println(seq)
-                      case map: Map[_, _] =>
-                        println(
-                          "{" + map.map { case (k, v) => s"$k = $v" }.mkString(", ") + "}"
-                        )
-                      case x => println(x)
-                    }),
+                   position: Position) => println(show(arg))),
+    "print" -> ((arg: Any,
+                   compilationUnit: CompilationUnit,
+                   position: Position) => print(show(arg))),
     "size" -> ((arg: Any,
                 compilationUnit: CompilationUnit,
                 position: Position) =>
@@ -25,22 +35,7 @@ object BuiltinFunctions {
                    case seq: Seq[_] => seq.size
                    case value       => throw TypeMismatch(value, ArrayType, compilationUnit, position)
                  }),
-    "print" -> ((arg: Any,
-                 compilationUnit: CompilationUnit,
-                 position: Position) =>
-                  arg match {
-                    case seq: Seq[_] => print("[" + seq.mkString(", ") + "]")
-                    case map: Map[_, _] =>
-                      print(
-                        "{" + map.map { case (k, v) => s"$k = $v" }.mkString(", ") + "}"
-                      )
-                    case x => print(x)
-                  }),
-    "string" -> ((arg: Any, compilationUnit: CompilationUnit, position: Position) => {
-      arg match {
-          case value => value.toString.to[mutable.ArrayBuffer]
-      }
-    }),
+    "string" -> string,
     "read" -> ((arg: Any,
                     compilationUnit: CompilationUnit,
                     position: Position) =>

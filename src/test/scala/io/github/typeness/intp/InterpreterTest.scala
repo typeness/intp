@@ -427,7 +427,24 @@ class InterpreterTest extends FunSuite {
   test("Builtin string function") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/string.intp")
-    println(interpreter.memory.getAll)
+    assert(
+      interpreter.memory.getAll ==
+        Map(
+          "one" -> ArrayBuffer('1'),
+          "eleven" -> ArrayBuffer('1', '1'),
+          "arr" -> ArrayBuffer('[', '0', ',', ' ', '1', '0', ',', ' ', '4', ']'),
+          "t" -> ArrayBuffer('t', 'r', 'u', 'e'),
+          "f" -> ArrayBuffer('f', 'a', 'l', 's', 'e'),
+          "db" -> ArrayBuffer('-', '1', '2', '.', '3', '4'),
+          "test" -> ArrayBuffer('1', '2'),
+          "dat" -> ArrayBuffer(
+            '{', 'a', ' ', '=', ' ', '[', '1', ']', ',', ' ', 'c', ' ', '=', ' ', 't', 'r', 'u', 'e', '}'
+          ),
+          "str" -> ArrayBuffer('[', 'l', ',', ' ', 'o', ',', ' ', 'l', ']'),
+          "function" -> ArrayBuffer('f', 'u', 'n', 'c'),
+          "arrFunc" -> ArrayBuffer('[', 'f', 'u', 'n', 'c', ']')
+        )
+    )
   }
   test("Builtin assert function") {
     val interpreter = new Interpreter()
