@@ -104,14 +104,14 @@ class InterpreterTest extends FunSuite {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/if.intp")
     assert(
-      interpreter.memory.getAll == Map("is" -> true, "d" -> 1000)
+      interpreter.memory.getAll == Map("is" -> true)
     )
   }
   test("If-else statements") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/if-else.intp")
     assert(
-      interpreter.memory.getAll == Map("x" -> 2, "c" -> true)
+      interpreter.memory.getAll == Map("x" -> 2)
     )
   }
   test("While statement") {
@@ -544,5 +544,17 @@ class InterpreterTest extends FunSuite {
     assert(interpreter.memory.getAll == Map(
       "test" -> Map("a" -> 'x')
     ))
+  }
+  test("While local scope do not leak definitions") {
+    val interpreter = new Interpreter()
+    intercept[UndefinedVariable] {
+      interpreter.runFromResource("interpreter/whileLocalScope.intp")
+    }
+  }
+  test("If local scope do not leak defintions") {
+    val interpreter = new Interpreter()
+    intercept[UndefinedVariable] {
+      interpreter.runFromResource("interpreter/ifLocalScope.intp")
+    }
   }
 }

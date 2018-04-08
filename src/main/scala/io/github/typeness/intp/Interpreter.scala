@@ -1,6 +1,5 @@
 package io.github.typeness.intp
 
-import scala.annotation.tailrec
 import scala.collection.mutable
 
 class Interpreter extends ASTVisitor {
@@ -216,29 +215,37 @@ class Interpreter extends ASTVisitor {
     ast.elements.map(visit).to[mutable.ArrayBuffer]
 
   override protected def ifAST(ast: IfAST): Any = visit(ast.condition) match {
-    case true => visit(ast.ifBlock)
+    case true =>
+      memory.pushNewLocalScope()
+      visit(ast.ifBlock)
+      memory.popNewLocalScope()
     case false =>
       ast.elseBlock match {
-        case Some(p) => visit(p)
+        case Some(p) =>
+          memory.pushNewLocalScope()
+          visit(p)
+          memory.popNewLocalScope()
         case None => ()
       }
     case value =>
       throw TypeMismatch(value, BooleanType, compilationUnit, ast.condition.token.position)
   }
 
-  @tailrec
-  final override protected def whileAST(ast: WhileAST): Any =
+  final override protected def whileAST(ast: WhileAST): Any = {
     if (memory.get("return").nonEmpty) ()
-    else {
-      visit(ast.condition) match {
+    var condition = visit(ast.condition)
+    memory.pushNewLocalScope()
+    while (condition != false && memory.get("return").isEmpty) {
+      condition match {
         case true =>
           visit(ast.whileBlock)
-          whileAST(ast)
-        case false => ()
-        case value =>
-          throw TypeMismatch(value, BooleanType, compilationUnit, ast.whileBlock.token.position)
+        case value => throw TypeMismatch(value, BooleanType, compilationUnit, ast.whileBlock.token.position)
       }
+      if (memory.get("return").nonEmpty) condition = false
+      else condition = visit(ast.condition)
     }
+    memory.popNewLocalScope()
+  }
 
   override protected def returnAST(ast: ReturnAST): Any =
     visit(

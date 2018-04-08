@@ -18,6 +18,23 @@ class Memory {
     stack = stack.tail
   }
 
+  def pushNewLocalScope(): Unit = {
+    pushNewStack()
+  }
+
+  def popNewLocalScope(): Unit = {
+    val top = stack.head
+    stack = stack.tail
+    // Update modified variables
+    val head = stack.head
+    stack = stack.tail
+    stack = head.map {
+      case (name, value) => name -> top.getOrElse(name, value)
+    } :: stack
+    if (top.contains("return")) stack.head.put("return", top("return"))
+  }
+
+
   def get(name: String): Option[Any] = stack.head.get(name)
 
   def getAll: Map[String, Any] = stack.head.toMap
