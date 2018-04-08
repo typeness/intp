@@ -70,3 +70,10 @@ Actually it's syntax sugar for array of characters i.e. `['t', 'e', 's', 't']`
 **function** | no | no | no | no | no | no | yes | no | no
 **array** | no | no | no | no | no | no | no | yes | no
 **object** | no | no | no | no | no | no | no | no | yes
+
+### Operators
+- Boolean: `not`, `and`, `or`, `==`, `!=`
+- Numeric(Double, Integer): `+`, `-`, `*`, `/`, `%`, `==`, `!=`, `<`, `<=`, `>`, `>=`
+- Char: `==`, `!=`
+- Array(String): `+`, `==`, `!=`
+- Object: `==`
