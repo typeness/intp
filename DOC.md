@@ -59,3 +59,14 @@ Actually it's syntax sugar for array of characters i.e. `['t', 'e', 's', 't']`
 - `read()` (return single line from stdin)
 - `size(array)` (return size when used or arrays, otherwise throws error)
 - `assert(condtion)` (when condition is false throws error)
+### Casting functions
+ --  |  int  |  char | bool | double | string | function | array | object
+--- | --- | --- | --- | --- | --- | --- | --- | --- |
+**int**  |  yes  |  yes | no | yes | yes | no | no | no |
+**char**  |  yes  |  yes | no | yes | yes | no | no | no |
+**bool**  |  no  |  no | yes | no | yes | no | no | no |
+**double**  |  yes  |  yes | no | yes | yes | no | no | no |
+**string**  |  yes  |  yes | yes | yes | yes | yes | yes | yes
+**function** | no | no | no | no | no | no | yes | no | no
+**array** | no | no | no | no | no | no | no | yes | no
+**object** | no | no | no | no | no | no | no | no | yes
