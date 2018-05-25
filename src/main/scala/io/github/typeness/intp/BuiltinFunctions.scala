@@ -9,16 +9,15 @@ object BuiltinFunctions {
   private val string =
     (arg: Any, cu: CompilationUnit, pos: Position) => show(arg).to[mutable.ArrayBuffer]
 
-  private def show: Any => String =  (arg: Any) => {
-    val result = arg match {
-      case seq: Seq[_] => "[" + seq.map(show).mkString(", ") + "]"
-      case map: mutable.Map[_, _] =>
-          "{" + map.map { case (k, v) => s"$k = ${show(v)}" }.mkString(", ") + "}"
-      case FunctionLiteral(_, _, token) => token.value
-      case value => value.toString
-    }
-    result
-//    result.to[mutable.ArrayBuffer]
+  private def show(arg: Any): String = arg match {
+    case seq: Seq[_] =>
+      "[" + seq.map(show).mkString(", ") + "]"
+    case map: mutable.Map[_, _] =>
+      "{" + map.map { case (k, v) => s"$k = ${show(v)}" }.mkString(", ") + "}"
+    case FunctionLiteral(_, _, token) =>
+      token.value
+    case value =>
+      value.toString
   }
 
   val map: Map[String, (Any, CompilationUnit, Position) => Any] = Map(

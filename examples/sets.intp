@@ -37,13 +37,6 @@ setIntersection = func(a, b) {
     }
     i = i + 1
   }
-  i = 0
-  while (i < size(b)) {
-    if (contains(a, b[i]) and not contains(result, b[i])) {
-      result = result + [b[i]]
-    }
-    i = i + 1
-  }
   return result
 }
 

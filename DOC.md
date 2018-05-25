@@ -51,7 +51,7 @@ Actually it's syntax sugar for array of characters i.e. `['t', 'e', 's', 't']`
 - Integer: `1`
 - Double: `3.14`
 - Boolean: `true`, `false`
-- Character: `c`
+- Character: `'c'`
 
 ### Builtin functions
 - `println(object)`
