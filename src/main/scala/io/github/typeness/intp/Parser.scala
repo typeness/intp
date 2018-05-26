@@ -241,7 +241,7 @@ class Parser(text: String)(
       case L_ROUND_BRACKET | L_SQUARE_BRACKET | DOT =>
         var varAST = currentToken.tokenType match {
           case L_ROUND_BRACKET =>
-            if (BuiltinFunctions.map.contains(name)) {
+            if (Builtin.functions.contains(name)) {
               BuiltinFunctionCall(IdToken(name, pos), actualParametersList())
             } else {
               FunctionCall(VarAST(IdToken(name, pos)), actualParametersList())

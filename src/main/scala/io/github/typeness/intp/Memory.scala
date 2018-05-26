@@ -18,9 +18,7 @@ class Memory {
     stack = stack.tail
   }
 
-  def pushNewLocalScope(): Unit = {
-    pushNewStack()
-  }
+  def pushNewLocalScope(): Unit = pushNewStack()
 
   def popNewLocalScope(): Unit = {
     val top = stack.head

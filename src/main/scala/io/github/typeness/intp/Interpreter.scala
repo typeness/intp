@@ -254,7 +254,7 @@ class Interpreter extends ASTVisitor {
 
   override protected def builtinFunctionCall(ast: BuiltinFunctionCall): Any = {
     val name = ast.name.value
-    BuiltinFunctions.map.get(name) match {
+    Builtin.functions.get(name) match {
       case Some(fn) =>
         val params = ast.actualParameters.map(visit)
         fn(if (params.size == 1) params.head else params, compilationUnit, ast.token.position)

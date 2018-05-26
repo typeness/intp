@@ -38,6 +38,7 @@ object Type {
     case _: Char      => CharType
     case _: Boolean   => BooleanType
     case _: Map[_, _] => ObjectType
-    case _            => FunctionType
+    case _: FunctionLiteral => FunctionType
+    case _            => throw new Exception(s"Internal error: unknown type of $expr")
   }
 }
