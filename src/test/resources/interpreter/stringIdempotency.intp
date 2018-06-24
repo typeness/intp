@@ -1,0 +1,3 @@
+a = "true"
+println(string(a))
+test = string(a) == "true"

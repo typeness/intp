@@ -1,44 +1,37 @@
 package io.github.typeness.intp
 
-sealed trait Type
+import scala.collection.mutable
 
-case object IntegerType extends Type {
-  override def toString: String = "Integer"
+sealed trait TopType
+
+case class IntegerType(value: Int) extends TopType {
+  override def toString: String = s"$value"
 }
 
-case object ArrayType extends Type {
-  override def toString: String = "Array"
+case class ArrayType[T <: TopType](value: mutable.ArrayBuffer[T]) extends TopType {
+  override def toString: String = Builtin.show(this)
 }
 
-case object FunctionType extends Type {
+case class FunctionType(value: FunctionLiteral) extends TopType {
   override def toString: String = "Function"
 }
 
-case object DoubleType extends Type {
-  override def toString: String = "Double"
+case class DoubleType(value: Double) extends TopType {
+  override def toString: String = s"$value"
 }
 
-case object CharType extends Type {
-  override def toString: String = "Char"
+case class CharType(value: Char) extends TopType {
+  override def toString: String = s"$value"
 }
 
-case object BooleanType extends Type {
-  override def toString: String = "Boolean"
+case class BooleanType(value: Boolean) extends TopType {
+  override def toString: String = s"$value"
 }
 
-case object ObjectType extends Type {
-  override def toString: String = "Object"
+case class ObjectType(value: mutable.Map[String, TopType]) extends TopType {
+  override def toString: String = s"$value"
 }
 
-object Type {
-  def getType(expr: Any): Type = expr match {
-    case _: Int       => IntegerType
-    case _: Seq[_]    => ArrayType
-    case _: Double    => DoubleType
-    case _: Char      => CharType
-    case _: Boolean   => BooleanType
-    case _: Map[_, _] => ObjectType
-    case _: FunctionLiteral => FunctionType
-    case _            => throw new Exception(s"Internal error: unknown type of $expr")
-  }
+case object UnitType extends TopType {
+  override def toString: String = "Unit"
 }

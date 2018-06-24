@@ -30,7 +30,7 @@ case class AssertionError(compilationUnit: CompilationUnit, position: Position)
   )
 
 case class TypeMismatch(found: Any,
-                        required: Type,
+                        required: String,
                         compilationUnit: CompilationUnit,
                         position: Position)
     extends InterpreterError(
@@ -41,7 +41,7 @@ case class TypeMismatch(found: Any,
       position
     )
 
-case class CastError(from: Type, to: Type, compilationUnit: CompilationUnit, position: Position)
+case class CastError(from: String, to: String, compilationUnit: CompilationUnit, position: Position)
     extends InterpreterError(
       "casting failed\n" +
         s"from: $from\n" +

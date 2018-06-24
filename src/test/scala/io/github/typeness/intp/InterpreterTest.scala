@@ -2,6 +2,7 @@ package io.github.typeness.intp
 
 import org.scalatest.FunSuite
 
+import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 class InterpreterTest extends FunSuite {
@@ -9,61 +10,61 @@ class InterpreterTest extends FunSuite {
     val parser = new Parser("2+3")()
     val ast = parser.parse().children.head
     val interpreter = new Interpreter()
-    assert(interpreter.visit(ast) == 2 + 3)
+    assert(interpreter.visit(ast) == IntegerType(2 + 3))
   }
   test("Allow multiple digits in input") {
     val parser = new Parser("12+14")()
     val ast = parser.parse().children.head
     val interpreter = new Interpreter()
-    assert(interpreter.visit(ast) == 12 + 14)
+    assert(interpreter.visit(ast) == IntegerType(12 + 14))
   }
   test("Handle input with whitespace characters") {
     val parser = new Parser("10 + 1")()
     val ast = parser.parse().children.head
     val interpreter = new Interpreter()
-    assert(interpreter.visit(ast) == 10 + 1)
+    assert(interpreter.visit(ast) == IntegerType(10 + 1))
   }
   test("Evaluate subtractions") {
     val parser = new Parser("7 - 5")()
     val ast = parser.parse().children.head
     val interpreter = new Interpreter()
-    assert(interpreter.visit(ast) == 7 - 5)
+    assert(interpreter.visit(ast) == IntegerType(7 - 5))
   }
   test("Handle multiplication") {
     val parser = new Parser("3*8")()
     val ast = parser.parse().children.head
     val interpreter = new Interpreter()
-    assert(interpreter.visit(ast) == 3 * 8)
+    assert(interpreter.visit(ast) == IntegerType(3 * 8))
   }
   test("Handle division") {
     val parser = new Parser("8/4")()
     val ast = parser.parse().children.head
     val interpreter = new Interpreter()
-    assert(interpreter.visit(ast) == 8 / 4)
+    assert(interpreter.visit(ast) == IntegerType(8 / 4))
   }
   test("Evaluate arbitrary number of additions and subtractions") {
     val parser = new Parser("9 - 5 + 3 + 11")()
     val ast = parser.parse().children.head
     val interpreter = new Interpreter()
-    assert(interpreter.visit(ast) == 9 - 5 + 3 + 11)
+    assert(interpreter.visit(ast) == IntegerType(9 - 5 + 3 + 11))
   }
   test("Evaluate single number") {
     val parser = new Parser("12345")()
     val ast = parser.parse().children.head
     val interpreter = new Interpreter()
-    assert(interpreter.visit(ast) == 12345)
+    assert(interpreter.visit(ast) == IntegerType(12345))
   }
   test("Evaluate arbitrary expression") {
     val parser = new Parser("10-2*3/4+5-1")()
     val ast = parser.parse().children.head
     val interpreter = new Interpreter()
-    assert(interpreter.visit(ast) == 10 - 2 * 3 / 4 + 5 - 1)
+    assert(interpreter.visit(ast) == IntegerType(10 - 2 * 3 / 4 + 5 - 1))
   }
   test("Handle order of subtraction") {
     val parser = new Parser("7 - 3 - 1")()
     val ast = parser.parse().children.head
     val interpreter = new Interpreter()
-    assert(interpreter.visit(ast) == 7 - 3 - 1)
+    assert(interpreter.visit(ast) == IntegerType(7 - 3 - 1))
   }
   test("Handle parenthesis") {
     val parser =
@@ -72,95 +73,110 @@ class InterpreterTest extends FunSuite {
     val interpreter = new Interpreter()
     assert(
       interpreter
-        .visit(ast) == 7 + 3 * (10 / (12 / (3 + 1) - 1)) / (2 + 3) - 5 - 3 + 8
+              .visit(ast) == IntegerType(7 + 3 * (10 / (12 / (3 + 1) - 1)) / (2 + 3) - 5 - 3 + 8)
     )
   }
   test("Handle unary minus") {
     val parser = new Parser("--2")()
     val ast = parser.parse().children.head
     val interpreter = new Interpreter()
-    assert(interpreter.visit(ast) == -(-2))
+    assert(interpreter.visit(ast) == IntegerType(-(-2)))
   }
   test("Evaluate arbitrary number of unary operators") {
     val parser = new Parser("5 - - - + - (3 + 4) - +2")()
     val ast = parser.parse().children.head
     val interpreter = new Interpreter()
-    assert(interpreter.visit(ast) == 10)
+    assert(interpreter.visit(ast) == IntegerType(10))
   }
   test("Numeric variable assign and read") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/variables.intp")
     assert(
-      interpreter.memory.getAll == Map("x" -> 2, "y" -> 8, "z" -> 10)
+      interpreter.memory.getAll == Map("x" -> IntegerType(2), "y" -> IntegerType(8), "z" -> IntegerType(10))
     )
   }
   test("Boolean expression") {
     val parser = new Parser("true or false and not true")()
     val ast = parser.parse().children.head
     val interpreter = new Interpreter()
-    assert(interpreter.visit(ast) == true)
+    assert(interpreter.visit(ast) == BooleanType(true))
   }
   test("If statement") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/if.intp")
     assert(
-      interpreter.memory.getAll == Map("is" -> true)
+      interpreter.memory.getAll == Map("is" -> BooleanType(true))
     )
   }
   test("If-else statements") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/if-else.intp")
     assert(
-      interpreter.memory.getAll == Map("x" -> 2)
+      interpreter.memory.getAll == Map("x" -> IntegerType(2))
     )
   }
   test("While statement") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/while.intp")
     assert(
-      interpreter.memory.getAll == Map("x" -> 1000000)
+      interpreter.memory.getAll == Map("x" -> IntegerType(1000000))
     )
   }
   test("Assignment of array literal") {
     val interpreter = new Interpreter()
     interpreter.runFromString("x = [1, 2, 3]")
     assert(
-      interpreter.memory.getAll == Map("x" -> Vector(1, 2, 3))
+      interpreter.memory.getAll == Map(
+        "x" -> ArrayType(mutable.ArrayBuffer(IntegerType(1), IntegerType(2), IntegerType(3)))
+      )
     )
   }
   test("Assignment of multi-dimension array literal") {
     val interpreter = new Interpreter()
     interpreter.runFromString("x = [[1, 2], [3, 4], [5]]")
     assert(
-      interpreter.memory.getAll == Map("x" -> Vector(Vector(1, 2), Vector(3, 4), Vector(5)))
+      interpreter.memory.getAll == Map("x" -> ArrayType(
+        mutable.ArrayBuffer(
+          ArrayType(mutable.ArrayBuffer(IntegerType(1), IntegerType(2))),
+          ArrayType(mutable.ArrayBuffer(IntegerType(3), IntegerType(4))),
+          ArrayType(mutable.ArrayBuffer(IntegerType(5))))))
     )
   }
   test("Concat of array literal") {
     val interpreter = new Interpreter()
     interpreter.runFromString("x = [1, 2, 3] + [4, 5, 6]")
     assert(
-      interpreter.memory.getAll == Map("x" -> (Vector(1, 2, 3) ++ Vector(4, 5, 6)))
+      interpreter.memory.getAll == Map(
+        "x" -> ArrayType(
+          mutable.ArrayBuffer(IntegerType(1), IntegerType(2), IntegerType(3))
+            ++ mutable.ArrayBuffer(IntegerType(4), IntegerType(5), IntegerType(6)))
+      )
     )
   }
   test("Push 10 elements to array in loop") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/array-loop.intp")
     assert(
-      interpreter.memory.getAll == Map("arr" -> Vector.range(0, 10), "x" -> 10)
+      interpreter.memory.getAll == Map(
+        "arr" -> ArrayType(mutable.ArrayBuffer.range(0, 10).map(IntegerType)), "x" -> IntegerType(10)
+      )
     )
   }
   test("Array access") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/array-access.intp")
     assert(
-      interpreter.memory.getAll == Map("arr" -> Vector(-100, 33, 55, 56, 234), "middle" -> 55)
+      interpreter.memory.getAll == Map(
+        "arr" -> ArrayType(mutable.ArrayBuffer(
+          IntegerType(-100), IntegerType(33), IntegerType(55), IntegerType(56), IntegerType(234))),
+          "middle" -> IntegerType(55))
     )
   }
   test("Character assignment") {
     val interpreter = new Interpreter()
     interpreter.runFromString("x = 'c'")
     assert(
-      interpreter.memory.getAll == Map("x" -> 'c')
+      interpreter.memory.getAll == Map("x" -> CharType('c'))
     )
   }
   test("Define a function") {
@@ -168,7 +184,7 @@ class InterpreterTest extends FunSuite {
     interpreter.runFromResource("interpreter/functionDefinition.intp")
     assert(
       interpreter.memory.getAll == Map(
-        "f" -> FunctionLiteral(
+        "f" -> FunctionType(FunctionLiteral(
           List(IdToken("a", Position(1, 10)), IdToken("b", Position(1, 13))),
           Program(
             List(
@@ -198,16 +214,16 @@ class InterpreterTest extends FunSuite {
           FuncToken(Position(1, 5))
         )
       )
-    )
+    ))
   }
   test("Call a function") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/function-call.intp")
     assert(
       interpreter.memory.getAll == Map(
-        "arr" -> ArrayBuffer(44, 88, 132, 176),
-        "x" -> 44,
-        "f" -> FunctionLiteral(
+        "arr" -> ArrayType(ArrayBuffer(44, 88, 132, 176).map(IntegerType)),
+        "x" -> IntegerType(44),
+        "f" -> FunctionType(FunctionLiteral(
           List(IdToken("a", Position(2, 10))),
           Program(
             List(
@@ -240,15 +256,15 @@ class InterpreterTest extends FunSuite {
           FuncToken(Position(2, 5))
         )
       )
-    )
+    ))
   }
   test("Return function from function and call it") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/return-function.intp")
     assert(
       interpreter.memory.getAll == Map(
-        "x" -> 3,
-        "f" -> FunctionLiteral(
+        "x" -> IntegerType(3),
+        "f" -> FunctionType(FunctionLiteral(
           List(),
           Program(
             List(
@@ -272,23 +288,23 @@ class InterpreterTest extends FunSuite {
           FuncToken(Position(1, 5))
         )
       )
-    )
+    ))
   }
   test("Call function with another function as argument") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/function-as-argument.intp")
     assert(
       interpreter.memory.getAll == Map(
-        "result" -> true,
-        "g" -> FunctionLiteral(
+        "result" -> BooleanType(true),
+        "g" -> FunctionType(FunctionLiteral(
           List(),
           Program(
             List(ReturnAST(BooleanLiteral(TrueToken(Position(5, 10))), ReturnToken(Position(5, 3))))
           ),
           FuncToken(Position(4, 5))
-        ),
+        )),
         "f" ->
-          FunctionLiteral(
+          FunctionType(FunctionLiteral(
             List(IdToken("x", Position(1, 10))),
             Program(
               List(
@@ -300,14 +316,14 @@ class InterpreterTest extends FunSuite {
             ),
             FuncToken(Position(1, 5))
           )
-      )
+      ))
     )
   }
   test("Assignment for array indexed object") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/assignment-array-indexed.intp")
     assert(
-      interpreter.memory.getAll == Map("x" -> Vector(1, 2, 10))
+      interpreter.memory.getAll == Map("x" -> ArrayType(mutable.ArrayBuffer(1, 2, 10).map(IntegerType)))
     )
   }
   test("Strings manipulation") {
@@ -315,10 +331,10 @@ class InterpreterTest extends FunSuite {
     interpreter.runFromResource("interpreter/strings-manipulation.intp")
     assert(
       interpreter.memory.getAll == Map(
-        "z" -> Vector('A', 'l', 'a', ' ', 'm', 'a', ' ', 'k', 'o', 't', 'a', '.'),
-        "y" -> Vector(' ', 'm', 'a'),
-        "x" -> Vector('A', 'l', 'a'),
-        "c" -> 'A'
+        "z" -> ArrayType(mutable.ArrayBuffer('A', 'l', 'a', ' ', 'm', 'a', ' ', 'k', 'o', 't', 'a', '.').map(CharType)),
+        "y" -> ArrayType(mutable.ArrayBuffer(' ', 'm', 'a').map(CharType)),
+        "x" -> ArrayType(mutable.ArrayBuffer('A', 'l', 'a').map(CharType)),
+        "c" -> CharType('A')
       )
     )
   }
@@ -327,41 +343,41 @@ class InterpreterTest extends FunSuite {
     interpreter.runFromResource("interpreter/equals.intp")
     assert(
       interpreter.memory.getAll == Map(
-        "e" -> false,
-        "j" -> false,
-        "f" -> true,
-        "a" -> true,
-        "i" -> true,
-        "b" -> false,
-        "g" -> true,
+        "e" -> BooleanType(false),
+        "j" -> BooleanType(false),
+        "f" -> BooleanType(true),
+        "a" -> BooleanType(true),
+        "i" -> BooleanType(true),
+        "b" -> BooleanType(false),
+        "g" -> BooleanType(true),
         "c" ->
-          true,
-        "h" -> true,
-        "d" -> false
+          BooleanType(true),
+        "h" -> BooleanType(true),
+        "d" -> BooleanType(false)
       )
     )
   }
   test("Compute recursion factorial") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/factorial.intp")
-    assert(interpreter.memory.get("result").contains(120))
+    assert(interpreter.memory.get("result").contains(IntegerType(120)))
   }
   test("Operator != for all possible types") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/not-equals.intp")
     assert(
       interpreter.memory.getAll == Map(
-        "e" -> true,
-        "j" -> true,
-        "f" -> false,
-        "a" -> false,
-        "i" -> false,
-        "b" -> true,
-        "g" -> false,
+        "e" -> BooleanType(true),
+        "j" -> BooleanType(true),
+        "f" -> BooleanType(false),
+        "a" -> BooleanType(false),
+        "i" -> BooleanType(false),
+        "b" -> BooleanType(true),
+        "g" -> BooleanType(false),
         "c" ->
-          false,
-        "h" -> false,
-        "d" -> true
+          BooleanType(false),
+        "h" -> BooleanType(false),
+        "d" -> BooleanType(true)
       )
     )
   }
@@ -377,7 +393,7 @@ class InterpreterTest extends FunSuite {
     val ast = parser.parse().children.head
     val interpreter = new Interpreter()
     assert(
-      interpreter.visit(ast) == 10 % 3
+      interpreter.visit(ast) == DoubleType(10 % 3)
     )
   }
   test("Allow reuse of functions literal") {
@@ -385,21 +401,21 @@ class InterpreterTest extends FunSuite {
     interpreter.runFromResource("interpreter/f-literal-reuse.intp")
     assert(
       interpreter.memory.getAll == Map(
-        "f1" -> FunctionLiteral(
+        "f1" -> FunctionType(FunctionLiteral(
           List(IdToken("a", Position(1, 11))),
           Program(
             List(ReturnAST(VarAST(IdToken("a", Position(2, 10))), ReturnToken(Position(2, 3))))
           ),
           FuncToken(Position(1, 6))
-        ),
-        "f2" -> FunctionLiteral(
+        )),
+        "f2" -> FunctionType(FunctionLiteral(
           List(IdToken("a", Position(1, 11))),
           Program(
             List(ReturnAST(VarAST(IdToken("a", Position(2, 10))), ReturnToken(Position(2, 3))))
           ),
           FuncToken(Position(1, 6))
-        ),
-        "test" -> true
+        )),
+        "test" -> BooleanType(true)
       )
     )
   }
@@ -417,7 +433,7 @@ class InterpreterTest extends FunSuite {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/size.intp")
     assert(
-      interpreter.memory.getAll == Map("z" -> 0, "y" -> 1, "x" -> 3)
+      interpreter.memory.getAll == Map("z" -> IntegerType(0), "y" -> IntegerType(1), "x" -> IntegerType(3))
     )
   }
   test("Builtin print function") {
@@ -430,19 +446,19 @@ class InterpreterTest extends FunSuite {
     assert(
       interpreter.memory.getAll ==
         Map(
-          "one" -> ArrayBuffer('1'),
-          "eleven" -> ArrayBuffer('1', '1'),
-          "arr" -> ArrayBuffer('[', '0', ',', ' ', '1', '0', ',', ' ', '4', ']'),
-          "t" -> ArrayBuffer('t', 'r', 'u', 'e'),
-          "f" -> ArrayBuffer('f', 'a', 'l', 's', 'e'),
-          "db" -> ArrayBuffer('-', '1', '2', '.', '3', '4'),
-          "test" -> ArrayBuffer('1', '2'),
-          "dat" -> ArrayBuffer(
-            '{', 'a', ' ', '=', ' ', '[', '1', ']', ',', ' ', 'c', ' ', '=', ' ', 't', 'r', 'u', 'e', '}'
-          ),
-          "str" -> ArrayBuffer('[', 'l', ',', ' ', 'o', ',', ' ', 'l', ']'),
-          "function" -> ArrayBuffer('f', 'u', 'n', 'c'),
-          "arrFunc" -> ArrayBuffer('[', 'f', 'u', 'n', 'c', ']')
+          "one" -> ArrayType(ArrayBuffer('1').map(CharType)),
+          "eleven" -> ArrayType(ArrayBuffer('1', '1').map(CharType)),
+          "arr" -> ArrayType(ArrayBuffer('[', '0', ',', ' ', '1', '0', ',', ' ', '4', ']').map(CharType)),
+          "t" -> ArrayType(ArrayBuffer('t', 'r', 'u', 'e').map(CharType)),
+          "f" -> ArrayType(ArrayBuffer('f', 'a', 'l', 's', 'e').map(CharType)),
+          "db" -> ArrayType(ArrayBuffer('-', '1', '2', '.', '3', '4').map(CharType)),
+          "test" -> ArrayType(ArrayBuffer('1', '2').map(CharType)),
+          "dat" -> ArrayType(ArrayBuffer(
+            '{', 'a', ' ', '=', ' ', '1', ',', ' ', 'c', ' ', '=', ' ', 't', 'r', 'u', 'e', '}'
+          ).map(CharType)),
+          "str" -> ArrayType(ArrayBuffer('l', 'o', 'l').map(CharType)),
+          "function" -> ArrayType(ArrayBuffer('f', 'u', 'n', 'c').map(CharType)),
+          "arrFunc" -> ArrayType(ArrayBuffer('[', 'f', 'u', 'n', 'c', ']').map(CharType))
         )
     )
   }
@@ -464,10 +480,10 @@ class InterpreterTest extends FunSuite {
     assert(
       interpreter.memory.getAll ==
         Map(
-          "person" -> Map(
-            "surname" -> ArrayBuffer('S', 'm', 'i', 't', 'h'),
-            "name" -> ArrayBuffer('J', 'o', 'h', 'n')
-          )
+          "person" -> ObjectType(mutable.Map(
+            "surname" -> ArrayType(ArrayBuffer('S', 'm', 'i', 't', 'h').map(CharType)),
+            "name" -> ArrayType(ArrayBuffer('J', 'o', 'h', 'n').map(CharType))
+          ))
         )
     )
   }
@@ -475,7 +491,11 @@ class InterpreterTest extends FunSuite {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/propertyAccess.intp")
     assert(
-      interpreter.memory.getAll == Map("f" -> 2, "obj" -> Map("x" -> 1, "z" -> 3, "y" -> 2))
+      interpreter.memory.getAll == Map("f" -> IntegerType(2),
+        "obj" -> ObjectType(mutable.Map(
+          "x" -> IntegerType(1), "z" -> IntegerType(3), "y" -> IntegerType(2))
+        )
+      )
     )
   }
   test("Object literal as property") {
@@ -483,31 +503,35 @@ class InterpreterTest extends FunSuite {
     interpreter.runFromResource("interpreter/objectLiteralAsProperty.intp")
     assert(
       interpreter.memory.getAll ==
-        Map("f" -> 'y', "obj" -> Map("x" -> Map("g" -> 'y'), "y" -> -4))
+        Map("f" -> CharType('y'),
+          "obj" -> ObjectType(
+            mutable.Map("x" -> ObjectType(mutable.Map("g" -> CharType('y'))), "y" -> IntegerType(-4))
+          )
+        )
     )
   }
   test("Data keyword as syntax sugar over function returning object literal") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/data.intp")
-    assert(interpreter.memory.get("n").contains(ArrayBuffer('J', 'o', 'h', 'n')))
-    assert(interpreter.memory.get("s").contains(ArrayBuffer('S', 'm', 'i', 't', 'h')))
-    assert(interpreter.memory.get("n2").contains(ArrayBuffer('A', 'm', 'y')))
-    assert(interpreter.memory.get("s2").contains(ArrayBuffer('N', 'e', 'w')))
+    assert(interpreter.memory.get("n").contains(ArrayType(ArrayBuffer('J', 'o', 'h', 'n').map(CharType))))
+    assert(interpreter.memory.get("s").contains(ArrayType(ArrayBuffer('S', 'm', 'i', 't', 'h').map(CharType))))
+    assert(interpreter.memory.get("n2").contains(ArrayType(ArrayBuffer('A', 'm', 'y').map(CharType))))
+    assert(interpreter.memory.get("s2").contains(ArrayType(ArrayBuffer('N', 'e', 'w').map(CharType))))
   }
   test("Valid conversions via casting functions") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/castingFunctions.intp")
     assert(
       interpreter.memory.getAll == Map(
-        "int2int" -> 3,
-        "int2char" -> '1',
-        "int2double" -> 34.0,
-        "char2int" -> 97,
-        "char2char" -> 'x',
-        "char2double" -> 101.0,
-        "double2int" -> 2,
-        "double2char" -> 'B',
-        "double2double" -> 23.45
+        "int2int" -> IntegerType(3),
+        "int2char" -> CharType('1'),
+        "int2double" -> DoubleType(34.0),
+        "char2int" -> IntegerType(97),
+        "char2char" -> CharType('x'),
+        "char2double" -> DoubleType(101.0),
+        "double2int" -> IntegerType(2),
+        "double2char" -> CharType('B'),
+        "double2double" -> DoubleType(23.45)
       )
     )
 
@@ -521,28 +545,28 @@ class InterpreterTest extends FunSuite {
   test("Property access of in place defined object literal") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/accessObjectLiteralInPlace.intp")
-    assert(interpreter.memory.getAll == Map("y" -> 3, "z" -> true))
+    assert(interpreter.memory.getAll == Map("y" -> IntegerType(3), "z" -> BooleanType(true)))
   }
   test("Defining array and indexing it in one place") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/arrayIndexingInOneStep.intp")
-    assert(interpreter.memory.getAll == Map("test" -> 123))
+    assert(interpreter.memory.getAll == Map("test" -> IntegerType(123)))
   }
   test("Defining function and calling it in one place") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/functionCallInOneStep.intp")
-    assert(interpreter.memory.getAll == Map("p" -> -9))
+    assert(interpreter.memory.getAll == Map("p" -> IntegerType(-9)))
   }
   test("Combine definition of array, function and object with indexing, call and access") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/fluentSyntax.intp")
-    assert(interpreter.memory.getAll == Map("test" -> 3.14))
+    assert(interpreter.memory.getAll == Map("test" -> DoubleType(3.14)))
   }
   test("Property assignment") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/propertyAssignment.intp")
     assert(interpreter.memory.getAll == Map(
-      "test" -> Map("a" -> 'x')
+      "test" -> ObjectType(mutable.Map("a" -> CharType('x')))
     ))
   }
   test("While local scope do not leak definitions") {
@@ -556,5 +580,10 @@ class InterpreterTest extends FunSuite {
     intercept[UndefinedVariable] {
       interpreter.runFromResource("interpreter/ifLocalScope.intp")
     }
+  }
+  test("string function is idempotent") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/stringIdempotency.intp")
+    assert(interpreter.memory.get("test").contains(BooleanType(true)))
   }
 }

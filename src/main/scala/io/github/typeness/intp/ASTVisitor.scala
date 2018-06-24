@@ -1,7 +1,7 @@
 package io.github.typeness.intp
 
 trait ASTVisitor {
-  def visit(ast: AST): Any = ast match {
+  def visit(ast: AST): TopType = ast match {
     case a: BinOp               => binOp(a)
     case a: Number              => number(a)
     case a: BooleanLiteral      => booleanLiteral(a)
@@ -23,24 +23,24 @@ trait ASTVisitor {
     case a: PropertyAccess      => propertyAccess(a)
     case a: PropertyAssignAST   => propertyAssign(a)
   }
-  protected def binOp(ast: BinOp): Any
-  protected def number(ast: Number): Any
-  protected def booleanLiteral(ast: BooleanLiteral): Any
-  protected def charLiteral(ast: CharLiteral): Any
-  protected def unaryOp(ast: UnaryOp): Any
-  protected def assignAST(ast: AssignAST): Any
-  protected def arrayAssignAST(ast: ArrayAssignAST): Any
-  protected def varAST(ast: VarAST): Any
-  protected def program(ast: Program): Any
-  protected def functionCall(ast: FunctionCall): Any
-  protected def functionLiteral(ast: FunctionLiteral): Any
-  protected def arrayAccess(ast: ArrayAccess): Any
-  protected def arrayLiteral(ast: ArrayLiteral): Any
-  protected def ifAST(ast: IfAST): Any
-  protected def whileAST(ast: WhileAST): Any
-  protected def returnAST(ast: ReturnAST): Any
-  protected def builtinFunctionCall(ast: BuiltinFunctionCall): Any
-  protected def objectLiteral(ast: ObjectLiteral): Any
-  protected def propertyAccess(ast: PropertyAccess): Any
-  protected def propertyAssign(ast: PropertyAssignAST): Any
+  protected def binOp(ast: BinOp): TopType
+  protected def number(ast: Number): TopType
+  protected def booleanLiteral(ast: BooleanLiteral): TopType
+  protected def charLiteral(ast: CharLiteral): TopType
+  protected def unaryOp(ast: UnaryOp): TopType
+  protected def assignAST(ast: AssignAST): TopType
+  protected def arrayAssignAST(ast: ArrayAssignAST): TopType
+  protected def varAST(ast: VarAST): TopType
+  protected def program(ast: Program): TopType
+  protected def functionCall(ast: FunctionCall): TopType
+  protected def functionLiteral(ast: FunctionLiteral): TopType
+  protected def arrayAccess(ast: ArrayAccess): TopType
+  protected def arrayLiteral(ast: ArrayLiteral): TopType
+  protected def ifAST(ast: IfAST): TopType
+  protected def whileAST(ast: WhileAST): TopType
+  protected def returnAST(ast: ReturnAST): TopType
+  protected def builtinFunctionCall(ast: BuiltinFunctionCall): TopType
+  protected def objectLiteral(ast: ObjectLiteral): TopType
+  protected def propertyAccess(ast: PropertyAccess): TopType
+  protected def propertyAssign(ast: PropertyAssignAST): TopType
 }

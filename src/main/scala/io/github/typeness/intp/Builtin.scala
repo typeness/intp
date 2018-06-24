@@ -6,101 +6,154 @@ import scala.util.{Failure, Success, Try}
 
 object Builtin {
 
-  private def show(arg: Any): String = arg match {
-    case seq: Seq[_] =>
-      "[" + seq.map(show).mkString(", ") + "]"
-    case map: mutable.Map[_, _] =>
+  private def isString(seq: mutable.ArrayBuffer[TopType]) = {
+    try {
+      val _ = seq.map(_.asInstanceOf[CharType])
+      true
+    } catch {
+      case _: Exception => false
+    }
+  }
+
+
+  def show(arg: TopType): String = arg match {
+    case ArrayType(seq: mutable.ArrayBuffer[TopType]) =>
+      if (isString(seq)) s"${seq.mkString("")}"
+      else s"[${seq.map(show).mkString(", ")}]"
+    case ObjectType(map: mutable.Map[_, TopType]) =>
       "{" + map.map { case (k, v) => s"$k = ${show(v)}" }.mkString(", ") + "}"
-    case FunctionLiteral(_, _, token) =>
+    case FunctionType(FunctionLiteral(_, _, token)) =>
       token.value
     case value =>
       value.toString
   }
 
-  type BuiltinFunction = ((Any, CompilationUnit, Position) => Any)
+  type BuiltinFunction = ((List[TopType], CompilationUnit, Position) => TopType)
 
-  private val string: BuiltinFunction  =
-    (arg: Any, _: CompilationUnit, _: Position) => show(arg).to[mutable.ArrayBuffer]
+  object BuiltinFunction {
+    def apply(fn: BuiltinFunction, argsSize: Int, arity: Int): BuiltinFunction = {
+      if (argsSize != arity)
+        (_: List[TopType], compilationUnit: CompilationUnit, position: Position) =>
+          throw WrongFunctionCall("", argsSize, arity, compilationUnit, position)
+      else
+        fn
+    }
+  }
 
-  private val println: BuiltinFunction  =
-    (arg: Any, _: CompilationUnit, _: Position) => scala.Console.println(show(arg))
+  private def string(args: List[TopType], cu: CompilationUnit, pos: Position): TopType =
+    BuiltinFunction(
+      (arg: List[TopType], _: CompilationUnit, _: Position) => {
+        ArrayType(show(arg.head).map(CharType).to[mutable.ArrayBuffer])
+      },
+      args.length,
+      1
+    )(args, cu, pos)
 
-  private val print: BuiltinFunction =
-    (arg: Any, _: CompilationUnit, _: Position) => scala.Console.print(show(arg))
+  private def println(args: List[TopType], cu: CompilationUnit, pos: Position): TopType =
+    BuiltinFunction(
+      (args: List[TopType], _: CompilationUnit, _: Position) => {
+        scala.Console.println(show(args.head))
+        UnitType
+      },
+      args.size,
+      1
+    )(args, cu, pos)
 
-  private val size: BuiltinFunction =
-    (arg: Any, compilationUnit: CompilationUnit, position: Position) =>
-      arg match {
-        case seq: Seq[_] => seq.size
-        case value => throw TypeMismatch(value, ArrayType, compilationUnit, position)
-      }
+  private def print(args: List[TopType], cu: CompilationUnit, pos: Position): TopType =
+    BuiltinFunction(
+      (args: List[TopType], _: CompilationUnit, _: Position) => {
+        scala.Console.print(show(args.head))
+        UnitType
+      },
+      args.size,
+      1
+    )(args, cu, pos)
 
-  private val read: BuiltinFunction =
-    (arg: Any, compilationUnit: CompilationUnit, position: Position) =>
-      ZeroArgumentFunction(
-        arg,
-        compilationUnit,
-        position,
-        "read",
-        () => scala.io.StdIn.readLine().to[mutable.ArrayBuffer]
-      )
+  private def size(args: List[TopType], cu: CompilationUnit, pos: Position): TopType =
+    BuiltinFunction(
+      (args: List[TopType], compilationUnit: CompilationUnit, position: Position) =>
+        args.head match {
+          case ArrayType(seq) => IntegerType(seq.size)
+          case value => throw TypeMismatch(value, "Array", compilationUnit, position)
+        },
+      args.size,
+      1
+    )(args, cu, pos)
 
-  private val assert: BuiltinFunction =
-    (arg: Any,
-     compilationUnit: CompilationUnit,
-     position: Position) =>
-      arg match {
-        case bool: Boolean => if(!bool) throw AssertionError(compilationUnit, position)
-        case value         => throw TypeMismatch(value, BooleanType, compilationUnit, position)
-      }
+  private def read(args: List[TopType], cu: CompilationUnit, pos: Position): TopType =
+    BuiltinFunction(
+      (_: List[TopType], _: CompilationUnit, _: Position) =>
+        ArrayType(scala.io.StdIn.readLine().map(CharType).to[mutable.ArrayBuffer]),
+      args.size,
+      0
+    )(args, cu, pos)
 
-  private val int: BuiltinFunction =
-    (arg: Any,
-     compilationUnit: CompilationUnit,
-     position: Position) =>
-      arg match {
-        case int: Int       => int
-        case char: Char     => char.toInt
-        case double: Double => double.toInt
-        case seq: Seq[_] => Try(seq.mkString.toInt) match {
-          case Success(x) => x
-          case Failure(_) =>  throw TypeMismatch(seq.mkString, IntegerType, compilationUnit, position)
-        }
-        case value =>
-          throw CastError(Type.getType(value), IntegerType, compilationUnit, position)
-      }
+  private def assert(args: List[TopType], cu: CompilationUnit, pos: Position): TopType =
+    BuiltinFunction(
+      (args: List[TopType], compilationUnit: CompilationUnit, position: Position) =>
+        args.head match {
+          case BooleanType(bool) =>
+            if (!bool) throw AssertionError(compilationUnit, position)
+            else UnitType
+          case value => throw TypeMismatch(value, "Boolean", compilationUnit, position)
+        },
+      args.size,
+      1
+    )(args, cu, pos)
 
-  private val char: BuiltinFunction =
-    (arg: Any,
-     compilationUnit: CompilationUnit,
-     position: Position) =>
-      arg match {
-        case int: Int       => int.toChar
-        case char: Char     => char
-        case double: Double => double.toChar
-        case seq: Seq[_] => Try(seq.head.toString.charAt(0)) match {
-          case Success(x) => x
-          case Failure(_) =>  throw TypeMismatch(seq.mkString, CharType, compilationUnit, position)
-        }
-        case value =>
-          throw CastError(Type.getType(value), CharType, compilationUnit, position)
-      }
+  private def int(args: List[TopType], cu: CompilationUnit, pos: Position): TopType =
+    BuiltinFunction(
+      (args: List[TopType], compilationUnit: CompilationUnit, position: Position) =>
+        args.head match {
+          case IntegerType(v) => IntegerType(v)
+          case CharType(v) => IntegerType(v.toInt)
+          case DoubleType(v) => IntegerType(v.toInt)
+          case ArrayType(seq) => Try(seq.mkString.toInt) match {
+            case Success(x) => IntegerType(x)
+            case Failure(_) => throw TypeMismatch(seq.mkString, "Integer", compilationUnit, position)
+          }
+          case value =>
+            throw CastError(value.toString, "Integer", compilationUnit, position)
+        },
+      args.size,
+      1
+    )(args, cu, pos)
 
-  private val double: BuiltinFunction =
-    (arg: Any,
-     compilationUnit: CompilationUnit,
-     position: Position) =>
-      arg match {
-        case int: Int       => int.toDouble
-        case char: Char     => char.toDouble
-        case double: Double => double
-        case seq: Seq[_] => Try(seq.mkString.toDouble) match {
-          case Success(x) => x
-          case Failure(_) =>  throw TypeMismatch(seq.mkString, DoubleType, compilationUnit, position)
-        }
-        case value =>
-          throw CastError(Type.getType(value), DoubleType, compilationUnit, position)
-      }
+  private def char(args: List[TopType], cu: CompilationUnit, pos: Position): TopType =
+    BuiltinFunction(
+      (args: List[TopType], compilationUnit: CompilationUnit, position: Position) =>
+        args.head match {
+          case IntegerType(v) => CharType(v.toChar)
+          case CharType(v) => CharType(v)
+          case DoubleType(v) => CharType(v.toChar)
+          case ArrayType(seq) => Try(seq.head.toString.charAt(0)) match {
+            case Success(x) => CharType(x)
+            case Failure(_) => throw TypeMismatch(seq.mkString, "Char", compilationUnit, position)
+          }
+          case value =>
+            throw CastError(value.toString, "Char", compilationUnit, position)
+        },
+      args.size,
+      1
+    )(args, cu, pos)
+
+  private def double(args: List[TopType], cu: CompilationUnit, pos: Position): TopType =
+    BuiltinFunction(
+      (args: List[TopType], compilationUnit: CompilationUnit, position: Position) =>
+        args.head match {
+          case IntegerType(v) => DoubleType(v.toDouble)
+          case CharType(v) => DoubleType(v.toDouble)
+          case DoubleType(v) => DoubleType(v)
+          case ArrayType(seq) => Try(seq.mkString.toDouble) match {
+            case Success(x) => DoubleType(x)
+            case Failure(_) => throw TypeMismatch(seq.mkString, "Double", compilationUnit, position)
+          }
+          case value =>
+            throw CastError(value.toString, "Double", compilationUnit, position)
+        },
+      args.size,
+      1
+    )(args, cu, pos)
 
   val functions: Map[String, BuiltinFunction] = Map(
     "println" -> println,
@@ -113,17 +166,4 @@ object Builtin {
     "char" -> char,
     "double" -> double
   )
-
-  private object ZeroArgumentFunction {
-    def apply(arg: Any,
-              compilationUnit: CompilationUnit,
-              position: Position,
-              name: String,
-              fn: () => Any): Any = arg match {
-      case seq: Seq[_] if seq.isEmpty => fn()
-      case s: Seq[_]                  => throw WrongFunctionCall(name, s.size, 0, compilationUnit, position)
-      case _                          => throw WrongFunctionCall(name, 1, 0, compilationUnit, position)
-    }
-  }
-
 }
