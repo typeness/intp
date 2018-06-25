@@ -29,7 +29,7 @@ case class BooleanType(value: Boolean) extends TopType {
 }
 
 case class ObjectType(value: mutable.Map[String, TopType]) extends TopType {
-  override def toString: String = s"$value"
+  override def toString: String = Builtin.show(this)
 }
 
 case object UnitType extends TopType {

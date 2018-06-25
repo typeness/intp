@@ -303,6 +303,13 @@ class Interpreter extends ASTVisitor {
 
     }
 
+  override protected def ifThenElseAST(ast: IfThenElseAST): TopType = visit(ast.condition) match {
+    case BooleanType(true) => visit(ast.ifBlock)
+    case BooleanType(false) => visit(ast.elseBlock)
+    case value =>
+      throw TypeMismatch(value, "Boolean", compilationUnit, ast.condition.token.position)
+  }
+
   def runFromResource(res: String): TopType = {
     fileName = res
     val parser = Parser.fromResource(res)

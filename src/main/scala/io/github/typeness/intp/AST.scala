@@ -44,7 +44,7 @@ case class FunctionCall(source: AST, actualParameters: List[AST]) extends AST {
 }
 
 case class FunctionLiteral(formalParameters: List[IdToken], body: Program, token: FuncToken)
-    extends AST
+  extends AST
 
 case class ArrayAccess(source: AST, index: AST) extends AST {
   override def token: Token = source.token
@@ -67,3 +67,5 @@ case class ObjectLiteral(elements: Map[IdToken, AST], token: LCurlyBracketToken)
 case class PropertyAccess(source: AST, name: IdToken) extends AST {
   override def token: IdToken = name
 }
+
+case class IfThenElseAST(condition: AST, ifBlock: AST, elseBlock: AST, token: IfToken) extends AST

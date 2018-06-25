@@ -422,7 +422,11 @@ class InterpreterTest extends FunSuite {
   test("Expression if-then-else return value") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/if-then-else.intp")
-    println(interpreter.memory.getAll)
+    assert(
+      interpreter.memory.getAll == Map(
+        "x" -> IntegerType(10), "y" ->IntegerType(12)
+      )
+    )
   }
   test("Builtin println function") {
     val interpreter = new Interpreter()

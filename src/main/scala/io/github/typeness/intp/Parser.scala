@@ -392,13 +392,9 @@ class Parser(text: String)(
     val condition = disjunction()
     eat(THEN)
     val ifBlock = disjunction()
-    val elseBlock = currentToken.tokenType match {
-      case ELSE =>
-        eat(ELSE)
-        Some(disjunction())
-      case _ => None
-    }
-    IfAST(condition, ifBlock, elseBlock, IfToken(ifTokenPos))
+    eat(ELSE)
+    val elseBlock = disjunction()
+    IfThenElseAST(condition, ifBlock, elseBlock, IfToken(ifTokenPos))
   }
 
   /*
