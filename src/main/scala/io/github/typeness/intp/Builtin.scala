@@ -18,7 +18,7 @@ object Builtin {
 
   def show(arg: TopType): String = arg match {
     case ArrayType(seq: mutable.ArrayBuffer[TopType]) =>
-      if (isString(seq)) s"${seq.mkString("")}"
+      if (seq.nonEmpty && isString(seq)) s"${seq.mkString("")}"
       else s"[${seq.map(show).mkString(", ")}]"
     case ObjectType(map: mutable.Map[_, TopType]) =>
       "{" + map.map { case (k, v) => s"$k = ${show(v)}" }.mkString(", ") + "}"

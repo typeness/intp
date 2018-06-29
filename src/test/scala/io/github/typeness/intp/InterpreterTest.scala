@@ -590,4 +590,11 @@ class InterpreterTest extends FunSuite {
     interpreter.runFromResource("interpreter/stringIdempotency.intp")
     assert(interpreter.memory.get("test").contains(BooleanType(true)))
   }
+  test("string function on empty array literal") {
+    val interpreter = new Interpreter()
+    interpreter.runFromString("a = string([])")
+    assert(interpreter.memory.get("a").contains(
+      ArrayType(mutable.ArrayBuffer('[', ']').map(CharType)))
+    )
+  }
 }
