@@ -758,4 +758,8 @@ class ParserTest extends FunSuite {
           CharLiteral(CharToken('x',Position(2,11))))))
     )
   }
+  test("Parse double comment") {
+    val parser = Parser.fromResource("parser/comments2.intp")
+    parser.parse()
+  }
 }

@@ -142,7 +142,7 @@ class Lexer(text: String)(
   }
 
   private def skipComments(): Unit = {
-    if (currentChar.contains('/') && peek().contains('/')) {
+    while (currentChar.contains('/') && peek().contains('/')) {
       advance()
       advance()
       while (!currentChar.contains('\n') && currentChar.isDefined) {
