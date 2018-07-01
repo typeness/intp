@@ -597,4 +597,10 @@ class InterpreterTest extends FunSuite {
       ArrayType(mutable.ArrayBuffer('[', ']').map(CharType)))
     )
   }
+  test("Access array element out of bounds") {
+    val interpreter = new Interpreter()
+    intercept[IndexOutOfBound] {
+      interpreter.runFromResource("interpreter/indexOutOfBounds.intp")
+    }
+  }
 }

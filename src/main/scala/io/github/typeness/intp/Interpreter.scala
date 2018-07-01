@@ -215,7 +215,9 @@ class Interpreter extends ASTVisitor {
     visit(ast.source) match {
       case ArrayType(ls: mutable.ArrayBuffer[TopType@unchecked]) =>
         visit(ast.index) match {
-          case IntegerType(i) => ls(i)
+          case IntegerType(i) =>
+            if (i >= 0 && i < ls.size) ls(i)
+            else throw IndexOutOfBound(ast.token.value, ls.size, i, compilationUnit, ast.token.position)
           case value =>
             throw TypeMismatch(value, "Integer", compilationUnit, ast.source.token.position)
         }

@@ -88,3 +88,10 @@ case class WrongFunctionCall(name: String,
       compilationUnit,
       position
     )
+
+case class IndexOutOfBound(name: String, size: Int, index: Int, cu: CompilationUnit, position: Position)
+  extends InterpreterError(
+    s"array '$name' has $size elements (element number $index accessed)\n",
+    cu,
+    position
+  )
