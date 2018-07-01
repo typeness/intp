@@ -1,15 +1,12 @@
-import AssemblyKeys._
-
 
 name := "intp"
 
 version := "0.4.2"
-assemblySettings
-jarName in assembly := name.value + "-" + version.value+ ".jar"
+assemblyJarName in assembly := name.value + "-" + version.value+ ".jar"
 
-scalaVersion := "2.12.2"
+scalaVersion := "2.12.4"
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+  "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 )
 scalacOptions ++= Seq(
   "-target:jvm-1.8",
