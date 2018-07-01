@@ -76,4 +76,4 @@ Actually it's syntax sugar for array of characters i.e. `['t', 'e', 's', 't']`
 - Numeric(Double, Integer): `+`, `-`, `*`, `/`, `%`, `==`, `!=`, `<`, `<=`, `>`, `>=`
 - Char: `==`, `!=`
 - Array(String): `+`, `==`, `!=`
-- Object: `==`
+- Object: `==`, `!=`

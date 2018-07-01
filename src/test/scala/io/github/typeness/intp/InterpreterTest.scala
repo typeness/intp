@@ -603,4 +603,8 @@ class InterpreterTest extends FunSuite {
       interpreter.runFromResource("interpreter/indexOutOfBounds.intp")
     }
   }
+  test("Object's equality operators") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/objectEquality.intp")
+  }
 }

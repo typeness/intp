@@ -75,6 +75,15 @@ class Interpreter extends ASTVisitor {
         op.position
       )
   }
+
+  private def objectOperands(left: ObjectType,
+                             op: Token,
+                             right: ObjectType): TopType = op.tokenType match {
+    case EQUALS => BooleanType(left == right)
+    case NOT_EQUALS => BooleanType(left != right)
+    case _ => throw WrongBinaryOperator(left, op, right, compilationUnit, op.position)
+  }
+
   override protected def binOp(ast: BinOp): TopType =
     (visit(ast.left), visit(ast.right)) match {
       /* In case of double Ints to be able to call numericOperands method
@@ -91,6 +100,7 @@ class Interpreter extends ASTVisitor {
       case (ArrayType(left), ArrayType(right)) =>
         arrayOperands(left, ast.op, right)
       case (CharType(left), CharType(right)) => charOperands(left, ast.op, right)
+      case (left@ObjectType(_), right@ObjectType(_)) => objectOperands(left, ast.op, right)
       case (left, right) =>
         throw WrongBinaryOperator(left, ast.op, right, compilationUnit, ast.op.position)
     }
