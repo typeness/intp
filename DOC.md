@@ -66,10 +66,10 @@ Actually it's syntax sugar for array of characters i.e. `['t', 'e', 's', 't']`
 **char**  |  yes  |  yes | no | yes | yes | no | no | no |
 **bool**  |  no  |  no | yes | no | yes | no | no | no |
 **double**  |  yes  |  yes | no | yes | yes | no | no | no |
-**string**  |  yes  |  yes | yes | yes | yes | yes | yes | yes
-**function** | no | no | no | no | no | no | yes | no | no
-**array** | no | no | no | no | no | no | no | yes | no
-**object** | no | no | no | no | no | no | no | no | yes
+**string**  |  yes  |  yes | yes | yes | yes | yes | yes | yes |
+**function** | no | no | no | no | no | yes | no | no |
+**array** | no | no | no | no | no | no | yes| no | 
+**object** | no | no | no | no | no | no | no | yes | 
 
 ### Operators
 - Boolean: `not`, `and`, `or`, `==`, `!=`
