@@ -1,0 +1,113 @@
+
+remove = func(n, array) {
+  i = 0
+  result = []
+  while i < size(array) {
+    if i != n {
+      result = result + [array[i]]
+    }
+    i = i + 1 
+  }
+  return result
+}
+
+concat = func(array) {
+  result = []
+  i = 0
+  while (i < size(array)) {
+    j = 0
+    while (j < size(array[i])) {
+      result = result + [array[i][j]]
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return result
+}
+
+unwords = func(array) {
+  result = ""
+  i = 0
+  while (i < size(array)) {
+    result = result + string(array[i]) + " "
+    i = i + 1
+  }
+  return result
+}
+
+
+splitBy = func(character, text) {
+  result = []
+  i = 0
+  subStr = ""
+  while (i < size(text)) {
+    current = text[i]
+    if (current == character and subStr != "") {
+      result = result + [subStr]
+      subStr = ""
+    } else if (current != character) {
+      subStr = subStr + [current]
+    }
+    i = i + 1
+  }
+  if subStr != "" {
+    result = result + [subStr]
+  }
+  return result
+}
+
+addTodo = func(todo, todos) {
+  return todos + [todo]
+}
+
+removeTodo = func(number, todos) {
+  number = int(number)
+  if (number < 0 or number >= size(todos)) {
+    println("Unknown todo")
+    return todos
+  } else {
+    return remove(number, todos)
+  }
+}
+
+showTodos = func(todos) {
+  i = 0
+  while i < size(todos) {
+    println(string(i + 1) + ") " + todos[i])
+    i = i + 1
+  }
+}
+
+displayHelp = func() {
+  println("Commands: \nhelp\nexit\nprint\nadd [todo]\nremove [number]")
+}
+
+parseCommand = func(line, todos) {
+  parsedLine = splitBy(' ', line)
+  if size(parsedLine) != 0 {
+    command = parsedLine[0]
+    if command == "help" {
+      displayHelp()
+    } else if command == "exit" {
+      exit(0)
+    } else if command == "print" {
+      showTodos(todos)
+    } else if command == "add" {
+      todo = unwords(remove(0, parsedLine))
+      todos = addTodo(todo, todos)
+    } else if command == "remove" {
+      number = int(parsedLine[1])
+      todos = removeTodo(number - 1, todos)
+    } else {
+      println("unknown command")
+    }
+  } 
+  return todos
+}
+
+todos = []
+
+while (true) {
+  line = read()
+  todos = parseCommand(line, todos)
+}
