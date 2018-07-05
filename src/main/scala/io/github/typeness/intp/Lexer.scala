@@ -13,6 +13,10 @@ class Lexer(text: String)(
   private var isClosingApostrophe: Boolean = false
   private var currentPosition: Position = Position(1, 0)
 
+  private val asciiEscapes: Map[Char, Char] = Map(
+    'n' -> '\n', 'r' -> '\r', 't' -> '\t', 'b' -> '\b'
+  )
+
   private def keywords(str: String, pos: Position): Option[Token] = str match {
     case "if"     => Some(IfToken(pos))
     case "else"   => Some(ElseToken(pos))
@@ -190,16 +194,16 @@ class Lexer(text: String)(
 
   private def str(): Token = {
     val sb = new StringBuilder()
-    var specialChar = false
     val pos = Position(currentPosition.row, currentPosition.col + 1)
-    while (currentChar.isDefined && (specialChar || !currentChar.contains('"'))) {
+    while (currentChar.isDefined && !currentChar.contains('"')) {
       if (currentChar.get == '\\') {
-        specialChar = true
+        advance()
+        sb.append(asciiEscapes.getOrElse(currentChar.get, currentChar.get))
+        advance()
       } else {
-        specialChar = false
+        sb.append(currentChar.get)
+        advance()
       }
-      sb.append(currentChar.get)
-      advance()
     }
     StringToken(sb.toString(), pos)
   }

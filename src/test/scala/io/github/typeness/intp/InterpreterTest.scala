@@ -607,4 +607,11 @@ class InterpreterTest extends FunSuite {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/objectEquality.intp")
   }
+  test("Escape special ASCII characters") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/ascii.intp")
+    assert(interpreter.memory.get("str").get ==
+      ArrayType("a\nb\\\"\t\r\b".map(CharType).to[mutable.ArrayBuffer])
+    )
+  }
 }
