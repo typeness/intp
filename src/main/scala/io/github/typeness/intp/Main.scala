@@ -1,7 +1,7 @@
 package io.github.typeness.intp
 
 object Main {
-  private val version: String = "0.4.3"
+  private val version: String = "0.4.4"
 
   def main(args: Array[String]): Unit = {
     if (args.isEmpty) println("No input file given")
