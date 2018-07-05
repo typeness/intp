@@ -28,7 +28,7 @@ object Builtin {
       value.toString
   }
 
-  type BuiltinFunction = ((List[TopType], CompilationUnit, Position) => TopType)
+  type BuiltinFunction = (List[TopType], CompilationUnit, Position) => TopType
 
   object BuiltinFunction {
     def apply(fn: BuiltinFunction, argsSize: Int, arity: Int): BuiltinFunction = {
@@ -155,6 +155,20 @@ object Builtin {
       1
     )(args, cu, pos)
 
+  private def exit(args: List[TopType], cu: CompilationUnit, pos: Position): TopType =
+    BuiltinFunction(
+      (args: List[TopType], compilationUnit: CompilationUnit, position: Position) =>
+        args.head match {
+          case IntegerType(code) =>
+            System.exit(code)
+            UnitType
+          case value =>
+            throw CastError(value.toString, "Integer", compilationUnit, position)
+        },
+      args.size,
+  1
+    )(args, cu, pos)
+
   val functions: Map[String, BuiltinFunction] = Map(
     "println" -> println,
     "print" -> print,
@@ -164,6 +178,7 @@ object Builtin {
     "assert" -> assert,
     "int" -> int,
     "char" -> char,
-    "double" -> double
+    "double" -> double,
+    "exit" -> exit
   )
 }

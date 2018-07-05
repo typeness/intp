@@ -59,6 +59,7 @@ Actually it's syntax sugar for array of characters i.e. `['t', 'e', 's', 't']`
 - `read()` (return single line from stdin)
 - `size(array)` (return size when used or arrays, otherwise throws error)
 - `assert(condtion)` (when condition is false throws error)
+- `exit(code)` (exit program immediately with given status code)
 ### Casting functions
  --  |  int  |  char | bool | double | string | function | array | object
 --- | --- | --- | --- | --- | --- | --- | --- | --- |
