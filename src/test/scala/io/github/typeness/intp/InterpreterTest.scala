@@ -613,5 +613,23 @@ class InterpreterTest extends FunSuite {
     assert(interpreter.memory.get("str").get ==
       ArrayType("a\nb\\\"\t\r\b".map(CharType).to[mutable.ArrayBuffer])
     )
+    assert(interpreter.memory.get("n").get ==
+      CharType('\n')
+    )
+    assert(interpreter.memory.get("r").get ==
+      CharType('\r')
+    )
+    assert(interpreter.memory.get("b").get ==
+      CharType('\b')
+    )
+    assert(interpreter.memory.get("t").get ==
+      CharType('\t')
+    )
+    assert(interpreter.memory.get("ap").get ==
+      CharType('\'')
+    )
+    assert(interpreter.memory.get("zero").get ==
+      CharType(0.toChar)
+    )
   }
 }
