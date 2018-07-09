@@ -29,9 +29,10 @@ class Memory {
     stack = head.map {
       case (name, value) => name -> top.getOrElse(name, value)
     } :: stack
-    if (top.contains("return")) stack.head.put("return", top("return"))
+    if (top.contains("return")) {
+      val _ = stack.head.put("return", top("return"))
+    }
   }
-
 
   def get(name: String): Option[TopType] = stack.head.get(name)
 
