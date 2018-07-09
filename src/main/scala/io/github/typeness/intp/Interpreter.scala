@@ -62,27 +62,27 @@ class Interpreter extends ASTVisitor {
 
   private def arrayOperands(left: mutable.ArrayBuffer[TopType@unchecked],
                             op: Token,
-                            right: mutable.ArrayBuffer[TopType@unchecked]): TopType = op.tokenType match {
-    case PLUS => ArrayType(left ++ right)
-    case EQUALS => BooleanType(left == right)
-    case NOT_EQUALS => BooleanType(left != right)
-    case _ =>
-      throw WrongBinaryOperator(
-        s"[${left.mkString(", ")}]",
-        op,
-        s"[${right.mkString(", ")}]",
-        compilationUnit,
-        op.position
-      )
-  }
+                            right: mutable.ArrayBuffer[TopType@unchecked]): TopType =
+    op.tokenType match {
+      case PLUS => ArrayType(left ++ right)
+      case EQUALS => BooleanType(left == right)
+      case NOT_EQUALS => BooleanType(left != right)
+      case _ =>
+        throw WrongBinaryOperator(
+          s"[${left.mkString(", ")}]",
+          op,
+          s"[${right.mkString(", ")}]",
+          compilationUnit,
+          op.position
+        )
+    }
 
-  private def objectOperands(left: ObjectType,
-                             op: Token,
-                             right: ObjectType): TopType = op.tokenType match {
-    case EQUALS => BooleanType(left == right)
-    case NOT_EQUALS => BooleanType(left != right)
-    case _ => throw WrongBinaryOperator(left, op, right, compilationUnit, op.position)
-  }
+  private def objectOperands(left: ObjectType, op: Token, right: ObjectType): TopType =
+    op.tokenType match {
+      case EQUALS => BooleanType(left == right)
+      case NOT_EQUALS => BooleanType(left != right)
+      case _ => throw WrongBinaryOperator(left, op, right, compilationUnit, op.position)
+    }
 
   override protected def binOp(ast: BinOp): TopType =
     (visit(ast.left), visit(ast.right)) match {
@@ -90,7 +90,7 @@ class Interpreter extends ASTVisitor {
         we need to cast one operand to Double then we can cast again to Int
        */
       case (IntegerType(left), IntegerType(right)) =>
-//      case (left: Int, right: Int) =>
+        //      case (left: Int, right: Int) =>
         integerOperands(left, ast.op, right)
       case (IntegerType(left), DoubleType(right)) => doubleOperands(left.toDouble, ast.op, right)
       case (DoubleType(left), IntegerType(right)) => doubleOperands(left, ast.op, right.toDouble)
@@ -261,14 +261,16 @@ class Interpreter extends ASTVisitor {
     if (memory.get("return").nonEmpty) ()
     var BooleanType(condition) = visit(ast.condition) match {
       case b: BooleanType => b
-      case value => throw TypeMismatch(value, "Boolean", compilationUnit, ast.whileBlock.token.position)
+      case value =>
+        throw TypeMismatch(value, "Boolean", compilationUnit, ast.whileBlock.token.position)
     }
     memory.pushNewLocalScope()
     while (condition && memory.get("return").isEmpty) {
       condition match {
         case true =>
           visit(ast.whileBlock)
-        case value => throw TypeMismatch(value, "Boolean", compilationUnit, ast.whileBlock.token.position)
+        case value =>
+          throw TypeMismatch(value, "Boolean", compilationUnit, ast.whileBlock.token.position)
       }
       if (memory.get("return").nonEmpty) condition = false
       else {
@@ -281,7 +283,9 @@ class Interpreter extends ASTVisitor {
   }
 
   override protected def returnAST(ast: ReturnAST): TopType =
-    visit(AssignAST(IdToken("return", ast.token.position), ast.result, AssignToken(ast.token.position)))
+    visit(
+      AssignAST(IdToken("return", ast.token.position), ast.result, AssignToken(ast.token.position))
+    )
 
   override protected def builtinFunctionCall(ast: BuiltinFunctionCall): TopType = {
     val name = ast.name.value
@@ -294,7 +298,9 @@ class Interpreter extends ASTVisitor {
   }
 
   override protected def objectLiteral(ast: ObjectLiteral): TopType =
-    ObjectType(mutable.Map(ast.elements.map { case (name, value) => (name.value, visit(value)) }.toSeq: _*))
+    ObjectType(
+      mutable.Map(ast.elements.map { case (name, value) => (name.value, visit(value)) }.toSeq: _*)
+    )
 
   override protected def propertyAccess(ast: PropertyAccess): TopType = visit(ast.source) match {
     case ObjectType(objectLiteral: mutable.Map[String@unchecked, TopType@unchecked]) =>
@@ -320,6 +326,14 @@ class Interpreter extends ASTVisitor {
     case BooleanType(false) => visit(ast.elseBlock)
     case value =>
       throw TypeMismatch(value, "Boolean", compilationUnit, ast.condition.token.position)
+  }
+
+  override protected def importAST(ast: ImportAST): TopType = {
+    val interpreter = new Interpreter()
+    interpreter.runFromFile(ast.token.value + ".intp")
+    // copy definitions after running interpreter
+    interpreter.memory.getAll.foreach(this.memory.define)
+    UnitType
   }
 
   def runFromResource(res: String): TopType = {

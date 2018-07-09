@@ -23,6 +23,7 @@ trait ASTVisitor {
     case a: PropertyAccess      => propertyAccess(a)
     case a: PropertyAssignAST   => propertyAssign(a)
     case a: IfThenElseAST       => ifThenElseAST(a)
+    case a: ImportAST           => importAST(a)
   }
   protected def binOp(ast: BinOp): TopType
   protected def number(ast: Number): TopType
@@ -45,4 +46,5 @@ trait ASTVisitor {
   protected def propertyAccess(ast: PropertyAccess): TopType
   protected def propertyAssign(ast: PropertyAssignAST): TopType
   protected def ifThenElseAST(ast: IfThenElseAST): TopType
+  protected def importAST(ast: ImportAST): TopType
 }

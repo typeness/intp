@@ -32,17 +32,29 @@ class Parser(text: String)(
   }
 
   /*
-  statement =   if_statement
+  statement =  import_statement
+             | if_statement
              | while_statement
              | return_statement
              | disjunction ;
    */
   private def statement(): AST = {
     currentToken.tokenType match {
+      case IMPORT => importStatement()
       case IF     => ifStatement()
       case WHILE  => whileStatement()
       case RETURN => returnStatement()
       case _      => disjunction()
+    }
+  }
+
+  private def importStatement(): AST = {
+    eat(IMPORT)
+    currentToken match {
+      case id: IdToken =>
+        eat(ID)
+        ImportAST(id)
+      case _ => throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
     }
   }
 
