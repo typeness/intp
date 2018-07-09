@@ -264,3 +264,33 @@ case class DataToken(position: Position) extends Token {
 
   override def value = "data"
 }
+
+case class CompoundAdditionToken(position: Position) extends Token {
+  override def tokenType: TokenType = COMPOUND_PLUS
+
+  override def value: String = "+="
+}
+
+case class CompoundSubtractionToken(position: Position) extends Token {
+  override def tokenType: TokenType = COMPOUND_MINUS
+
+  override def value: String = "-="
+}
+
+case class CompoundMultiplicationToken(position: Position) extends Token {
+  override def tokenType: TokenType = COMPOUND_MULTIPLICATION
+
+  override def value: String = "*="
+}
+
+case class CompoundDivisionToken(position: Position) extends Token {
+  override def tokenType: TokenType = COMPOUND_DIV
+
+  override def value: String = "/="
+}
+
+case class CompoundModuloToken(position: Position) extends Token {
+  override def tokenType: TokenType = COMPOUND_MODULO
+
+  override def value: String = "%="
+}

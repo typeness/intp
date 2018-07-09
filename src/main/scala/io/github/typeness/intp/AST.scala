@@ -18,7 +18,7 @@ case class UnaryOp(op: Token, expr: AST) extends AST {
   override def token: Token = op
 }
 
-case class AssignAST(name: IdToken, expr: AST, token: AssignToken) extends AST
+case class AssignAST(name: IdToken, expr: AST, token: Token) extends AST
 
 case class ArrayAssignAST(source: AST, index: AST, expr: AST) extends AST {
   override def token: Token = source.token
@@ -44,7 +44,7 @@ case class FunctionCall(source: AST, actualParameters: List[AST]) extends AST {
 }
 
 case class FunctionLiteral(formalParameters: List[IdToken], body: Program, token: FuncToken)
-  extends AST
+    extends AST
 
 case class ArrayAccess(source: AST, index: AST) extends AST {
   override def token: Token = source.token

@@ -63,6 +63,21 @@ case object NOT_EQUALS extends TokenType
 // %
 case object MODULO extends TokenType
 
+// -=
+case object COMPOUND_MINUS extends TokenType
+
+// +=
+case object COMPOUND_PLUS extends TokenType
+
+// *=
+case object COMPOUND_MULTIPLICATION extends TokenType
+
+// /=
+case object COMPOUND_DIV extends TokenType
+
+// %=
+case object COMPOUND_MODULO extends TokenType
+
 // Parenthesis
 
 // (

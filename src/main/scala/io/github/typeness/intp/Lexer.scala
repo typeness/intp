@@ -74,6 +74,26 @@ class Lexer(text: String)(
         advance()
         advance()
         NotEqualsToken(currentPosition.copy(col = currentPosition.col - 1))
+      } else if (currentChar.contains('+') && peek().contains('=')) {
+        advance()
+        advance()
+        CompoundAdditionToken(currentPosition.copy(col = currentPosition.col - 1))
+      } else if (currentChar.contains('*') && peek().contains('=')) {
+        advance()
+        advance()
+        CompoundMultiplicationToken(currentPosition.copy(col = currentPosition.col - 1))
+      } else if (currentChar.contains('-') && peek().contains('=')) {
+        advance()
+        advance()
+        CompoundSubtractionToken(currentPosition.copy(col = currentPosition.col - 1))
+      } else if (currentChar.contains('/') && peek().contains('=')) {
+        advance()
+        advance()
+        CompoundDivisionToken(currentPosition.copy(col = currentPosition.col - 1))
+      } else if (currentChar.contains('%') && peek().contains('=')) {
+        advance()
+        advance()
+        CompoundModuloToken(currentPosition.copy(col = currentPosition.col - 1))
       } else if (currentChar.contains('=')) {
         advance()
         AssignToken(currentPosition)
