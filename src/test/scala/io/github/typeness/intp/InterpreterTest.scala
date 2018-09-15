@@ -729,4 +729,9 @@ class InterpreterTest extends FunSuite {
       )
     )
   }
+
+  test("For loop") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/forLoop.intp")
+  }
 }

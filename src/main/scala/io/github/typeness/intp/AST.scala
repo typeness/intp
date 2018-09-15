@@ -56,6 +56,8 @@ case class IfAST(condition: AST, ifBlock: AST, elseBlock: Option[AST], token: If
 
 case class WhileAST(condition: AST, whileBlock: AST, token: WhileToken) extends AST
 
+case class ForAST(initial: List[AST], condition: AST, step: List[AST], program: AST, token: ForToken) extends AST
+
 case class ReturnAST(result: AST, token: ReturnToken) extends AST
 
 case class BuiltinFunctionCall(name: IdToken, actualParameters: List[AST]) extends AST {

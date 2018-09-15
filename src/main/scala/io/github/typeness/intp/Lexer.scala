@@ -41,6 +41,7 @@ class Lexer(text: String)(
     case "func"   => Some(FuncToken(pos))
     case "then"   => Some(ThenToken(pos))
     case "data"   => Some(DataToken(pos))
+    case "for"   => Some(ForToken(pos))
     case _        => None
   }
 
@@ -154,6 +155,9 @@ class Lexer(text: String)(
       } else if (currentChar.contains('.')) {
         advance()
         DotToken(currentPosition)
+      } else if (currentChar.contains(';')) {
+        advance()
+        SemicolonToken(currentPosition)
       } else if (currentChar.isEmpty) {
         EOFToken(currentPosition)
       } else {

@@ -32,7 +32,8 @@ class Parser(text: String)(
   }
 
   /*
-  statement =  import_statement
+  statement =  for_statement
+             | import_statement
              | if_statement
              | while_statement
              | return_statement
@@ -44,10 +45,60 @@ class Parser(text: String)(
       case IF     => ifStatement()
       case WHILE  => whileStatement()
       case RETURN => returnStatement()
+      case FOR    => forStatement()
       case _      => disjunction()
     }
   }
 
+  /*
+  for_statement = FOR for_statement_init disjunction SEMICOLON for_statement_step
+                    L_CURLY_BRACKET PROGRAM R_CURlY_BRACKET ;
+   */
+  private def forStatement(): AST = {
+    val forPosition = currentToken.position
+    eat(FOR)
+    val initial = forStatementInit()
+    val condition = disjunction()
+    eat(SEMICOLON)
+    val step = forStatementStep()
+    eat(L_CURLY_BRACKET)
+    val body = program()
+    eat(R_CURLY_BRACKET)
+    ForAST(initial, condition, step, body, ForToken(forPosition))
+  }
+
+  /*
+  for_statement_init = disjunction (COMMA disjunction)* SEMICOLON
+                   | SEMICOLON ;
+   */
+
+  private def forStatementInit(): List[AST] = {
+    val defs = mutable.ListBuffer[AST]()
+    while(currentToken.tokenType != SEMICOLON) {
+      defs += disjunction()
+      if (currentToken.tokenType != SEMICOLON) eat(COMMA)
+    }
+    eat(SEMICOLON)
+    defs.toList
+  }
+
+  /*
+  for_statement_step = (disjunction (COMMA disjunction)*)* ;
+   */
+
+  private def forStatementStep(): List[AST] = {
+    val steps = mutable.ListBuffer[AST]()
+    while(currentToken.tokenType != L_CURLY_BRACKET) {
+      steps += disjunction()
+      if (currentToken.tokenType != L_CURLY_BRACKET) eat(COMMA)
+    }
+    steps.toList
+  }
+
+
+  /*
+  import_statement = IMPORT ID ;
+   */
   private def importStatement(): AST = {
     eat(IMPORT)
     currentToken match {

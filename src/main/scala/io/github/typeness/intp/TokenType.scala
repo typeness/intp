@@ -118,6 +118,9 @@ case object DOT extends TokenType
 // "
 case object QUOTATION extends TokenType
 
+// ;
+case object SEMICOLON extends TokenType
+
 // Keywords
 
 // import
@@ -152,3 +155,6 @@ case object THEN extends TokenType
 
 // data
 case object DATA extends TokenType
+
+// for
+case object FOR extends TokenType

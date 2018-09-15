@@ -336,6 +336,33 @@ class Interpreter extends ASTVisitor {
     UnitType
   }
 
+  override protected def forAST(ast: ForAST): TopType = {
+    if (memory.get("return").nonEmpty) ()
+    memory.pushNewLocalScope()
+    ast.initial.foreach(visit)
+    var BooleanType(condition) = visit(ast.condition) match {
+      case b: BooleanType => b
+      case value =>
+        throw TypeMismatch(value, "Boolean", compilationUnit, ast.program.token.position)
+    }
+    while (condition && memory.get("return").isEmpty) {
+      condition match {
+        case true =>
+          visit(ast.program)
+        case value =>
+          throw TypeMismatch(value, "Boolean", compilationUnit, ast.program.token.position)
+      }
+      if (memory.get("return").nonEmpty) condition = false
+      else {
+        ast.step.foreach(visit)
+        val BooleanType(updated) = visit(ast.condition)
+        condition = updated
+      }
+    }
+    memory.popNewLocalScope()
+    UnitType
+  }
+
   def runFromResource(res: String): TopType = {
     fileName = res
     val parser = Parser.fromResource(res)

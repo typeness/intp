@@ -197,6 +197,12 @@ case class QuotationToken(position: Position) extends Token {
   override def value: String = "\""
 }
 
+case class SemicolonToken(position: Position) extends Token {
+  override def tokenType: TokenType = SEMICOLON
+
+  override def value: String = ";"
+}
+
 case class ImportToken(position: Position) extends Token {
   override def tokenType: TokenType = IMPORT
 
@@ -263,6 +269,12 @@ case class DataToken(position: Position) extends Token {
   override def tokenType: DATA.type = DATA
 
   override def value = "data"
+}
+
+case class ForToken(position: Position) extends Token {
+  override def tokenType: TokenType = FOR
+
+  override def value: String = "for"
 }
 
 case class CompoundAdditionToken(position: Position) extends Token {
