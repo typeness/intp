@@ -16,6 +16,12 @@ while condition {
   i = i + 1
 }
 ```
+### For loop
+```
+for i = 0; i < 10; i += 1 {
+  println(i)
+}
+```
 
 ### If-then-else expression
 ```
