@@ -1,0 +1,31 @@
+a = 1
+f = func() {
+  b = 10
+  add = func(x) {
+    c = 3
+    addX = func(y) {
+      assert(a == 2)
+      assert(c == 3)
+      return x + y
+    }
+    return addX
+  }
+  b = 11
+  add1 = add(1)
+  assert(add1(3) == 4)
+  return add
+}
+a = 2
+add = f()
+add5 = add(5)
+assert(add5(3) == 8)
+
+test = func() {
+  a = 11
+  f = func() {
+    return a
+  }
+  return f
+}
+x = test()()
+assert(x == 11)

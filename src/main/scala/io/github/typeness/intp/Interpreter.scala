@@ -156,7 +156,8 @@ class Interpreter extends ASTVisitor {
     val name = ast.name.value
     ast.expr match {
       // do not evaluate function definition
-      case fl: FunctionLiteral => memory.define(name -> FunctionType(fl))
+      case fl: FunctionLiteral =>
+        memory.define(name -> FunctionType(fl, memory.getAll.toList))
       case _ => memory.define(name -> visit(ast.expr))
     }
     UnitType
@@ -178,7 +179,7 @@ class Interpreter extends ASTVisitor {
 
   override protected def varAST(ast: VarAST): TopType =
     memory.get(ast.name.value) match {
-      case Some(variable) => variable
+      case Some(variable) => variable.value
       case None =>
         throw UndefinedVariable(ast.name.value, compilationUnit, ast.name.position)
     }
@@ -190,7 +191,7 @@ class Interpreter extends ASTVisitor {
 
   override protected def functionCall(ast: FunctionCall): TopType =
     visit(ast.source) match {
-      case FunctionType(FunctionLiteral(formalParameters, body, _)) =>
+      case FunctionType(FunctionLiteral(formalParameters, body, _), closures) =>
         if (formalParameters.size != ast.actualParameters.size) {
           val fnName = ast.source match {
             case VarAST(name) => name.value
@@ -203,23 +204,36 @@ class Interpreter extends ASTVisitor {
             compilationUnit,
             ast.source.token.position
           )
+        } else {
+          val parameters = formalParameters
+            .zip(ast.actualParameters)
+            .map({
+              case (idToken, expr) => (idToken.value, visit(expr))
+            })
+          memory.pushNewStack()
+          closures.foreach { case (name, obj) =>
+            memory.get(name) match {
+              case Some(oldObj) =>
+                if (oldObj.scopeLevel < obj.scopeLevel) memory.define(name -> obj.value)
+                else ()
+              case None => memory.define(name -> obj.value)
+            }
+          }
+          parameters.foreach(memory.define)
+          visit(body)
+          val result = memory.get("return") match {
+            case Some(ObjectInMemory(_, value, _)) => value
+            case None => UnitType
+          }
+          memory.popStack()
+          result
         }
-        val parameters = formalParameters
-          .zip(ast.actualParameters)
-          .map({
-            case (idToken, expr) => (idToken.value, visit(expr))
-          })
-        memory.pushNewStack()
-        parameters.foreach(memory.define)
-        visit(body)
-        val result = memory.get("return").orElse(Some(UnitType)).get
-        memory.popStack()
-        result
       case value =>
         throw TypeMismatch(value, "Function", compilationUnit, ast.source.token.position)
     }
 
-  override protected def functionLiteral(ast: FunctionLiteral): TopType = FunctionType(ast)
+  override protected def functionLiteral(ast: FunctionLiteral): TopType =
+    FunctionType(ast, memory.getAll.toList)
 
   override protected def arrayAccess(ast: ArrayAccess): TopType =
     visit(ast.source) match {
@@ -332,7 +346,9 @@ class Interpreter extends ASTVisitor {
     val interpreter = new Interpreter()
     interpreter.runFromFile(ast.token.value + ".intp")
     // copy definitions after running interpreter
-    interpreter.memory.getAll.foreach(this.memory.define)
+    interpreter.memory.getAll.foreach{
+      case (name, obj) => memory.define(name -> obj.value)
+    }
     UnitType
   }
 

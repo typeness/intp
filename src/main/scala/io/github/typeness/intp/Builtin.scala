@@ -22,7 +22,7 @@ object Builtin {
       else s"[${seq.map(show).mkString(", ")}]"
     case ObjectType(map: mutable.Map[_, TopType]) =>
       "{" + map.map { case (k, v) => s"$k = ${show(v)}" }.mkString(", ") + "}"
-    case FunctionType(FunctionLiteral(_, _, token)) =>
+    case FunctionType(FunctionLiteral(_, _, token), _) =>
       token.value
     case value =>
       value.toString

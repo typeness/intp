@@ -2,15 +2,19 @@ package io.github.typeness.intp
 
 import scala.collection.mutable
 
+case class ObjectInMemory(name: String, value: TopType, scopeLevel: Int)
+
 class Memory {
-  private var stack: List[mutable.Map[String, TopType]] = List(mutable.Map.empty)
+  private var stack: List[mutable.Map[String, ObjectInMemory]] = List(mutable.Map.empty)
+
+  def scopeLevel: Int = stack.size
 
   def pushNewStack(): Unit = {
     stack = stack.head.clone() :: stack
   }
 
   def define(obj: (String, TopType)): Unit = {
-    stack.head.put(obj._1, obj._2)
+    stack.head.put(obj._1, ObjectInMemory(obj._1, obj._2, scopeLevel))
     ()
   }
 
@@ -34,8 +38,9 @@ class Memory {
     }
   }
 
-  def get(name: String): Option[TopType] = stack.head.get(name)
+  def get(name: String): Option[ObjectInMemory] = stack.head.get(name)
 
-  def getAll: Map[String, TopType] = stack.head.toMap
+  def getAll: Map[String, ObjectInMemory] = stack.head.toMap
+
 
 }

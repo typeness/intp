@@ -10,9 +10,9 @@ class MemoryTest extends FunSuite {
     memory.define("a" -> IntegerType(2))
     memory.define("b" -> BooleanType(true))
     memory.define("c" -> ArrayType(mutable.ArrayBuffer(DoubleType(12.3), CharType('a'))))
-    assert(memory.get("a").contains(IntegerType(2)))
-    assert(memory.get("b").contains(BooleanType(true)))
-    assert(memory.get("c").contains(ArrayType(mutable.ArrayBuffer(DoubleType(12.3), CharType('a')))))
+    assert(memory.get("a").map(_.value).contains(IntegerType(2)))
+    assert(memory.get("b").map(_.value).contains(BooleanType(true)))
+    assert(memory.get("c").map(_.value).contains(ArrayType(mutable.ArrayBuffer(DoubleType(12.3), CharType('a')))))
   }
   test("Global variables and closures") {
     val memory = new Memory()
@@ -24,21 +24,21 @@ class MemoryTest extends FunSuite {
     memory.pushNewStack()
     memory.define("localInNestedFunction" -> IntegerType(44))
 
-    assert(memory.get("global").contains(BooleanType(true)))
-    assert(memory.get("localInNestedFunction").contains(IntegerType(44)))
+    assert(memory.get("global").map(_.value).contains(BooleanType(true)))
+    assert(memory.get("localInNestedFunction").map(_.value).contains(IntegerType(44)))
     // from closure
-    assert(memory.get("localInFunction").contains(DoubleType(0.1)))
+    assert(memory.get("localInFunction").map(_.value).contains(DoubleType(0.1)))
 
     memory.popStack()
-    assert(memory.get("global").contains(BooleanType(true)))
+    assert(memory.get("global").map(_.value).contains(BooleanType(true)))
     // after pop stack localInNestedFunction in erased
     assert(memory.get("localInNestedFunction").isEmpty)
     // but localInFunction is still here
-    assert(memory.get("localInFunction").contains(DoubleType(0.1)))
+    assert(memory.get("localInFunction").map(_.value).contains(DoubleType(0.1)))
 
     // return to global scope
     memory.popStack()
-    assert(memory.get("global").contains(BooleanType(true)))
+    assert(memory.get("global").map(_.value).contains(BooleanType(true)))
     assert(memory.get("localInNestedFunction").isEmpty)
     assert(memory.get("localInFunction").isEmpty)
   }
@@ -47,8 +47,8 @@ class MemoryTest extends FunSuite {
     memory.define("var" -> BooleanType(true))
     memory.pushNewStack()
     memory.define("var" -> BooleanType(false))
-    assert(memory.get("var").contains(BooleanType(false)))
+    assert(memory.get("var").map(_.value).contains(BooleanType(false)))
     memory.popStack()
-    assert(memory.get("var").contains(BooleanType(true)))
+    assert(memory.get("var").map(_.value).contains(BooleanType(true)))
   }
 }
