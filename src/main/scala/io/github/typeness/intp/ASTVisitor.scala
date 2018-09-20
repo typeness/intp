@@ -25,6 +25,7 @@ trait ASTVisitor {
     case a: IfThenElseAST       => ifThenElseAST(a)
     case a: ImportAST           => importAST(a)
     case a: ForAST              => forAST(a)
+    case a: BreakAST            => breakAST(a)
   }
   protected def binOp(ast: BinOp): TopType
   protected def number(ast: Number): TopType
@@ -49,4 +50,5 @@ trait ASTVisitor {
   protected def ifThenElseAST(ast: IfThenElseAST): TopType
   protected def importAST(ast: ImportAST): TopType
   protected def forAST(ast: ForAST): TopType
+  protected def breakAST(ast: BreakAST): TopType
 }

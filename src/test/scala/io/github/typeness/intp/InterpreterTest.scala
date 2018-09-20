@@ -739,4 +739,8 @@ class InterpreterTest extends FunSuite {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/closures.intp")
   }
+  test("Break statement") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/break.intp")
+  }
 }

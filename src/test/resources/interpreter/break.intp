@@ -1,0 +1,18 @@
+i = 0
+while true {
+  i += 1
+  if i == 5 {
+    break
+  }
+}
+assert(i == 5)
+
+array = [1, 2, 3, 4, 5]
+sum = 0
+for i = 0; true; i+= 1 {
+  if i == size(array) {
+    break
+  }
+  sum += array[i]
+}
+assert(sum == 1 + 2 + 3 + 4 + 5)

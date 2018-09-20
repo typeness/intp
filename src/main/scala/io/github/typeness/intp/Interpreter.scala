@@ -185,7 +185,10 @@ class Interpreter extends ASTVisitor {
     }
 
   override protected def program(ast: Program): TopType = {
-    for (child <- ast.children if memory.get("return").isEmpty) visit(child)
+    for (
+      child <- ast.children
+      if memory.get("return").isEmpty && !memory.get("break").map(_.value).contains(BooleanType(true))
+    ) visit(child)
     UnitType
   }
 
@@ -279,19 +282,24 @@ class Interpreter extends ASTVisitor {
         throw TypeMismatch(value, "Boolean", compilationUnit, ast.whileBlock.token.position)
     }
     memory.pushNewLocalScope()
-    while (condition && memory.get("return").isEmpty) {
+    while (condition
+        && memory.get("return").isEmpty
+        && !memory.get("break").map(_.value).contains(BooleanType(true))) {
       condition match {
         case true =>
           visit(ast.whileBlock)
         case value =>
           throw TypeMismatch(value, "Boolean", compilationUnit, ast.whileBlock.token.position)
       }
-      if (memory.get("return").nonEmpty) condition = false
-      else {
+      if (memory.get("return").nonEmpty
+        || memory.get("break").map(_.value).contains(BooleanType(true))) {
+        condition = false
+      } else {
         val BooleanType(updated) = visit(ast.condition)
         condition = updated
       }
     }
+    memory.define("break" -> BooleanType(false))
     memory.popNewLocalScope()
     UnitType
   }
@@ -361,23 +369,37 @@ class Interpreter extends ASTVisitor {
       case value =>
         throw TypeMismatch(value, "Boolean", compilationUnit, ast.program.token.position)
     }
-    while (condition && memory.get("return").isEmpty) {
+    while (condition
+      && memory.get("return").isEmpty
+      && !memory.get("break").map(_.value).contains(BooleanType(true))) {
       condition match {
         case true =>
           visit(ast.program)
         case value =>
           throw TypeMismatch(value, "Boolean", compilationUnit, ast.program.token.position)
       }
-      if (memory.get("return").nonEmpty) condition = false
-      else {
+      if (memory.get("return").nonEmpty
+        || memory.get("break").map(_.value).contains(BooleanType(true))) {
+        condition = false
+      } else {
         ast.step.foreach(visit)
         val BooleanType(updated) = visit(ast.condition)
         condition = updated
       }
     }
+    memory.define("break" -> BooleanType(false))
     memory.popNewLocalScope()
     UnitType
   }
+
+  override protected def breakAST(ast: BreakAST): TopType =
+    visit(
+      AssignAST(
+        IdToken("break", ast.token.position),
+        BooleanLiteral(TrueToken(ast.token.position)),
+        AssignToken(ast.token.position)
+      )
+    )
 
   def runFromResource(res: String): TopType = {
     fileName = res

@@ -41,7 +41,7 @@ class Lexer(text: String)(
     case "func"   => Some(FuncToken(pos))
     case "then"   => Some(ThenToken(pos))
     case "data"   => Some(DataToken(pos))
-    case "for"   => Some(ForToken(pos))
+    case "for"    => Some(ForToken(pos))
     case _        => None
   }
 

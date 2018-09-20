@@ -60,6 +60,8 @@ case class ForAST(initial: List[AST], condition: AST, step: List[AST], program: 
 
 case class ReturnAST(result: AST, token: ReturnToken) extends AST
 
+case class BreakAST(token: BreakToken) extends AST
+
 case class BuiltinFunctionCall(name: IdToken, actualParameters: List[AST]) extends AST {
   override def token: Token = name
 }

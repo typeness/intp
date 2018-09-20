@@ -36,6 +36,9 @@ class Memory {
     if (top.contains("return")) {
       val _ = stack.head.put("return", top("return"))
     }
+    if (top.get("break").map(_.value).contains(BooleanType(true))) {
+      val _ = stack.head.put("break", top("break"))
+    }
   }
 
   def get(name: String): Option[ObjectInMemory] = stack.head.get(name)
