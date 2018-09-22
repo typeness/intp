@@ -1,6 +1,5 @@
 package io.github.typeness.intp
 
-
 import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
 
@@ -14,7 +13,6 @@ object Builtin {
       case _: Exception => false
     }
   }
-
 
   def show(arg: TopType): String = arg match {
     case ArrayType(seq: mutable.ArrayBuffer[TopType]) =>
@@ -32,9 +30,10 @@ object Builtin {
 
   object BuiltinFunction {
     def apply(fn: BuiltinFunction, argsSize: Int, arity: Int): BuiltinFunction = {
-      if (argsSize != arity)
-        (_: List[TopType], compilationUnit: CompilationUnit, position: Position) =>
-          throw WrongFunctionCall("", argsSize, arity, compilationUnit, position)
+      if (argsSize != arity)(_: List[TopType],
+                             compilationUnit: CompilationUnit,
+                             position: Position) =>
+        throw WrongFunctionCall("", argsSize, arity, compilationUnit, position)
       else
         fn
     }
@@ -74,8 +73,8 @@ object Builtin {
       (args: List[TopType], compilationUnit: CompilationUnit, position: Position) =>
         args.head match {
           case ArrayType(seq) => IntegerType(seq.size)
-          case value => throw TypeMismatch(value, "Array", compilationUnit, position)
-        },
+          case value          => throw TypeMismatch(value, "Array", compilationUnit, position)
+      },
       args.size,
       1
     )(args, cu, pos)
@@ -96,7 +95,7 @@ object Builtin {
             if (!bool) throw AssertionError(compilationUnit, position)
             else UnitType
           case value => throw TypeMismatch(value, "Boolean", compilationUnit, position)
-        },
+      },
       args.size,
       1
     )(args, cu, pos)
@@ -106,15 +105,17 @@ object Builtin {
       (args: List[TopType], compilationUnit: CompilationUnit, position: Position) =>
         args.head match {
           case IntegerType(v) => IntegerType(v)
-          case CharType(v) => IntegerType(v.toInt)
-          case DoubleType(v) => IntegerType(v.toInt)
-          case ArrayType(seq) => Try(seq.mkString.toInt) match {
-            case Success(x) => IntegerType(x)
-            case Failure(_) => throw TypeMismatch(seq.mkString, "Integer", compilationUnit, position)
-          }
+          case CharType(v)    => IntegerType(v.toInt)
+          case DoubleType(v)  => IntegerType(v.toInt)
+          case ArrayType(seq) =>
+            Try(seq.mkString.toInt) match {
+              case Success(x) => IntegerType(x)
+              case Failure(_) =>
+                throw TypeMismatch(seq.mkString, "Integer", compilationUnit, position)
+            }
           case value =>
             throw CastError(value.toString, "Integer", compilationUnit, position)
-        },
+      },
       args.size,
       1
     )(args, cu, pos)
@@ -124,15 +125,16 @@ object Builtin {
       (args: List[TopType], compilationUnit: CompilationUnit, position: Position) =>
         args.head match {
           case IntegerType(v) => CharType(v.toChar)
-          case CharType(v) => CharType(v)
-          case DoubleType(v) => CharType(v.toChar)
-          case ArrayType(seq) => Try(seq.head.toString.charAt(0)) match {
-            case Success(x) => CharType(x)
-            case Failure(_) => throw TypeMismatch(seq.mkString, "Char", compilationUnit, position)
-          }
+          case CharType(v)    => CharType(v)
+          case DoubleType(v)  => CharType(v.toChar)
+          case ArrayType(seq) =>
+            Try(seq.head.toString.charAt(0)) match {
+              case Success(x) => CharType(x)
+              case Failure(_) => throw TypeMismatch(seq.mkString, "Char", compilationUnit, position)
+            }
           case value =>
             throw CastError(value.toString, "Char", compilationUnit, position)
-        },
+      },
       args.size,
       1
     )(args, cu, pos)
@@ -142,15 +144,17 @@ object Builtin {
       (args: List[TopType], compilationUnit: CompilationUnit, position: Position) =>
         args.head match {
           case IntegerType(v) => DoubleType(v.toDouble)
-          case CharType(v) => DoubleType(v.toDouble)
-          case DoubleType(v) => DoubleType(v)
-          case ArrayType(seq) => Try(seq.mkString.toDouble) match {
-            case Success(x) => DoubleType(x)
-            case Failure(_) => throw TypeMismatch(seq.mkString, "Double", compilationUnit, position)
-          }
+          case CharType(v)    => DoubleType(v.toDouble)
+          case DoubleType(v)  => DoubleType(v)
+          case ArrayType(seq) =>
+            Try(seq.mkString.toDouble) match {
+              case Success(x) => DoubleType(x)
+              case Failure(_) =>
+                throw TypeMismatch(seq.mkString, "Double", compilationUnit, position)
+            }
           case value =>
             throw CastError(value.toString, "Double", compilationUnit, position)
-        },
+      },
       args.size,
       1
     )(args, cu, pos)
@@ -164,9 +168,9 @@ object Builtin {
             UnitType
           case value =>
             throw CastError(value.toString, "Integer", compilationUnit, position)
-        },
+      },
       args.size,
-  1
+      1
     )(args, cu, pos)
 
   val functions: Map[String, BuiltinFunction] = Map(

@@ -409,7 +409,10 @@ class InterpreterTest extends FunSuite {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/data.intp")
     assert(
-      interpreter.memory.get("n").map(_.value).contains(ArrayType(ArrayBuffer('J', 'o', 'h', 'n').map(CharType)))
+      interpreter.memory
+        .get("n")
+        .map(_.value)
+        .contains(ArrayType(ArrayBuffer('J', 'o', 'h', 'n').map(CharType)))
     )
     assert(
       interpreter.memory
@@ -418,10 +421,16 @@ class InterpreterTest extends FunSuite {
         .contains(ArrayType(ArrayBuffer('S', 'm', 'i', 't', 'h').map(CharType)))
     )
     assert(
-      interpreter.memory.get("n2").map(_.value).contains(ArrayType(ArrayBuffer('A', 'm', 'y').map(CharType)))
+      interpreter.memory
+        .get("n2")
+        .map(_.value)
+        .contains(ArrayType(ArrayBuffer('A', 'm', 'y').map(CharType)))
     )
     assert(
-      interpreter.memory.get("s2").map(_.value).contains(ArrayType(ArrayBuffer('N', 'e', 'w').map(CharType)))
+      interpreter.memory
+        .get("s2")
+        .map(_.value)
+        .contains(ArrayType(ArrayBuffer('N', 'e', 'w').map(CharType)))
     )
   }
   test("Valid conversions via casting functions") {
@@ -451,7 +460,10 @@ class InterpreterTest extends FunSuite {
   test("Property access of in place defined object literal") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/accessObjectLiteralInPlace.intp")
-    assert(interpreter.memory.getAll.mapValues(_.value) == Map("y" -> IntegerType(3), "z" -> BooleanType(true)))
+    assert(
+      interpreter.memory.getAll
+        .mapValues(_.value) == Map("y" -> IntegerType(3), "z" -> BooleanType(true))
+    )
   }
   test("Defining array and indexing it in one place") {
     val interpreter = new Interpreter()
@@ -498,7 +510,10 @@ class InterpreterTest extends FunSuite {
     val interpreter = new Interpreter()
     interpreter.runFromString("val a = string([])")
     assert(
-      interpreter.memory.get("a").map(_.value).contains(ArrayType(mutable.ArrayBuffer('[', ']').map(CharType)))
+      interpreter.memory
+        .get("a")
+        .map(_.value)
+        .contains(ArrayType(mutable.ArrayBuffer('[', ']').map(CharType)))
     )
   }
   test("Access array element out of bounds") {

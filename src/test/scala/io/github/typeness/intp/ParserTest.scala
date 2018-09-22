@@ -15,7 +15,19 @@ class ParserTest extends FunSuite {
     val parser = new Parser("val x = (2.0 - 1) * 2")()
     val ast = parser.parse().children.head
     assert(
-      ast == ValDefAST(IdToken("x", Position(1, 5)), BinOp(BinOp(Number(RealConstToken(2.0, Position(1, 10))), SubtractionToken(Position(1, 14)), Number(IntegerConstToken(1, Position(1, 16)))), MultiplicationToken(Position(1, 19)), Number(IntegerConstToken(2, Position(1, 21)))), ValToken(Position(1, 1)))
+      ast == ValDefAST(
+        IdToken("x", Position(1, 5)),
+        BinOp(
+          BinOp(
+            Number(RealConstToken(2.0, Position(1, 10))),
+            SubtractionToken(Position(1, 14)),
+            Number(IntegerConstToken(1, Position(1, 16)))
+          ),
+          MultiplicationToken(Position(1, 19)),
+          Number(IntegerConstToken(2, Position(1, 21)))
+        ),
+        ValToken(Position(1, 1))
+      )
     )
   }
   test("Parse multiplication") {
@@ -135,7 +147,73 @@ class ParserTest extends FunSuite {
     val parser = Parser.fromResource("parser/multipleStatements.intp")
     val ast = parser.parse().children
     assert(
-      ast == List(ValDefAST(IdToken("x", Position(1, 5)), BinOp(Number(IntegerConstToken(1, Position(1, 9))), MultiplicationToken(Position(1, 10)), Number(IntegerConstToken(2, Position(1, 11)))), ValToken(Position(1, 1))), ValDefAST(IdToken("y", Position(2, 5)), BinOp(Number(IntegerConstToken(2, Position(2, 9))), AdditionToken(Position(2, 11)), VarAST(IdToken("x", Position(2, 13)))), ValToken(Position(2, 1))), ValDefAST(IdToken("abcd", Position(3, 5)), ArrayLiteral(List(BinOp(Number(IntegerConstToken(2, Position(3, 13))), MultiplicationToken(Position(3, 15)), Number(IntegerConstToken(3, Position(3, 17)))), Number(RealConstToken(1.3, Position(3, 20))), BinOp(VarAST(IdToken("y", Position(3, 25))), MultiplicationToken(Position(3, 27)), VarAST(IdToken("x", Position(3, 29)))), BinOp(BooleanLiteral(TrueToken(Position(3, 32))), OrToken(Position(3, 37)), BooleanLiteral(FalseToken(Position(3, 40))))), LSquareBracketToken(Position(3, 12))), ValToken(Position(3, 1))), BinOp(VarAST(IdToken("abcd", Position(4, 1))), MultiplicationToken(Position(4, 6)), Number(IntegerConstToken(2, Position(4, 8)))), FunctionCall(VarAST(IdToken("f", Position(5, 1))), List(VarAST(IdToken("abcd", Position(5, 3))), BinOp(ArrayAccess(VarAST(IdToken("g", Position(5, 9))), Number(IntegerConstToken(1, Position(5, 11)))), MultiplicationToken(Position(5, 14)), ArrayAccess(VarAST(IdToken("h", Position(5, 16))), Number(IntegerConstToken(2, Position(5, 18))))))))
+      ast == List(
+        ValDefAST(
+          IdToken("x", Position(1, 5)),
+          BinOp(
+            Number(IntegerConstToken(1, Position(1, 9))),
+            MultiplicationToken(Position(1, 10)),
+            Number(IntegerConstToken(2, Position(1, 11)))
+          ),
+          ValToken(Position(1, 1))
+        ),
+        ValDefAST(
+          IdToken("y", Position(2, 5)),
+          BinOp(
+            Number(IntegerConstToken(2, Position(2, 9))),
+            AdditionToken(Position(2, 11)),
+            VarAST(IdToken("x", Position(2, 13)))
+          ),
+          ValToken(Position(2, 1))
+        ),
+        ValDefAST(
+          IdToken("abcd", Position(3, 5)),
+          ArrayLiteral(
+            List(
+              BinOp(
+                Number(IntegerConstToken(2, Position(3, 13))),
+                MultiplicationToken(Position(3, 15)),
+                Number(IntegerConstToken(3, Position(3, 17)))
+              ),
+              Number(RealConstToken(1.3, Position(3, 20))),
+              BinOp(
+                VarAST(IdToken("y", Position(3, 25))),
+                MultiplicationToken(Position(3, 27)),
+                VarAST(IdToken("x", Position(3, 29)))
+              ),
+              BinOp(
+                BooleanLiteral(TrueToken(Position(3, 32))),
+                OrToken(Position(3, 37)),
+                BooleanLiteral(FalseToken(Position(3, 40)))
+              )
+            ),
+            LSquareBracketToken(Position(3, 12))
+          ),
+          ValToken(Position(3, 1))
+        ),
+        BinOp(
+          VarAST(IdToken("abcd", Position(4, 1))),
+          MultiplicationToken(Position(4, 6)),
+          Number(IntegerConstToken(2, Position(4, 8)))
+        ),
+        FunctionCall(
+          VarAST(IdToken("f", Position(5, 1))),
+          List(
+            VarAST(IdToken("abcd", Position(5, 3))),
+            BinOp(
+              ArrayAccess(
+                VarAST(IdToken("g", Position(5, 9))),
+                Number(IntegerConstToken(1, Position(5, 11)))
+              ),
+              MultiplicationToken(Position(5, 14)),
+              ArrayAccess(
+                VarAST(IdToken("h", Position(5, 16))),
+                Number(IntegerConstToken(2, Position(5, 18)))
+              )
+            )
+          )
+        )
+      )
     )
   }
   test("Parse functions call") {
@@ -247,22 +325,71 @@ class ParserTest extends FunSuite {
     val parser = Parser.fromResource("parser/functionDefinition.intp")
     val ast = parser.parse().children
     assert(
-      ast == List(ValDefAST(IdToken("f", Position(1, 5)), FunctionLiteral(List(IdToken("a", Position(1, 14)), IdToken("b", Position(1, 17))), Program(List(ValDefAST(IdToken("x", Position(2, 7)), BinOp(VarAST(IdToken("a", Position(2, 11))), MultiplicationToken(Position(2, 13)), Number(IntegerConstToken(2, Position(2, 15)))), ValToken(Position(2, 3))),
-        VarDefAST(IdToken("arr", Position(3, 7)), ArrayLiteral(List(VarAST(IdToken("a", Position(3, 14))), VarAST(IdToken("b", Position(3, 17))), VarAST(IdToken("x", Position(3, 20)))), LSquareBracketToken(Position(3, 13))), VarToken(Position(3, 3))))), FuncToken(Position(1, 9))), ValToken(Position(1, 1))))
+      ast == List(
+        ValDefAST(
+          IdToken("f", Position(1, 5)),
+          FunctionLiteral(
+            List(IdToken("a", Position(1, 14)), IdToken("b", Position(1, 17))),
+            Program(
+              List(
+                ValDefAST(
+                  IdToken("x", Position(2, 7)),
+                  BinOp(
+                    VarAST(IdToken("a", Position(2, 11))),
+                    MultiplicationToken(Position(2, 13)),
+                    Number(IntegerConstToken(2, Position(2, 15)))
+                  ),
+                  ValToken(Position(2, 3))
+                ),
+                VarDefAST(
+                  IdToken("arr", Position(3, 7)),
+                  ArrayLiteral(
+                    List(
+                      VarAST(IdToken("a", Position(3, 14))),
+                      VarAST(IdToken("b", Position(3, 17))),
+                      VarAST(IdToken("x", Position(3, 20)))
+                    ),
+                    LSquareBracketToken(Position(3, 13))
+                  ),
+                  VarToken(Position(3, 3))
+                )
+              )
+            ),
+            FuncToken(Position(1, 9))
+          ),
+          ValToken(Position(1, 1))
+        )
+      )
     )
   }
   test("Parse character assignment") {
     val parser = new Parser("val c = 'a'")()
     val ast = parser.parse().children.head
     assert(
-      ast == ValDefAST(IdToken("c", Position(1, 5)), CharLiteral(CharToken('a', Position(1, 10))), ValToken(Position(1, 1)))
+      ast == ValDefAST(
+        IdToken("c", Position(1, 5)),
+        CharLiteral(CharToken('a', Position(1, 10))),
+        ValToken(Position(1, 1))
+      )
     )
   }
   test("Parse string assignment") {
     val parser = new Parser("val s = \"text\"")()
     val ast = parser.parse().children.head
     assert(
-      ast == ValDefAST(IdToken("s", Position(1, 5)), ArrayLiteral(List(CharLiteral(CharToken('t', Position(1, 10))), CharLiteral(CharToken('e', Position(1, 10))), CharLiteral(CharToken('x', Position(1, 10))), CharLiteral(CharToken('t', Position(1, 10)))), LSquareBracketToken(Position(1, 9))), ValToken(Position(1, 1)))
+      ast == ValDefAST(
+        IdToken("s", Position(1, 5)),
+        ArrayLiteral(
+          List(
+            CharLiteral(CharToken('t', Position(1, 10))),
+            CharLiteral(CharToken('e', Position(1, 10))),
+            CharLiteral(CharToken('x', Position(1, 10))),
+            CharLiteral(CharToken('t', Position(1, 10)))
+          ),
+          LSquareBracketToken(Position(1, 9))
+        ),
+        ValToken(Position(1, 1))
+      )
     )
   }
   test("Parse if statement") {
@@ -281,22 +408,98 @@ class ParserTest extends FunSuite {
     val parser = Parser.fromResource("parser/if-else.intp")
     val ast = parser.parse().children.head
     assert(
-      ast == IfAST(BinOp(VarAST(IdToken("x", Position(1, 4))), EqualsToken(Position(1, 6)), Number(IntegerConstToken(2, Position(1, 9)))), Program(List(ValDefAST(IdToken("c", Position(2, 7)), BooleanLiteral(TrueToken(Position(2, 11))), ValToken(Position(2, 3))))), Some(Program(List(ValDefAST(IdToken("c", Position(4, 7)), BooleanLiteral(FalseToken(Position(4, 11))), ValToken(Position(4, 3)))))), IfToken(Position(1, 1)))
+      ast == IfAST(
+        BinOp(
+          VarAST(IdToken("x", Position(1, 4))),
+          EqualsToken(Position(1, 6)),
+          Number(IntegerConstToken(2, Position(1, 9)))
+        ),
+        Program(
+          List(
+            ValDefAST(
+              IdToken("c", Position(2, 7)),
+              BooleanLiteral(TrueToken(Position(2, 11))),
+              ValToken(Position(2, 3))
+            )
+          )
+        ),
+        Some(
+          Program(
+            List(
+              ValDefAST(
+                IdToken("c", Position(4, 7)),
+                BooleanLiteral(FalseToken(Position(4, 11))),
+                ValToken(Position(4, 3))
+              )
+            )
+          )
+        ),
+        IfToken(Position(1, 1))
+      )
     )
   }
   test("Parse while statement") {
     val parser = Parser.fromResource("parser/while.intp")
     val ast = parser.parse().children.head
     assert(
-      ast == WhileAST(BooleanLiteral(TrueToken(Position(1, 7))), Program(List(VarDefAST(IdToken("x", Position(2, 7)), BinOp(VarAST(IdToken("x", Position(2, 11))), AdditionToken(Position(2, 13)), Number(IntegerConstToken(1, Position(2, 15)))), VarToken(Position(2, 3))))), WhileToken(Position(1, 1)))
+      ast == WhileAST(
+        BooleanLiteral(TrueToken(Position(1, 7))),
+        Program(
+          List(
+            VarDefAST(
+              IdToken("x", Position(2, 7)),
+              BinOp(
+                VarAST(IdToken("x", Position(2, 11))),
+                AdditionToken(Position(2, 13)),
+                Number(IntegerConstToken(1, Position(2, 15)))
+              ),
+              VarToken(Position(2, 3))
+            )
+          )
+        ),
+        WhileToken(Position(1, 1))
+      )
     )
   }
   test("Parse function definition inside another function") {
     val parser = Parser.fromResource("parser/nestedFunctions.intp")
     val ast = parser.parse().children.head
     assert(
-      ast == ValDefAST(IdToken("f", Position(1, 5)), FunctionLiteral(List(IdToken("a", Position(1, 14)), IdToken("b", Position(1, 17))), Program(List(ValDefAST(IdToken("g", Position(2, 7)), FunctionLiteral(List(IdToken("c", Position(2, 16)), IdToken("d", Position(2, 19))), Program(List(FunctionCall(VarAST(IdToken("f", Position(3, 5))), List(VarAST(IdToken("c", Position(3, 7))), VarAST(IdToken("d", Position(3, 10))))))), FuncToken(Position(2, 11))), ValToken(Position(2, 3))),
-        FunctionCall(VarAST(IdToken("g", Position(5, 3))), List(VarAST(IdToken("a", Position(5, 5))), VarAST(IdToken("b", Position(5, 8))))))), FuncToken(Position(1, 9))), ValToken(Position(1, 1)))
+      ast == ValDefAST(
+        IdToken("f", Position(1, 5)),
+        FunctionLiteral(
+          List(IdToken("a", Position(1, 14)), IdToken("b", Position(1, 17))),
+          Program(
+            List(
+              ValDefAST(
+                IdToken("g", Position(2, 7)),
+                FunctionLiteral(
+                  List(IdToken("c", Position(2, 16)), IdToken("d", Position(2, 19))),
+                  Program(
+                    List(
+                      FunctionCall(
+                        VarAST(IdToken("f", Position(3, 5))),
+                        List(
+                          VarAST(IdToken("c", Position(3, 7))),
+                          VarAST(IdToken("d", Position(3, 10)))
+                        )
+                      )
+                    )
+                  ),
+                  FuncToken(Position(2, 11))
+                ),
+                ValToken(Position(2, 3))
+              ),
+              FunctionCall(
+                VarAST(IdToken("g", Position(5, 3))),
+                List(VarAST(IdToken("a", Position(5, 5))), VarAST(IdToken("b", Position(5, 8))))
+              )
+            )
+          ),
+          FuncToken(Position(1, 9))
+        ),
+        ValToken(Position(1, 1))
+      )
     )
   }
   test("Parse return statement") {
@@ -368,8 +571,38 @@ class ParserTest extends FunSuite {
     val parser = Parser.fromResource("parser/comments.intp")
     val ast = parser.parse()
     assert(
-      ast == Program(List(ValDefAST(IdToken("x", Position(2, 4)), ArrayLiteral(List(CharLiteral(CharToken('t', Position(2, 9))), CharLiteral(CharToken('e', Position(2, 9))), CharLiteral(CharToken('s', Position(2, 9))), CharLiteral(CharToken('t', Position(2, 9)))), LSquareBracketToken(Position(2, 8))), ValToken(Position(2, 0))),
-        ValDefAST(IdToken("y", Position(4, 4)), BinOp(VarAST(IdToken("x", Position(4, 8))), AdditionToken(Position(4, 10)), ArrayLiteral(List(CharLiteral(CharToken(' ', Position(4, 13))), CharLiteral(CharToken('.', Position(4, 13)))), LSquareBracketToken(Position(4, 12)))), ValToken(Position(4, 0)))))
+      ast == Program(
+        List(
+          ValDefAST(
+            IdToken("x", Position(2, 4)),
+            ArrayLiteral(
+              List(
+                CharLiteral(CharToken('t', Position(2, 9))),
+                CharLiteral(CharToken('e', Position(2, 9))),
+                CharLiteral(CharToken('s', Position(2, 9))),
+                CharLiteral(CharToken('t', Position(2, 9)))
+              ),
+              LSquareBracketToken(Position(2, 8))
+            ),
+            ValToken(Position(2, 0))
+          ),
+          ValDefAST(
+            IdToken("y", Position(4, 4)),
+            BinOp(
+              VarAST(IdToken("x", Position(4, 8))),
+              AdditionToken(Position(4, 10)),
+              ArrayLiteral(
+                List(
+                  CharLiteral(CharToken(' ', Position(4, 13))),
+                  CharLiteral(CharToken('.', Position(4, 13)))
+                ),
+                LSquareBracketToken(Position(4, 12))
+              )
+            ),
+            ValToken(Position(4, 0))
+          )
+        )
+      )
     )
   }
   test("Parse else-if statement") {
@@ -425,50 +658,270 @@ class ParserTest extends FunSuite {
   test("Parse function call from array") {
     val parser = Parser.fromResource("parser/functionCallFromArray.intp")
     val ast = parser.parse()
-    assert(ast ==
-      Program(List(ValDefAST(IdToken("x", Position(1, 5)), ArrayLiteral(List(FunctionLiteral(List(IdToken("x", Position(1, 15))), Program(List(ReturnAST(VarAST(IdToken("x", Position(1, 25))), ReturnToken(Position(1, 18))))), FuncToken(Position(1, 10)))), LSquareBracketToken(Position(1, 9))), ValToken(Position(1, 1))),
-        BuiltinFunctionCall(IdToken("println", Position(2, 1)), List(FunctionCall(ArrayAccess(VarAST(IdToken("x", Position(2, 9))), Number(IntegerConstToken(0, Position(2, 11)))), List(ArrayLiteral(List(CharLiteral(CharToken('t', Position(2, 15))), CharLiteral(CharToken('e', Position(2, 15))), CharLiteral(CharToken('s', Position(2, 15))), CharLiteral(CharToken('t', Position(2, 15)))), LSquareBracketToken(Position(2, 14)))))))))
+    assert(
+      ast ==
+        Program(
+          List(
+            ValDefAST(
+              IdToken("x", Position(1, 5)),
+              ArrayLiteral(
+                List(
+                  FunctionLiteral(
+                    List(IdToken("x", Position(1, 15))),
+                    Program(
+                      List(
+                        ReturnAST(
+                          VarAST(IdToken("x", Position(1, 25))),
+                          ReturnToken(Position(1, 18))
+                        )
+                      )
+                    ),
+                    FuncToken(Position(1, 10))
+                  )
+                ),
+                LSquareBracketToken(Position(1, 9))
+              ),
+              ValToken(Position(1, 1))
+            ),
+            BuiltinFunctionCall(
+              IdToken("println", Position(2, 1)),
+              List(
+                FunctionCall(
+                  ArrayAccess(
+                    VarAST(IdToken("x", Position(2, 9))),
+                    Number(IntegerConstToken(0, Position(2, 11)))
+                  ),
+                  List(
+                    ArrayLiteral(
+                      List(
+                        CharLiteral(CharToken('t', Position(2, 15))),
+                        CharLiteral(CharToken('e', Position(2, 15))),
+                        CharLiteral(CharToken('s', Position(2, 15))),
+                        CharLiteral(CharToken('t', Position(2, 15)))
+                      ),
+                      LSquareBracketToken(Position(2, 14))
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
     )
   }
   test("Parse indexing of array returned from function") {
     val parser = Parser.fromResource("parser/arrayIndexingFromFunction.intp")
     val ast = parser.parse()
-    assert(ast ==
-      Program(List(ValDefAST(IdToken("f", Position(1, 5)), FunctionLiteral(List(), Program(List(ReturnAST(ArrayLiteral(List(Number(IntegerConstToken(1, Position(2, 11))), Number(IntegerConstToken(2, Position(2, 14))), Number(IntegerConstToken(15, Position(2, 17)))), LSquareBracketToken(Position(2, 10))), ReturnToken(Position(2, 3))))), FuncToken(Position(1, 9))), ValToken(Position(1, 1))),
-        BuiltinFunctionCall(IdToken("println", Position(4, 1)), List(ArrayAccess(FunctionCall(VarAST(IdToken("f", Position(4, 9))), List()), Number(IntegerConstToken(2, Position(4, 13))))))))
+    assert(
+      ast ==
+        Program(
+          List(
+            ValDefAST(
+              IdToken("f", Position(1, 5)),
+              FunctionLiteral(
+                List(),
+                Program(
+                  List(
+                    ReturnAST(
+                      ArrayLiteral(
+                        List(
+                          Number(IntegerConstToken(1, Position(2, 11))),
+                          Number(IntegerConstToken(2, Position(2, 14))),
+                          Number(IntegerConstToken(15, Position(2, 17)))
+                        ),
+                        LSquareBracketToken(Position(2, 10))
+                      ),
+                      ReturnToken(Position(2, 3))
+                    )
+                  )
+                ),
+                FuncToken(Position(1, 9))
+              ),
+              ValToken(Position(1, 1))
+            ),
+            BuiltinFunctionCall(
+              IdToken("println", Position(4, 1)),
+              List(
+                ArrayAccess(
+                  FunctionCall(VarAST(IdToken("f", Position(4, 9))), List()),
+                  Number(IntegerConstToken(2, Position(4, 13)))
+                )
+              )
+            )
+          )
+        )
     )
   }
   test("Parse object literal") {
     val parser = Parser.fromResource("parser/objectLiteral.intp")
     val ast = parser.parse()
-    assert(ast ==
-      Program(List(ValDefAST(IdToken("person", Position(1, 5)), ObjectLiteral(Map(IdToken("name", Position(1, 15)) -> ArrayLiteral(List(CharLiteral(CharToken('J', Position(1, 23))), CharLiteral(CharToken('o', Position(1, 23))), CharLiteral(CharToken('h', Position(1, 23))), CharLiteral(CharToken('n', Position(1, 23)))), LSquareBracketToken(Position(1, 22))), IdToken("surname", Position(1, 30)) -> ArrayLiteral(List(CharLiteral(CharToken('S', Position(1, 41))), CharLiteral(CharToken('m', Position(1, 41))), CharLiteral(CharToken('i', Position(1, 41))), CharLiteral(CharToken('t', Position(1, 41))), CharLiteral(CharToken('h', Position(1, 41)))), LSquareBracketToken(Position(1, 40)))), LCurlyBracketToken(Position(1, 14))), ValToken(Position(1, 1)))))
+    assert(
+      ast ==
+        Program(
+          List(
+            ValDefAST(
+              IdToken("person", Position(1, 5)),
+              ObjectLiteral(
+                Map(
+                  IdToken("name", Position(1, 15)) -> ArrayLiteral(
+                    List(
+                      CharLiteral(CharToken('J', Position(1, 23))),
+                      CharLiteral(CharToken('o', Position(1, 23))),
+                      CharLiteral(CharToken('h', Position(1, 23))),
+                      CharLiteral(CharToken('n', Position(1, 23)))
+                    ),
+                    LSquareBracketToken(Position(1, 22))
+                  ),
+                  IdToken("surname", Position(1, 30)) -> ArrayLiteral(
+                    List(
+                      CharLiteral(CharToken('S', Position(1, 41))),
+                      CharLiteral(CharToken('m', Position(1, 41))),
+                      CharLiteral(CharToken('i', Position(1, 41))),
+                      CharLiteral(CharToken('t', Position(1, 41))),
+                      CharLiteral(CharToken('h', Position(1, 41)))
+                    ),
+                    LSquareBracketToken(Position(1, 40))
+                  )
+                ),
+                LCurlyBracketToken(Position(1, 14))
+              ),
+              ValToken(Position(1, 1))
+            )
+          )
+        )
     )
   }
   test("Object literal property access") {
     val parser = Parser.fromResource("parser/propertyAccess.intp")
     val ast = parser.parse()
-    assert(ast ==
-      Program(List(ValDefAST(IdToken("obj", Position(1, 5)), ObjectLiteral(Map(IdToken("x", Position(1, 12)) -> Number(IntegerConstToken(1, Position(1, 16))), IdToken("y", Position(1, 19)) -> Number(IntegerConstToken(2, Position(1, 23))), IdToken("z", Position(1, 26)) -> Number(IntegerConstToken(3, Position(1, 30)))), LCurlyBracketToken(Position(1, 11))), ValToken(Position(1, 1))),
-        ValDefAST(IdToken("f", Position(2, 5)), PropertyAccess(VarAST(IdToken("obj", Position(2, 9))), IdToken("y", Position(2, 13))), ValToken(Position(2, 1)))))
+    assert(
+      ast ==
+        Program(
+          List(
+            ValDefAST(
+              IdToken("obj", Position(1, 5)),
+              ObjectLiteral(
+                Map(
+                  IdToken("x", Position(1, 12)) -> Number(IntegerConstToken(1, Position(1, 16))),
+                  IdToken("y", Position(1, 19)) -> Number(IntegerConstToken(2, Position(1, 23))),
+                  IdToken("z", Position(1, 26)) -> Number(IntegerConstToken(3, Position(1, 30)))
+                ),
+                LCurlyBracketToken(Position(1, 11))
+              ),
+              ValToken(Position(1, 1))
+            ),
+            ValDefAST(
+              IdToken("f", Position(2, 5)),
+              PropertyAccess(VarAST(IdToken("obj", Position(2, 9))), IdToken("y", Position(2, 13))),
+              ValToken(Position(2, 1))
+            )
+          )
+        )
     )
   }
   test("Data keyword desugars to function") {
     val parser = Parser.fromResource("parser/data.intp")
     val ast = parser.parse()
-    assert(ast ==
-      Program(List(ValDefAST(IdToken("Person", Position(1, 5)), FunctionLiteral(List(IdToken("name", Position(1, 19)), IdToken("surname", Position(1, 25))), Program(List(ReturnAST(ObjectLiteral(Map(IdToken("name", Position(1, 19)) -> VarAST(IdToken("name", Position(1, 19))), IdToken("surname", Position(1, 25)) -> VarAST(IdToken("surname", Position(1, 25)))), LCurlyBracketToken(Position(1, 14))), ReturnToken(Position(1, 14))))), FuncToken(Position(1, 14))), ValToken(Position(1, 1))),
-        ValDefAST(IdToken("person", Position(2, 5)), FunctionCall(VarAST(IdToken("Person", Position(2, 14))), List(ArrayLiteral(List(CharLiteral(CharToken('J', Position(2, 22))), CharLiteral(CharToken('o', Position(2, 22))), CharLiteral(CharToken('h', Position(2, 22))), CharLiteral(CharToken('n', Position(2, 22)))), LSquareBracketToken(Position(2, 21))), ArrayLiteral(List(CharLiteral(CharToken('S', Position(2, 30))), CharLiteral(CharToken('m', Position(2, 30))), CharLiteral(CharToken('i', Position(2, 30))), CharLiteral(CharToken('t', Position(2, 30))), CharLiteral(CharToken('h', Position(2, 30)))), LSquareBracketToken(Position(2, 29))))), ValToken(Position(2, 1))),
-        ValDefAST(IdToken("n", Position(3, 5)), PropertyAccess(VarAST(IdToken("person", Position(3, 9))), IdToken("name", Position(3, 16))), ValToken(Position(3, 1))),
-        ValDefAST(IdToken("s", Position(4, 5)), PropertyAccess(VarAST(IdToken("person", Position(4, 9))), IdToken("surname", Position(4, 16))), ValToken(Position(4, 1)))))
+    assert(
+      ast ==
+        Program(
+          List(
+            ValDefAST(
+              IdToken("Person", Position(1, 5)),
+              FunctionLiteral(
+                List(IdToken("name", Position(1, 19)), IdToken("surname", Position(1, 25))),
+                Program(
+                  List(
+                    ReturnAST(
+                      ObjectLiteral(
+                        Map(
+                          IdToken("name", Position(1, 19)) -> VarAST(
+                            IdToken("name", Position(1, 19))
+                          ),
+                          IdToken("surname", Position(1, 25)) -> VarAST(
+                            IdToken("surname", Position(1, 25))
+                          )
+                        ),
+                        LCurlyBracketToken(Position(1, 14))
+                      ),
+                      ReturnToken(Position(1, 14))
+                    )
+                  )
+                ),
+                FuncToken(Position(1, 14))
+              ),
+              ValToken(Position(1, 1))
+            ),
+            ValDefAST(
+              IdToken("person", Position(2, 5)),
+              FunctionCall(
+                VarAST(IdToken("Person", Position(2, 14))),
+                List(
+                  ArrayLiteral(
+                    List(
+                      CharLiteral(CharToken('J', Position(2, 22))),
+                      CharLiteral(CharToken('o', Position(2, 22))),
+                      CharLiteral(CharToken('h', Position(2, 22))),
+                      CharLiteral(CharToken('n', Position(2, 22)))
+                    ),
+                    LSquareBracketToken(Position(2, 21))
+                  ),
+                  ArrayLiteral(
+                    List(
+                      CharLiteral(CharToken('S', Position(2, 30))),
+                      CharLiteral(CharToken('m', Position(2, 30))),
+                      CharLiteral(CharToken('i', Position(2, 30))),
+                      CharLiteral(CharToken('t', Position(2, 30))),
+                      CharLiteral(CharToken('h', Position(2, 30)))
+                    ),
+                    LSquareBracketToken(Position(2, 29))
+                  )
+                )
+              ),
+              ValToken(Position(2, 1))
+            ),
+            ValDefAST(
+              IdToken("n", Position(3, 5)),
+              PropertyAccess(
+                VarAST(IdToken("person", Position(3, 9))),
+                IdToken("name", Position(3, 16))
+              ),
+              ValToken(Position(3, 1))
+            ),
+            ValDefAST(
+              IdToken("s", Position(4, 5)),
+              PropertyAccess(
+                VarAST(IdToken("person", Position(4, 9))),
+                IdToken("surname", Position(4, 16))
+              ),
+              ValToken(Position(4, 1))
+            )
+          )
+        )
     )
   }
   test("Property assignment") {
     val parser = Parser.fromResource("parser/propertyAssignment.intp")
     val ast = parser.parse()
-    assert(ast ==
-      Program(List(ValDefAST(IdToken("test", Position(1, 5)), ObjectLiteral(Map(IdToken("a", Position(1, 13)) -> CharLiteral(CharToken('f', Position(1, 18)))), LCurlyBracketToken(Position(1, 12))), ValToken(Position(1, 1))),
-        PropertyAssignAST(VarAST(IdToken("test", Position(2, 1))), IdToken("a", Position(2, 6)), CharLiteral(CharToken('x', Position(2, 11))))))
+    assert(
+      ast ==
+        Program(
+          List(
+            ValDefAST(
+              IdToken("test", Position(1, 5)),
+              ObjectLiteral(
+                Map(IdToken("a", Position(1, 13)) -> CharLiteral(CharToken('f', Position(1, 18)))),
+                LCurlyBracketToken(Position(1, 12))
+              ),
+              ValToken(Position(1, 1))
+            ),
+            PropertyAssignAST(
+              VarAST(IdToken("test", Position(2, 1))),
+              IdToken("a", Position(2, 6)),
+              CharLiteral(CharToken('x', Position(2, 11)))
+            )
+          )
+        )
     )
   }
   test("Parse double comment") {

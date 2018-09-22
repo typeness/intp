@@ -25,13 +25,15 @@ class Memory {
     ()
   }
 
-  private def updateVariables(old: mutable.Map[String, ObjectInMemory],
-                      updated: mutable.Map[String, ObjectInMemory]): mutable.Map[String, ObjectInMemory] =
+  private def updateVariables(
+    old: mutable.Map[String, ObjectInMemory],
+    updated: mutable.Map[String, ObjectInMemory]
+  ): mutable.Map[String, ObjectInMemory] =
     old.map {
       case (name, value) =>
         updated.get(name) match {
           case Some(newObj) if newObj.scopeLevel == value.scopeLevel => name -> newObj
-          case _ => name -> value
+          case _                                                     => name -> value
         }
     }
 
@@ -61,6 +63,5 @@ class Memory {
   def get(name: String): Option[ObjectInMemory] = stack.head.get(name)
 
   def getAll: Map[String, ObjectInMemory] = stack.head.toMap
-
 
 }

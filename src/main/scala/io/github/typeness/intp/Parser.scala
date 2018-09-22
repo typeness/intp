@@ -42,14 +42,14 @@ class Parser(text: String)(
    */
   private def statement(): AST = {
     currentToken.tokenType match {
-      case IMPORT => importStatement()
-      case IF => ifStatement()
-      case WHILE => whileStatement()
-      case RETURN => returnStatement()
-      case FOR => forStatement()
-      case BREAK => breakStatement()
+      case IMPORT    => importStatement()
+      case IF        => ifStatement()
+      case WHILE     => whileStatement()
+      case RETURN    => returnStatement()
+      case FOR       => forStatement()
+      case BREAK     => breakStatement()
       case VAL | VAR => definition()
-      case _ => disjunction()
+      case _         => disjunction()
     }
   }
 
@@ -97,7 +97,6 @@ class Parser(text: String)(
     }
     steps.toList
   }
-
 
   /*
   import_statement = IMPORT ID ;
@@ -244,7 +243,7 @@ class Parser(text: String)(
         case PropertyAccess(source, name) =>
           PropertyAssignAST(source, name, desugarCompoundAssignment(result))
         case VarAST(name) => AssignAST(name, desugarCompoundAssignment(result), assignmentToken)
-        case _ => throw SyntaxError(result.token.value, compilationUnit, currentToken.position)
+        case _            => throw SyntaxError(result.token.value, compilationUnit, currentToken.position)
       }
     } else {
       while (currentToken.tokenType == OR) {
@@ -282,8 +281,8 @@ class Parser(text: String)(
   private def boolean(): AST = {
     var result = expression()
     while (currentToken.tokenType == GREATER || currentToken.tokenType == LESS
-      || currentToken.tokenType == GREATER_OR_EQUALS || currentToken.tokenType == LESS_OR_EQUALS
-      || currentToken.tokenType == EQUALS || currentToken.tokenType == NOT_EQUALS) {
+           || currentToken.tokenType == GREATER_OR_EQUALS || currentToken.tokenType == LESS_OR_EQUALS
+           || currentToken.tokenType == EQUALS || currentToken.tokenType == NOT_EQUALS) {
       val op = currentToken
       eat(op.tokenType)
       result = BinOp(left = result, op = op, right = expression())
@@ -315,7 +314,7 @@ class Parser(text: String)(
   private def term(): AST = {
     var result = factor()
     while (currentToken.tokenType == MULTIPLICATION
-      || currentToken.tokenType == DIV || currentToken.tokenType == MODULO) {
+           || currentToken.tokenType == DIV || currentToken.tokenType == MODULO) {
       val op = currentToken
       eat(op.tokenType)
       result = BinOp(left = result, op = op, right = factor())
@@ -340,23 +339,23 @@ class Parser(text: String)(
   private def factor(): AST = {
     val token = currentToken
     currentToken.tokenType match {
-      case ID => variable()
-      case FUNC => functionLiteral()
-      case PLUS | MINUS | NOT => unaryOperator()
+      case ID                         => variable()
+      case FUNC                       => functionLiteral()
+      case PLUS | MINUS | NOT         => unaryOperator()
       case INTEGER_CONST | REAL_CONST => numberLiteral()
-      case TRUE | FALSE => booleanLiteral()
+      case TRUE | FALSE               => booleanLiteral()
       case L_ROUND_BRACKET =>
         eat(L_ROUND_BRACKET)
         val result = disjunction()
         eat(R_ROUND_BRACKET)
         result
       case L_SQUARE_BRACKET => arrayLiteral()
-      case APOSTROPHE => characterLiteral()
-      case QUOTATION => stringLiteral()
-      case IF => ifThenElse()
-      case L_CURLY_BRACKET => objectLiteral()
-      case DATA => data()
-      case _ => throw SyntaxError(token.value, compilationUnit, currentToken.position)
+      case APOSTROPHE       => characterLiteral()
+      case QUOTATION        => stringLiteral()
+      case IF               => ifThenElse()
+      case L_CURLY_BRACKET  => objectLiteral()
+      case DATA             => data()
+      case _                => throw SyntaxError(token.value, compilationUnit, currentToken.position)
     }
   }
 
@@ -382,10 +381,10 @@ class Parser(text: String)(
           case _ => ArrayAccess(VarAST(IdToken(name, pos)), arrayIndexing())
         }
         while (currentToken.tokenType == L_ROUND_BRACKET
-          || currentToken.tokenType == L_SQUARE_BRACKET || currentToken.tokenType == DOT) {
+               || currentToken.tokenType == L_SQUARE_BRACKET || currentToken.tokenType == DOT) {
           currentToken.tokenType match {
             case L_ROUND_BRACKET => varAST = FunctionCall(varAST, actualParametersList())
-            case DOT => varAST = PropertyAccess(varAST, propertyAccess().name)
+            case DOT             => varAST = PropertyAccess(varAST, propertyAccess().name)
             // actually L_SQUARE_BRACKET
             case _ => varAST = ArrayAccess(varAST, arrayIndexing())
           }
@@ -667,15 +666,15 @@ class Parser(text: String)(
       case L_ROUND_BRACKET | L_SQUARE_BRACKET | DOT =>
         var varAST = currentToken.tokenType match {
           case L_ROUND_BRACKET => FunctionCall(source, actualParametersList())
-          case DOT => PropertyAccess(source, propertyAccess().name)
+          case DOT             => PropertyAccess(source, propertyAccess().name)
           // actually L_SQUARE_BRACKET
           case _ => ArrayAccess(source, arrayIndexing())
         }
         while (currentToken.tokenType == L_ROUND_BRACKET
-          || currentToken.tokenType == L_SQUARE_BRACKET || currentToken.tokenType == DOT) {
+               || currentToken.tokenType == L_SQUARE_BRACKET || currentToken.tokenType == DOT) {
           currentToken.tokenType match {
             case L_ROUND_BRACKET => varAST = FunctionCall(varAST, actualParametersList())
-            case DOT => varAST = PropertyAccess(varAST, propertyAccess().name)
+            case DOT             => varAST = PropertyAccess(varAST, propertyAccess().name)
             // actually L_SQUARE_BRACKET
             case _ => varAST = ArrayAccess(varAST, arrayIndexing())
           }

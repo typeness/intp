@@ -9,44 +9,44 @@ class Interpreter extends ASTVisitor {
   private var compilationUnit: CompilationUnit = CompilationUnit(fileName, "")
 
   private def integerOperands(left: Int, op: Token, right: Int): TopType = op.tokenType match {
-    case PLUS => IntegerType(left + right)
-    case MINUS => IntegerType(left - right)
-    case MULTIPLICATION => IntegerType(left * right)
-    case DIV => IntegerType(left / right)
-    case EQUALS => BooleanType(left == right)
+    case PLUS              => IntegerType(left + right)
+    case MINUS             => IntegerType(left - right)
+    case MULTIPLICATION    => IntegerType(left * right)
+    case DIV               => IntegerType(left / right)
+    case EQUALS            => BooleanType(left == right)
     case GREATER_OR_EQUALS => BooleanType(left >= right)
-    case LESS_OR_EQUALS => BooleanType(left <= right)
-    case GREATER => BooleanType(left > right)
-    case LESS => BooleanType(left < right)
-    case NOT_EQUALS => BooleanType(left != right)
-    case L_ROUND_BRACKET => UnitType
-    case MODULO => DoubleType(left % right)
+    case LESS_OR_EQUALS    => BooleanType(left <= right)
+    case GREATER           => BooleanType(left > right)
+    case LESS              => BooleanType(left < right)
+    case NOT_EQUALS        => BooleanType(left != right)
+    case L_ROUND_BRACKET   => UnitType
+    case MODULO            => DoubleType(left % right)
     case _ =>
       throw WrongBinaryOperator(left, op, right, compilationUnit, op.position)
   }
 
   private def doubleOperands(left: Double, op: Token, right: Double): TopType = op.tokenType match {
-    case PLUS => DoubleType(left + right)
-    case MINUS => DoubleType(left - right)
-    case MULTIPLICATION => DoubleType(left * right)
-    case DIV => DoubleType(left / right)
-    case EQUALS => BooleanType(left == right)
+    case PLUS              => DoubleType(left + right)
+    case MINUS             => DoubleType(left - right)
+    case MULTIPLICATION    => DoubleType(left * right)
+    case DIV               => DoubleType(left / right)
+    case EQUALS            => BooleanType(left == right)
     case GREATER_OR_EQUALS => BooleanType(left >= right)
-    case LESS_OR_EQUALS => BooleanType(left <= right)
-    case GREATER => BooleanType(left > right)
-    case LESS => BooleanType(left < right)
-    case NOT_EQUALS => BooleanType(left != right)
-    case L_ROUND_BRACKET => UnitType
-    case MODULO => DoubleType(left % right)
+    case LESS_OR_EQUALS    => BooleanType(left <= right)
+    case GREATER           => BooleanType(left > right)
+    case LESS              => BooleanType(left < right)
+    case NOT_EQUALS        => BooleanType(left != right)
+    case L_ROUND_BRACKET   => UnitType
+    case MODULO            => DoubleType(left % right)
     case _ =>
       throw WrongBinaryOperator(left, op, right, compilationUnit, op.position)
   }
 
   private def booleanOperands(left: Boolean, op: Token, right: Boolean): BooleanType =
     op.tokenType match {
-      case AND => BooleanType(left && right)
-      case OR => BooleanType(left || right)
-      case EQUALS => BooleanType(left == right)
+      case AND        => BooleanType(left && right)
+      case OR         => BooleanType(left || right)
+      case EQUALS     => BooleanType(left == right)
       case NOT_EQUALS => BooleanType(left != right)
       case _ =>
         throw WrongBinaryOperator(left, op, right, compilationUnit, op.position)
@@ -54,18 +54,18 @@ class Interpreter extends ASTVisitor {
 
   private def charOperands(left: Char, op: Token, right: Char): TopType =
     op.tokenType match {
-      case EQUALS => BooleanType(left == right)
+      case EQUALS     => BooleanType(left == right)
       case NOT_EQUALS => BooleanType(left != right)
       case _ =>
         throw WrongBinaryOperator(left, op, right, compilationUnit, op.position)
     }
 
-  private def arrayOperands(left: mutable.ArrayBuffer[TopType@unchecked],
+  private def arrayOperands(left: mutable.ArrayBuffer[TopType @unchecked],
                             op: Token,
-                            right: mutable.ArrayBuffer[TopType@unchecked]): TopType =
+                            right: mutable.ArrayBuffer[TopType @unchecked]): TopType =
     op.tokenType match {
-      case PLUS => ArrayType(left ++ right)
-      case EQUALS => BooleanType(left == right)
+      case PLUS       => ArrayType(left ++ right)
+      case EQUALS     => BooleanType(left == right)
       case NOT_EQUALS => BooleanType(left != right)
       case _ =>
         throw WrongBinaryOperator(
@@ -79,9 +79,9 @@ class Interpreter extends ASTVisitor {
 
   private def objectOperands(left: ObjectType, op: Token, right: ObjectType): TopType =
     op.tokenType match {
-      case EQUALS => BooleanType(left == right)
+      case EQUALS     => BooleanType(left == right)
       case NOT_EQUALS => BooleanType(left != right)
-      case _ => throw WrongBinaryOperator(left, op, right, compilationUnit, op.position)
+      case _          => throw WrongBinaryOperator(left, op, right, compilationUnit, op.position)
     }
 
   override protected def binOp(ast: BinOp): TopType =
@@ -94,13 +94,13 @@ class Interpreter extends ASTVisitor {
         integerOperands(left, ast.op, right)
       case (IntegerType(left), DoubleType(right)) => doubleOperands(left.toDouble, ast.op, right)
       case (DoubleType(left), IntegerType(right)) => doubleOperands(left, ast.op, right.toDouble)
-      case (DoubleType(left), DoubleType(right)) => doubleOperands(left, ast.op, right)
+      case (DoubleType(left), DoubleType(right))  => doubleOperands(left, ast.op, right)
       case (BooleanType(left), BooleanType(right)) =>
         booleanOperands(left, ast.op, right)
       case (ArrayType(left), ArrayType(right)) =>
         arrayOperands(left, ast.op, right)
-      case (CharType(left), CharType(right)) => charOperands(left, ast.op, right)
-      case (left@ObjectType(_), right@ObjectType(_)) => objectOperands(left, ast.op, right)
+      case (CharType(left), CharType(right))             => charOperands(left, ast.op, right)
+      case (left @ ObjectType(_), right @ ObjectType(_)) => objectOperands(left, ast.op, right)
       case (left, right) =>
         throw WrongBinaryOperator(left, ast.op, right, compilationUnit, ast.op.position)
     }
@@ -111,7 +111,7 @@ class Interpreter extends ASTVisitor {
   }
 
   override protected def booleanLiteral(ast: BooleanLiteral): BooleanType = ast match {
-    case BooleanLiteral(TrueToken(_)) => BooleanType(true)
+    case BooleanLiteral(TrueToken(_))  => BooleanType(true)
     case BooleanLiteral(FalseToken(_)) => BooleanType(false)
   }
 
@@ -120,7 +120,7 @@ class Interpreter extends ASTVisitor {
   override protected def unaryOp(ast: UnaryOp): TopType = visit(ast.expr) match {
     case DoubleType(value) =>
       ast.op.tokenType match {
-        case PLUS => DoubleType(value)
+        case PLUS  => DoubleType(value)
         case MINUS => DoubleType(-value)
         case _ =>
           throw WrongUnaryOperator(
@@ -132,7 +132,7 @@ class Interpreter extends ASTVisitor {
       }
     case IntegerType(value) =>
       ast.op.tokenType match {
-        case PLUS => IntegerType(value)
+        case PLUS  => IntegerType(value)
         case MINUS => IntegerType(-value)
         case _ =>
           throw WrongUnaryOperator(
@@ -173,7 +173,7 @@ class Interpreter extends ASTVisitor {
 
   override protected def arrayAssignAST(ast: ArrayAssignAST): TopType =
     visit(ast.source) match {
-      case ArrayType(arr: mutable.ArrayBuffer[TopType@unchecked]) =>
+      case ArrayType(arr: mutable.ArrayBuffer[TopType @unchecked]) =>
         visit(ast.index) match {
           case IntegerType(index) =>
             arr(index) = visit(ast.expr)
@@ -193,10 +193,10 @@ class Interpreter extends ASTVisitor {
     }
 
   override protected def program(ast: Program): TopType = {
-    for (
-      child <- ast.children
-      if memory.get("return").isEmpty && !memory.get("break").map(_.value).contains(BooleanType(true))
-    ) visit(child)
+    for (child <- ast.children
+         if memory
+           .get("return")
+           .isEmpty && !memory.get("break").map(_.value).contains(BooleanType(true))) visit(child)
     UnitType
   }
 
@@ -206,7 +206,7 @@ class Interpreter extends ASTVisitor {
         if (formalParameters.size != ast.actualParameters.size) {
           val fnName = ast.source match {
             case VarAST(name) => name.value
-            case _ => "<anonymous>"
+            case _            => "<anonymous>"
           }
           throw WrongFunctionCall(
             fnName,
@@ -235,7 +235,7 @@ class Interpreter extends ASTVisitor {
           visit(body)
           val result = memory.get("return") match {
             case Some(ObjectInMemory(_, value, _, _)) => value
-            case None => UnitType
+            case None                                 => UnitType
           }
           memory.popStack()
           result
@@ -249,11 +249,18 @@ class Interpreter extends ASTVisitor {
 
   override protected def arrayAccess(ast: ArrayAccess): TopType =
     visit(ast.source) match {
-      case ArrayType(ls: mutable.ArrayBuffer[TopType@unchecked]) =>
+      case ArrayType(ls: mutable.ArrayBuffer[TopType @unchecked]) =>
         visit(ast.index) match {
           case IntegerType(i) =>
             if (i >= 0 && i < ls.size) ls(i)
-            else throw IndexOutOfBound(ast.token.value, ls.size, i, compilationUnit, ast.token.position)
+            else
+              throw IndexOutOfBound(
+                ast.token.value,
+                ls.size,
+                i,
+                compilationUnit,
+                ast.token.position
+              )
           case value =>
             throw TypeMismatch(value, "Integer", compilationUnit, ast.source.token.position)
         }
@@ -292,8 +299,8 @@ class Interpreter extends ASTVisitor {
     }
     memory.pushNewLocalScope()
     while (condition
-      && memory.get("return").isEmpty
-      && !memory.get("break").map(_.value).contains(BooleanType(true))) {
+           && memory.get("return").isEmpty
+           && !memory.get("break").map(_.value).contains(BooleanType(true))) {
       condition match {
         case true =>
           visit(ast.whileBlock)
@@ -301,7 +308,7 @@ class Interpreter extends ASTVisitor {
           throw TypeMismatch(value, "Boolean", compilationUnit, ast.whileBlock.token.position)
       }
       if (memory.get("return").nonEmpty
-        || memory.get("break").map(_.value).contains(BooleanType(true))) {
+          || memory.get("break").map(_.value).contains(BooleanType(true))) {
         condition = false
       } else {
         val BooleanType(updated) = visit(ast.condition)
@@ -336,10 +343,10 @@ class Interpreter extends ASTVisitor {
     )
 
   override protected def propertyAccess(ast: PropertyAccess): TopType = visit(ast.source) match {
-    case ObjectType(objectLiteral: mutable.Map[String@unchecked, TopType@unchecked]) =>
+    case ObjectType(objectLiteral: mutable.Map[String @unchecked, TopType @unchecked]) =>
       objectLiteral.get(ast.name.value) match {
         case Some(x) => x
-        case None => throw UndefinedVariable(ast.name.value, compilationUnit, ast.token.position)
+        case None    => throw UndefinedVariable(ast.name.value, compilationUnit, ast.token.position)
       }
     case value =>
       throw TypeMismatch(value, "Object", compilationUnit, ast.source.token.position)
@@ -347,7 +354,7 @@ class Interpreter extends ASTVisitor {
 
   override protected def propertyAssign(ast: PropertyAssignAST): TopType =
     visit(ast.source) match {
-      case ObjectType(map: mutable.Map[String@unchecked, TopType@unchecked]) =>
+      case ObjectType(map: mutable.Map[String @unchecked, TopType @unchecked]) =>
         map(ast.name.value) = visit(ast.expr)
         UnitType
       case value => throw TypeMismatch(value, "Object", compilationUnit, ast.source.token.position)
@@ -355,7 +362,7 @@ class Interpreter extends ASTVisitor {
     }
 
   override protected def ifThenElseAST(ast: IfThenElseAST): TopType = visit(ast.condition) match {
-    case BooleanType(true) => visit(ast.ifBlock)
+    case BooleanType(true)  => visit(ast.ifBlock)
     case BooleanType(false) => visit(ast.elseBlock)
     case value =>
       throw TypeMismatch(value, "Boolean", compilationUnit, ast.condition.token.position)
@@ -381,8 +388,8 @@ class Interpreter extends ASTVisitor {
         throw TypeMismatch(value, "Boolean", compilationUnit, ast.program.token.position)
     }
     while (condition
-      && memory.get("return").isEmpty
-      && !memory.get("break").map(_.value).contains(BooleanType(true))) {
+           && memory.get("return").isEmpty
+           && !memory.get("break").map(_.value).contains(BooleanType(true))) {
       condition match {
         case true =>
           visit(ast.program)
@@ -390,7 +397,7 @@ class Interpreter extends ASTVisitor {
           throw TypeMismatch(value, "Boolean", compilationUnit, ast.program.token.position)
       }
       if (memory.get("return").nonEmpty
-        || memory.get("break").map(_.value).contains(BooleanType(true))) {
+          || memory.get("break").map(_.value).contains(BooleanType(true))) {
         condition = false
       } else {
         ast.step.foreach(visit)

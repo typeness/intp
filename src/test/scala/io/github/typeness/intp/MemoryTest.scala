@@ -9,10 +9,18 @@ class MemoryTest extends FunSuite {
     val memory = new Memory()
     memory.define("a" -> IntegerType(2), isMutable = true)
     memory.define("b" -> BooleanType(true), isMutable = true)
-    memory.define("c" -> ArrayType(mutable.ArrayBuffer(DoubleType(12.3), CharType('a'))), isMutable = true)
+    memory.define(
+      "c" -> ArrayType(mutable.ArrayBuffer(DoubleType(12.3), CharType('a'))),
+      isMutable = true
+    )
     assert(memory.get("a").map(_.value).contains(IntegerType(2)))
     assert(memory.get("b").map(_.value).contains(BooleanType(true)))
-    assert(memory.get("c").map(_.value).contains(ArrayType(mutable.ArrayBuffer(DoubleType(12.3), CharType('a')))))
+    assert(
+      memory
+        .get("c")
+        .map(_.value)
+        .contains(ArrayType(mutable.ArrayBuffer(DoubleType(12.3), CharType('a'))))
+    )
   }
   test("Global variables and closures") {
     val memory = new Memory()

@@ -12,7 +12,9 @@ case class ArrayType[T <: TopType](value: mutable.ArrayBuffer[T]) extends TopTyp
   override def toString: String = Builtin.show(this)
 }
 
-case class FunctionType(value: FunctionLiteral, closures: List[(String, ObjectInMemory)] = List.empty) extends TopType {
+case class FunctionType(value: FunctionLiteral,
+                        closures: List[(String, ObjectInMemory)] = List.empty)
+    extends TopType {
   override def toString: String = "Function"
 }
 

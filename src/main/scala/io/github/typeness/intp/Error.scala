@@ -23,11 +23,11 @@ case class SyntaxError(msg: String, compilationUnit: CompilationUnit, position: 
     )
 
 case class AssertionError(compilationUnit: CompilationUnit, position: Position)
-  extends InterpreterError(
-    "assertion failed\n",
-    compilationUnit,
-    position
-  )
+    extends InterpreterError(
+      "assertion failed\n",
+      compilationUnit,
+      position
+    )
 
 case class TypeMismatch(found: Any,
                         required: String,
@@ -86,11 +86,11 @@ case class ValAssignment(name: String, compilationUnit: CompilationUnit, positio
     )
 
 case class ObjectRedefinition(name: String, compilationUnit: CompilationUnit, position: Position)
-  extends InterpreterError(
-    s"$name' is already defined in this scope\n",
-    compilationUnit,
-    position
-  )
+    extends InterpreterError(
+      s"$name' is already defined in this scope\n",
+      compilationUnit,
+      position
+    )
 
 case class WrongFunctionCall(name: String,
                              provided: Int,
@@ -103,9 +103,13 @@ case class WrongFunctionCall(name: String,
       position
     )
 
-case class IndexOutOfBound(name: String, size: Int, index: Int, cu: CompilationUnit, position: Position)
-  extends InterpreterError(
-    s"array '$name' has $size elements (element number $index accessed)\n",
-    cu,
-    position
-  )
+case class IndexOutOfBound(name: String,
+                           size: Int,
+                           index: Int,
+                           cu: CompilationUnit,
+                           position: Position)
+    extends InterpreterError(
+      s"array '$name' has $size elements (element number $index accessed)\n",
+      cu,
+      position
+    )
