@@ -71,18 +71,23 @@ class Parser(text: String)(
   }
 
   /*
-  for_statement_init = definition (COMMA disjunction)* SEMICOLON
+  for_statement_init = (definition | disjunction) (COMMA (definition | disjunction))* SEMICOLON
                    | SEMICOLON ;
    */
 
   private def forStatementInit(): List[AST] = {
-    val defs = mutable.ListBuffer[AST]()
+    val statements = mutable.ListBuffer[AST]()
     while (currentToken.tokenType != SEMICOLON) {
-      defs += definition()
+      currentToken.tokenType match {
+        case VAR | VAL =>
+          statements += definition()
+        case _ =>
+          statements += disjunction()
+      }
       if (currentToken.tokenType != SEMICOLON) eat(COMMA)
     }
     eat(SEMICOLON)
-    defs.toList
+    statements.toList
   }
 
   /*

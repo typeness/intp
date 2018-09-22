@@ -1,11 +1,13 @@
 var array = []
 var array2 = []
-for var i = 0, var j = 9; i < 10; i += 1, j -= 1 {
+var test = false
+for var i = 0, test = true, var j = 9; i < 10; i += 1, j -= 1 {
   array += [i]
   array2 += [j]
 }
 assert(array == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 assert(array2 == [9, 8, 7, 6, 5, 4, 3, 2, 1, 0])
+assert(test)
 
 var sum = 0
 for var i = 0; i < size(array); i += 1 {
