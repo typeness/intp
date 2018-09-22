@@ -87,7 +87,7 @@ case class ValAssignment(name: String, compilationUnit: CompilationUnit, positio
 
 case class ObjectRedefinition(name: String, compilationUnit: CompilationUnit, position: Position)
     extends InterpreterError(
-      s"$name' is already defined in this scope\n",
+      s"'$name' is already defined in this scope\n",
       compilationUnit,
       position
     )
