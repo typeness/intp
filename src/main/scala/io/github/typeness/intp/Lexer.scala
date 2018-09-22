@@ -42,6 +42,8 @@ class Lexer(text: String)(
     case "then"   => Some(ThenToken(pos))
     case "data"   => Some(DataToken(pos))
     case "for"    => Some(ForToken(pos))
+    case "val"    => Some(ValToken(pos))
+    case "var"    => Some(VarToken(pos))
     case _        => None
   }
 

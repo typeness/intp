@@ -1,4 +1,4 @@
-factorial = func(n) {
+val factorial = func(n) {
   if n == 0 {
     return 1
   }
@@ -6,5 +6,5 @@ factorial = func(n) {
     return n * factorial(n - 1)
   }
 }
-n = 5
-result = factorial(n)
+var n = 5
+var result = factorial(n)

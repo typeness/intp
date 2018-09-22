@@ -1,4 +1,4 @@
-Person = data(name, surname)
-person = Person("John", "Smith")
-n = person.name
-s = person.surname
+val Person = data(name, surname)
+val person = Person("John", "Smith")
+val n = person.name
+val s = person.surname

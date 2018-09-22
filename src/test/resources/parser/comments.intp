@@ -1,5 +1,5 @@
 // comment0
-x = "test"
+val x = "test"
 // comment1
-y = x + " ."
+val y = x + " ."
 // last comment

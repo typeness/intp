@@ -1,4 +1,4 @@
-x = "Ala"
-y = " ma"
-z = x + y + " kota."
-c = z[0]
+var x = "Ala"
+var y = " ma"
+var z = x + y + " kota."
+var c = z[0]

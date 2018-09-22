@@ -1,4 +1,6 @@
-f = func(a, b) {
-  x = a * 2
-  var = [a, b, x]
+val f = func(a, b) {
+  val x = a * 2
+  val array  = [a, b, x]
+  return array
 }
+assert(f(1, 2) == [1, 2, 2])

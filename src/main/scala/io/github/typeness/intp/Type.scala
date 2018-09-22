@@ -21,7 +21,7 @@ case class DoubleType(value: Double) extends TopType {
 }
 
 case class CharType(value: Char) extends TopType {
-  override def toString: String = s"$value"
+  override def toString: String = value.toString
 }
 
 case class BooleanType(value: Boolean) extends TopType {

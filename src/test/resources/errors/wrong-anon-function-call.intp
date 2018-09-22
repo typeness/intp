@@ -1,5 +1,5 @@
-f  = func(a) {
-  g = func(a, b) {
+val f = func(a) {
+  val g = func(a, b) {
     return 1
   }
   return g

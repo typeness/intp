@@ -1,5 +1,5 @@
-contains = func(array, elem) {
-  i = 0
+val contains = func(array, elem) {
+  var i = 0
   while (i < size(array)) {
     if (array[i] == elem) {
       return true
@@ -9,9 +9,9 @@ contains = func(array, elem) {
   return false
 }
 
-setUnion = func(a, b) {
-  result = []
-  i = 0
+val setUnion = func(a, b) {
+  var result = []
+  var i = 0
   while (i < size(a)) {
     if (not contains(result, a[i])) {
       result = result + [a[i]]
@@ -28,9 +28,9 @@ setUnion = func(a, b) {
   return result
 }
 
-setIntersection = func(a, b) {
-  result = []
-  i = 0
+val setIntersection = func(a, b) {
+  var result = []
+  var i = 0
   while (i < size(a)) {
     if (contains(b, a[i]) and not contains(result, a[i])) {
       result = result + [a[i]]
@@ -40,9 +40,9 @@ setIntersection = func(a, b) {
   return result
 }
 
-setDifference = func(a, b) {
-  result = []
-  i = 0
+val setDifference = func(a, b) {
+  var result = []
+  var i = 0
   while (i < size(a)) {
     if (not contains(b, a[i]) and not contains(result, a[i])) {
       result = result + [a[i]]
@@ -52,8 +52,8 @@ setDifference = func(a, b) {
   return result
 }
 
-a = [1, 2, 3, 4, 5, 2]
-b = [3, 4, 5, 6, 7, -1]
+var a = [1, 2, 3, 4, 5, 2]
+var b = [3, 4, 5, 6, 7, -1]
 assert(setUnion(a, b) == [1, 2, 3, 4, 5, 6, 7, -1])
 assert(setIntersection(a, b) == [3, 4, 5])
 assert(setDifference(a, b) == [1, 2])

@@ -1,0 +1,16 @@
+var a = 0
+var b = 10
+if true {
+  var a = 1
+  b = 11
+  assert(a == 1)
+}
+assert(a == 0)
+assert(b == 11)
+
+var p = 1
+val f = func() {
+  p = 2
+}
+f()
+assert(p == 2)

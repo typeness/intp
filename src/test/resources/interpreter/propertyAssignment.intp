@@ -1,2 +1,2 @@
-test = {a = 'f'}
+val test = {a = 'f'}
 test.a = 'x'

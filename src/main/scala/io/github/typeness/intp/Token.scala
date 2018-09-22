@@ -26,12 +26,15 @@ case class RealConstToken(doubleValue: Double, position: Position) extends Numbe
 
 case class StringToken(value: String, position: Position) extends Token {
   override def tokenType: STRING.type = STRING
+  override def toString: String = s"StringToken('$value',$position)"
+
 }
 
 case class CharToken(c: Char, position: Position) extends Token {
   override def tokenType: CHARACTER.type = CHARACTER
 
   override def value: String = c.toString
+  override def toString: String = s"CharToken('$c',$position)"
 }
 
 case class SubtractionToken(position: Position) extends Token {
@@ -275,6 +278,18 @@ case class ForToken(position: Position) extends Token {
   override def tokenType: TokenType = FOR
 
   override def value: String = "for"
+}
+
+case class ValToken(position: Position) extends Token {
+  override def tokenType: TokenType = VAL
+
+  override def value: String = "val"
+}
+
+case class VarToken(position: Position) extends Token {
+  override def tokenType: TokenType = VAR
+
+  override def value: String = "var"
 }
 
 case class CompoundAdditionToken(position: Position) extends Token {

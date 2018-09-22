@@ -13,12 +13,12 @@ if condition {
 ### While loop
 ```
 while condition {
-  i = i + 1
+  var i = i + 1
 }
 ```
 ### For loop
 ```
-for i = 0; i < 10; i += 1 {
+for var i = 0; i < 10; i += 1 {
   println(i)
 }
 ```
@@ -31,12 +31,12 @@ if a % 2 == 0 then "even" else "odd"
 ### Data
 Key-value table similiar to JS object literal.
 ```
-Person = data(name, surname)
-john = Person("John", "Smith")
+val Person = data(name, surname)
+val john = Person("John", "Smith")
 ```
 Or manually
 ```
-john = {name = "John", surname = "Smith"}
+val john = {name = "John", surname = "Smith"}
 ```
 Person actually desugars to function returning object literal i.e. `func(name, surname) {return {name=name, surname=surname}}`
 
@@ -48,10 +48,10 @@ factorial = func(n) {
 }
 ```
 ### Array
-`arr = [1, 2, 3]`
+`val arr = [1, 2, 3]`
 
 ### String
-`a = "test"`
+`val a = "test"`
 
 Actually it's syntax sugar for array of characters i.e. `['t', 'e', 's', 't']`
 

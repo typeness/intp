@@ -1,2 +1,2 @@
-x = 10
-y = if x < 5 then 11 else 12
+var x = 10
+var y = if x < 5 then 11 else 12

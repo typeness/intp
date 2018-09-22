@@ -1,2 +1,2 @@
-x = "test"
+val x = "test"
 x[false]

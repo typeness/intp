@@ -1,2 +1,2 @@
-arr = [-100, 33, 55, 56, 234]
-middle = arr[2]
+var arr = [-100, 33, 55, 56, 234]
+var middle = arr[2]

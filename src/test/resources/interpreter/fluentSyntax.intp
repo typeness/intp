@@ -1,1 +1,1 @@
-test = [func(){return {a = 3.14}}][0]().a
+val test = [func(){return {a = 3.14}}][0]().a

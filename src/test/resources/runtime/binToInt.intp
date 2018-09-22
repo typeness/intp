@@ -1,6 +1,6 @@
-binToInt = func(bin) {
-  result = 0
-  i = 0
+val binToInt = func(bin) {
+  var result = 0
+  var i = 0
   while (i < size(bin)) {
     result = result * 2 + int(bin[i]) - int('0')
     i = i + 1

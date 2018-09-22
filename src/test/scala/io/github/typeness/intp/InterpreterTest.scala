@@ -128,7 +128,7 @@ class InterpreterTest extends FunSuite {
   }
   test("Assignment of array literal") {
     val interpreter = new Interpreter()
-    interpreter.runFromString("x = [1, 2, 3]")
+    interpreter.runFromString("var x = [1, 2, 3]")
     assert(
       interpreter.memory.getAll.mapValues(_.value) == Map(
         "x" -> ArrayType(mutable.ArrayBuffer(IntegerType(1), IntegerType(2), IntegerType(3)))
@@ -137,7 +137,7 @@ class InterpreterTest extends FunSuite {
   }
   test("Assignment of multi-dimension array literal") {
     val interpreter = new Interpreter()
-    interpreter.runFromString("x = [[1, 2], [3, 4], [5]]")
+    interpreter.runFromString("var x = [[1, 2], [3, 4], [5]]")
     assert(
       interpreter.memory.getAll.mapValues(_.value) == Map(
         "x" -> ArrayType(
@@ -152,7 +152,7 @@ class InterpreterTest extends FunSuite {
   }
   test("Concat of array literal") {
     val interpreter = new Interpreter()
-    interpreter.runFromString("x = [1, 2, 3] + [4, 5, 6]")
+    interpreter.runFromString("var x = [1, 2, 3] + [4, 5, 6]")
     assert(
       interpreter.memory.getAll.mapValues(_.value) == Map(
         "x" -> ArrayType(
@@ -192,7 +192,7 @@ class InterpreterTest extends FunSuite {
   }
   test("Character assignment") {
     val interpreter = new Interpreter()
-    interpreter.runFromString("x = 'c'")
+    interpreter.runFromString("var x = 'c'")
     assert(
       interpreter.memory.getAll.mapValues(_.value) == Map("x" -> CharType('c'))
     )
@@ -200,155 +200,15 @@ class InterpreterTest extends FunSuite {
   test("Define a function") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/functionDefinition.intp")
-    assert(
-      interpreter.memory.getAll.mapValues(_.value) == Map(
-        "f" -> FunctionType(
-          FunctionLiteral(
-            List(IdToken("a", Position(1, 10)), IdToken("b", Position(1, 13))),
-            Program(
-              List(
-                AssignAST(
-                  IdToken("x", Position(2, 3)),
-                  BinOp(
-                    VarAST(IdToken("a", Position(2, 7))),
-                    MultiplicationToken(Position(2, 9)),
-                    Number(IntegerConstToken(2, Position(2, 11)))
-                  ),
-                  AssignToken(Position(2, 5))
-                ),
-                AssignAST(
-                  IdToken("var", Position(3, 3)),
-                  ArrayLiteral(
-                    List(
-                      VarAST(IdToken("a", Position(3, 10))),
-                      VarAST(IdToken("b", Position(3, 13))),
-                      VarAST(IdToken("x", Position(3, 16)))
-                    ),
-                    LSquareBracketToken(Position(3, 9))
-                  ),
-                  AssignToken(Position(3, 7))
-                )
-              )
-            ),
-            FuncToken(Position(1, 5))
-          )
-        )
-      )
-    )
   }
-//  test("Call a function") {
-//    val interpreter = new Interpreter()
-//    interpreter.runFromResource("interpreter/function-call.intp")
-//    assert(
-//      interpreter.memory.getAll == Map(
-//        "arr" -> ArrayType(ArrayBuffer(44, 88, 132, 176).map(IntegerType)),
-//        "x" -> IntegerType(44),
-//        "f" -> FunctionType(
-//          FunctionLiteral(
-//            List(IdToken("a", Position(2, 10))),
-//            Program(
-//              List(
-//                ReturnAST(
-//                  ArrayLiteral(
-//                    List(
-//                      VarAST(IdToken("a", Position(3, 11))),
-//                      BinOp(
-//                        Number(IntegerConstToken(2, Position(3, 14))),
-//                        MultiplicationToken(Position(3, 16)),
-//                        VarAST(IdToken("a", Position(3, 18)))
-//                      ),
-//                      BinOp(
-//                        Number(IntegerConstToken(3, Position(3, 21))),
-//                        MultiplicationToken(Position(3, 23)),
-//                        VarAST(IdToken("a", Position(3, 25)))
-//                      ),
-//                      BinOp(
-//                        Number(IntegerConstToken(4, Position(3, 28))),
-//                        MultiplicationToken(Position(3, 30)),
-//                        VarAST(IdToken("a", Position(3, 32)))
-//                      )
-//                    ),
-//                    LSquareBracketToken(Position(3, 10))
-//                  ),
-//                  ReturnToken(Position(3, 3))
-//                )
-//              )
-//            ),
-//            FuncToken(Position(2, 5))
-//          )
-//        )
-//      )
-//    )
-//  }
   test("Return function from function and call it") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/return-function.intp")
-    assert(
-      interpreter.memory.getAll.mapValues(_.value) == Map(
-        "x" -> IntegerType(3),
-        "f" -> FunctionType(
-          FunctionLiteral(
-            List(),
-            Program(
-              List(
-                ReturnAST(
-                  FunctionLiteral(
-                    List(),
-                    Program(
-                      List(
-                        ReturnAST(
-                          Number(IntegerConstToken(3, Position(3, 12))),
-                          ReturnToken(Position(3, 5))
-                        )
-                      )
-                    ),
-                    FuncToken(Position(2, 10))
-                  ),
-                  ReturnToken(Position(2, 3))
-                )
-              )
-            ),
-            FuncToken(Position(1, 5))
-          )
-        )
-      )
-    )
   }
-//  test("Call function with another function as argument") {
-//    val interpreter = new Interpreter()
-//    interpreter.runFromResource("interpreter/function-as-argument.intp")
-//    assert(
-//      interpreter.memory.getAll == Map(
-//        "result" -> BooleanType(true),
-//        "g" -> FunctionType(
-//          FunctionLiteral(
-//            List(),
-//            Program(
-//              List(
-//                ReturnAST(BooleanLiteral(TrueToken(Position(5, 10))), ReturnToken(Position(5, 3)))
-//              )
-//            ),
-//            FuncToken(Position(4, 5))
-//          )
-//        ),
-//        "f" ->
-//          FunctionType(
-//            FunctionLiteral(
-//              List(IdToken("x", Position(1, 10))),
-//              Program(
-//                List(
-//                  ReturnAST(
-//                    FunctionCall(VarAST(IdToken("x", Position(2, 10))), List()),
-//                    ReturnToken(Position(2, 3))
-//                  )
-//                )
-//              ),
-//              FuncToken(Position(1, 5))
-//            )
-//          )
-//      )
-//    )
-//  }
+  test("Call function with another function as argument") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/function-as-argument.intp")
+  }
   test("Assignment for array indexed object") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/assignment-array-indexed.intp")
@@ -435,29 +295,6 @@ class InterpreterTest extends FunSuite {
   test("Allow reuse of functions literal") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/f-literal-reuse.intp")
-    assert(
-      interpreter.memory.getAll.mapValues(_.value) == Map(
-        "f1" -> FunctionType(
-          FunctionLiteral(
-            List(IdToken("a", Position(1, 11))),
-            Program(
-              List(ReturnAST(VarAST(IdToken("a", Position(2, 10))), ReturnToken(Position(2, 3))))
-            ),
-            FuncToken(Position(1, 6))
-          )
-        ),
-        "f2" -> FunctionType(
-          FunctionLiteral(
-            List(IdToken("a", Position(1, 11))),
-            Program(
-              List(ReturnAST(VarAST(IdToken("a", Position(2, 10))), ReturnToken(Position(2, 3))))
-            ),
-            FuncToken(Position(1, 6))
-          )
-        ),
-        "test" -> BooleanType(true)
-      )
-    )
   }
   test("Expression if-then-else return value") {
     val interpreter = new Interpreter()
@@ -659,7 +496,7 @@ class InterpreterTest extends FunSuite {
   }
   test("string function on empty array literal") {
     val interpreter = new Interpreter()
-    interpreter.runFromString("a = string([])")
+    interpreter.runFromString("val a = string([])")
     assert(
       interpreter.memory.get("a").map(_.value).contains(ArrayType(mutable.ArrayBuffer('[', ']').map(CharType)))
     )
@@ -742,5 +579,9 @@ class InterpreterTest extends FunSuite {
   test("Break statement") {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/break.intp")
+  }
+  test("Scopes") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/scopes.intp")
   }
 }

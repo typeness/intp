@@ -76,7 +76,7 @@ class ErrorReportingTest extends FunSuite {
   test("Use undefined variable") {
     val error = intercept[UndefinedVariable] {
       val interpreter = new Interpreter()
-      interpreter.runFromString("a = b")
+      interpreter.runFromString("val a = b")
     }
     println(error.getMessage)
   }

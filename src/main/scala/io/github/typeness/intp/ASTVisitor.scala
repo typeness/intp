@@ -26,6 +26,8 @@ trait ASTVisitor {
     case a: ImportAST           => importAST(a)
     case a: ForAST              => forAST(a)
     case a: BreakAST            => breakAST(a)
+    case a: ValDefAST           => valDefAST(a)
+    case a: VarDefAST           => varDefAST(a)
   }
   protected def binOp(ast: BinOp): TopType
   protected def number(ast: Number): TopType
@@ -51,4 +53,6 @@ trait ASTVisitor {
   protected def importAST(ast: ImportAST): TopType
   protected def forAST(ast: ForAST): TopType
   protected def breakAST(ast: BreakAST): TopType
+  protected def valDefAST(ast: ValDefAST): TopType
+  protected def varDefAST(ast: VarDefAST): TopType
 }

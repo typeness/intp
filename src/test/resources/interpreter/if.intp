@@ -1,4 +1,4 @@
-is = true
+var is = true
 if is {
-  d = 1000
+  var d = 1000
 }

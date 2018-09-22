@@ -1,2 +1,2 @@
-obj = {x = {g = 'y'}, y = -4}
-f = obj.x.g
+val obj = {x = {g = 'y'}, y = -4}
+val f = obj.x.g

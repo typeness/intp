@@ -1,4 +1,4 @@
-f = func() {
+val f = func() {
   while(true) {
     return false
   }

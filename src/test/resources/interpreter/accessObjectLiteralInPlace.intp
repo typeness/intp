@@ -1,2 +1,2 @@
-y = {a = 1, b = 3}.b
-z = {test = {h = true}, h = false}.test.h
+val y = {a = 1, b = 3}.b
+val z = {test = {h = true}, h = false}.test.h

@@ -1,1 +1,1 @@
-person = {name = "John", surname = "Smith"}
+val person = {name = "John", surname = "Smith"}

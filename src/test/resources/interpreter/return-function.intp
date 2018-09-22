@@ -1,6 +1,7 @@
-f = func() {
+val f = func() {
   return func() {
     return 3
   }
 }
-x = f()()
+val x = f()()
+assert(x == 3)

@@ -158,3 +158,9 @@ case object DATA extends TokenType
 
 // for
 case object FOR extends TokenType
+
+// val
+case object VAL extends TokenType
+
+// var
+case object VAR extends TokenType

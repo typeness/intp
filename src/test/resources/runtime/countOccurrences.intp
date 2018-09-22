@@ -1,11 +1,12 @@
-count = func(text) {
-  result = []
-  i = 0
+val count = func(text) {
+  var result = []
+  var i = 0
   while (i < 256) {
     result = result + [0]
     i = i + 1
   }
   i = 0
+  var index = 0
   while (i < size(text)) {
     index = int(text[i])
     result[index] = result[index] + 1
@@ -13,7 +14,7 @@ count = func(text) {
   }
   return result
 }
-map = count("this is very long text!23.")
+val map = count("this is very long text!23.")
 assert(map[int(' ')] == 4)
 assert(map[int('!')] == 1)
 assert(map[int('.')] == 1)

@@ -1,2 +1,2 @@
-x = [func(x){return x}]
+val x = [func(x){return x}]
 println(x[0]("test"))

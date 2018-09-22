@@ -1,7 +1,8 @@
-f = func(x) {
+val f = func(x) {
   return x()
 }
-g = func() {
+val g = func() {
   return true
 }
-result = f(g)
+val result = f(g)
+assert(result)

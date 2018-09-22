@@ -1,4 +1,4 @@
-f = func() {
+val f = func() {
   return [1, 2, 15]
 }
 println(f()[2])

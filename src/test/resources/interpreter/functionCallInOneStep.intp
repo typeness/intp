@@ -1,1 +1,1 @@
-p = func(){return -9}()
+val p = func(){return -9}()

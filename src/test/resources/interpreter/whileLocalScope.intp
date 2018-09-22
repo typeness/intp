@@ -1,6 +1,6 @@
-x = 2
+var x = 2
 while (x < 3) {
   x = x + 1
-  c = 15
+  val c = 15
 }
-y = c
+val y = c

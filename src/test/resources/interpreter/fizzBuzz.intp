@@ -1,6 +1,6 @@
-fizzBuzz = func() {
-  result = ""
-  i = 1
+val fizzBuzz = func() {
+  var result = ""
+  var i = 1
   while (i <= 100) {
     if (i % 3 == 0 and i % 5 == 0) {
       result = result + "fizz buzz"
@@ -19,5 +19,5 @@ fizzBuzz = func() {
   return result
 }
 
-a = fizzBuzz()
+val a = fizzBuzz()
 println(a)

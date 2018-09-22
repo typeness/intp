@@ -1,5 +1,5 @@
-x = 1*2
-y = 2 + x
-abcd = [2 * 3, 1.3, y * x, true or false]
+val x = 1*2
+val y = 2 + x
+val abcd = [2 * 3, 1.3, y * x, true or false]
 abcd * 2
 f(abcd, g[1] * h[2])

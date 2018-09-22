@@ -78,6 +78,20 @@ case class UndefinedVariable(name: String, compilationUnit: CompilationUnit, pos
       position
     )
 
+case class ValAssignment(name: String, compilationUnit: CompilationUnit, position: Position)
+    extends InterpreterError(
+      s"assignment to immutable variable '$name'\n",
+      compilationUnit,
+      position
+    )
+
+case class ObjectRedefinition(name: String, compilationUnit: CompilationUnit, position: Position)
+  extends InterpreterError(
+    s"$name' is already defined in this scope\n",
+    compilationUnit,
+    position
+  )
+
 case class WrongFunctionCall(name: String,
                              provided: Int,
                              excepted: Int,

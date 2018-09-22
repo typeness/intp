@@ -1,7 +1,7 @@
-str = "a\nb\\\"\t\r\b"
-n = '\n'
-r = '\r'
-b = '\b'
-t = '\t'
-ap = '\''
-zero = '\0'
+val str = "a\nb\\\"\t\r\b"
+val n = '\n'
+val r = '\r'
+val b = '\b'
+val t = '\t'
+val ap = '\''
+val zero = '\0'

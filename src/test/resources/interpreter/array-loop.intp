@@ -1,5 +1,5 @@
-arr = []
-x = 0
+var arr = []
+var x = 0
 while x < 10 {
   arr = arr + [x]
   x = x + 1

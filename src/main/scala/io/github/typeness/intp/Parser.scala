@@ -37,6 +37,7 @@ class Parser(text: String)(
              | if_statement
              | while_statement
              | return_statement
+             | definition
              | disjunction ;
    */
   private def statement(): AST = {
@@ -47,6 +48,7 @@ class Parser(text: String)(
       case RETURN => returnStatement()
       case FOR => forStatement()
       case BREAK => breakStatement()
+      case VAL | VAR => definition()
       case _ => disjunction()
     }
   }
@@ -69,14 +71,14 @@ class Parser(text: String)(
   }
 
   /*
-  for_statement_init = disjunction (COMMA disjunction)* SEMICOLON
+  for_statement_init = definition (COMMA disjunction)* SEMICOLON
                    | SEMICOLON ;
    */
 
   private def forStatementInit(): List[AST] = {
     val defs = mutable.ListBuffer[AST]()
     while (currentToken.tokenType != SEMICOLON) {
-      defs += disjunction()
+      defs += definition()
       if (currentToken.tokenType != SEMICOLON) eat(COMMA)
     }
     eat(SEMICOLON)
@@ -170,6 +172,35 @@ class Parser(text: String)(
     val pos = currentToken.position
     eat(BREAK)
     BreakAST(BreakToken(pos))
+  }
+
+  /*
+  definition = VAL ID disjunction
+             | VAR ID disjunction
+   */
+  private def definition(): AST = {
+    val pos = currentToken.position
+    currentToken.tokenType match {
+      case VAL =>
+        eat(VAL)
+        currentToken match {
+          case id: IdToken =>
+            eat(ID)
+            eat(ASSIGN)
+            ValDefAST(id, disjunction(), ValToken(pos))
+          case _ => throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
+        }
+      case VAR =>
+        eat(VAR)
+        currentToken match {
+          case id: IdToken =>
+            eat(ID)
+            eat(ASSIGN)
+            VarDefAST(id, disjunction(), VarToken(pos))
+          case _ => throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
+        }
+      case _ => throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
+    }
   }
 
   /*

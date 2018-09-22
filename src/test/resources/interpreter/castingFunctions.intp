@@ -1,14 +1,14 @@
 // int
-int2int = int(3)
-int2char = char(49)
-int2double = double(34)
+val int2int = int(3)
+val int2char = char(49)
+val int2double = double(34)
 
 // char
-char2int = int('a')
-char2char = char('x')
-char2double = double('e')
+val char2int = int('a')
+val char2char = char('x')
+val char2double = double('e')
 
 // double
-double2int = int(2.3)
-double2char = char(66.5)
-double2double = double(23.45)
+val double2int = int(2.3)
+val double2char = char(66.5)
+val double2double = double(23.45)

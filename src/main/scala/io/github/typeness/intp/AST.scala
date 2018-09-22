@@ -75,3 +75,7 @@ case class PropertyAccess(source: AST, name: IdToken) extends AST {
 case class IfThenElseAST(condition: AST, ifBlock: AST, elseBlock: AST, token: IfToken) extends AST
 
 case class ImportAST(token: IdToken) extends AST
+
+case class ValDefAST(name: IdToken, expr: AST, token: Token) extends AST
+
+case class VarDefAST(name: IdToken, expr: AST, token: Token) extends AST

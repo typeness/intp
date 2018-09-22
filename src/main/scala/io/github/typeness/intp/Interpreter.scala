@@ -154,11 +154,19 @@ class Interpreter extends ASTVisitor {
 
   override protected def assignAST(ast: AssignAST): TopType = {
     val name = ast.name.value
-    ast.expr match {
-      // do not evaluate function definition
-      case fl: FunctionLiteral =>
-        memory.define(name -> FunctionType(fl, memory.getAll.toList))
-      case _ => memory.define(name -> visit(ast.expr))
+    memory.get(name) match {
+      case Some(objectInMemory) =>
+        if (objectInMemory.isMutable) {
+          ast.expr match {
+            // do not evaluate function definition
+            case fl: FunctionLiteral =>
+              memory.assign(name -> FunctionType(fl, memory.getAll.toList))
+            case _ => memory.assign(name -> visit(ast.expr))
+          }
+        } else {
+          throw ValAssignment(name, compilationUnit, ast.name.position)
+        }
+      case None => throw UndefinedVariable(name, compilationUnit, ast.name.position)
     }
     UnitType
   }
@@ -214,18 +222,19 @@ class Interpreter extends ASTVisitor {
               case (idToken, expr) => (idToken.value, visit(expr))
             })
           memory.pushNewStack()
-          closures.foreach { case (name, obj) =>
-            memory.get(name) match {
-              case Some(oldObj) =>
-                if (oldObj.scopeLevel < obj.scopeLevel) memory.define(name -> obj.value)
-                else ()
-              case None => memory.define(name -> obj.value)
-            }
+          closures.foreach {
+            case (name, obj) =>
+              memory.get(name) match {
+                case Some(oldObj) =>
+                  if (oldObj.scopeLevel < obj.scopeLevel) memory.assign(name -> obj.value)
+                  else ()
+                case None => memory.define(name -> obj.value, obj.isMutable)
+              }
           }
-          parameters.foreach(memory.define)
+          parameters.foreach(param => memory.define(param, isMutable = true))
           visit(body)
           val result = memory.get("return") match {
-            case Some(ObjectInMemory(_, value, _)) => value
+            case Some(ObjectInMemory(_, value, _, _)) => value
             case None => UnitType
           }
           memory.popStack()
@@ -283,8 +292,8 @@ class Interpreter extends ASTVisitor {
     }
     memory.pushNewLocalScope()
     while (condition
-        && memory.get("return").isEmpty
-        && !memory.get("break").map(_.value).contains(BooleanType(true))) {
+      && memory.get("return").isEmpty
+      && !memory.get("break").map(_.value).contains(BooleanType(true))) {
       condition match {
         case true =>
           visit(ast.whileBlock)
@@ -299,14 +308,14 @@ class Interpreter extends ASTVisitor {
         condition = updated
       }
     }
-    memory.define("break" -> BooleanType(false))
+    memory.assign("break" -> BooleanType(false))
     memory.popNewLocalScope()
     UnitType
   }
 
   override protected def returnAST(ast: ReturnAST): TopType =
     visit(
-      AssignAST(IdToken("return", ast.token.position), ast.result, AssignToken(ast.token.position))
+      ValDefAST(IdToken("return", ast.token.position), ast.result, AssignToken(ast.token.position))
     )
 
   override protected def builtinFunctionCall(ast: BuiltinFunctionCall): TopType = {
@@ -321,7 +330,9 @@ class Interpreter extends ASTVisitor {
 
   override protected def objectLiteral(ast: ObjectLiteral): TopType =
     ObjectType(
-      mutable.Map(ast.elements.map { case (name, value) => (name.value, visit(value)) }.toSeq: _*)
+      mutable.Map(ast.elements.map {
+        case (name, value) => (name.value, visit(value))
+      }.toSeq: _*)
     )
 
   override protected def propertyAccess(ast: PropertyAccess): TopType = visit(ast.source) match {
@@ -354,8 +365,8 @@ class Interpreter extends ASTVisitor {
     val interpreter = new Interpreter()
     interpreter.runFromFile(ast.token.value + ".intp")
     // copy definitions after running interpreter
-    interpreter.memory.getAll.foreach{
-      case (name, obj) => memory.define(name -> obj.value)
+    interpreter.memory.getAll.foreach {
+      case (name, obj) => memory.assign(name -> obj.value)
     }
     UnitType
   }
@@ -387,19 +398,51 @@ class Interpreter extends ASTVisitor {
         condition = updated
       }
     }
-    memory.define("break" -> BooleanType(false))
+    memory.assign("break" -> BooleanType(false))
     memory.popNewLocalScope()
     UnitType
   }
 
   override protected def breakAST(ast: BreakAST): TopType =
     visit(
-      AssignAST(
+      ValDefAST(
         IdToken("break", ast.token.position),
         BooleanLiteral(TrueToken(ast.token.position)),
         AssignToken(ast.token.position)
       )
     )
+
+  override protected def valDefAST(ast: ValDefAST): TopType = {
+    val name = ast.name.value
+    memory.get(name) match {
+      case Some(objectInMemory) if objectInMemory.scopeLevel >= memory.scopeLevel =>
+        throw ObjectRedefinition(name, compilationUnit, ast.token.position)
+      case _ =>
+        ast.expr match {
+          // do not evaluate function definition
+          case fl: FunctionLiteral =>
+            memory.define(name -> FunctionType(fl, memory.getAll.toList), isMutable = false)
+          case _ => memory.define(name -> visit(ast.expr), isMutable = false)
+        }
+    }
+    UnitType
+  }
+
+  override protected def varDefAST(ast: VarDefAST): TopType = {
+    val name = ast.name.value
+    memory.get(name) match {
+      case Some(objectInMemory) if objectInMemory.scopeLevel >= memory.scopeLevel =>
+        throw ObjectRedefinition(name, compilationUnit, ast.token.position)
+      case _ =>
+        ast.expr match {
+          // do not evaluate function definition
+          case fl: FunctionLiteral =>
+            memory.define(name -> FunctionType(fl, memory.getAll.toList), isMutable = true)
+          case _ => memory.define(name -> visit(ast.expr), isMutable = true)
+        }
+    }
+    UnitType
+  }
 
   def runFromResource(res: String): TopType = {
     fileName = res
