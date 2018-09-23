@@ -81,6 +81,6 @@ case class IfThenElseAST(condition: AST, ifBlock: AST, elseBlock: AST, token: If
 
 case class ImportAST(token: IdToken) extends AST
 
-case class ValDefAST(name: IdToken, expr: AST, token: Token) extends AST
+case class ValDefAST(name: IdToken, expr: AST, inLoopBody: Boolean, token: Token) extends AST
 
-case class VarDefAST(name: IdToken, expr: AST, token: Token) extends AST
+case class VarDefAST(name: IdToken, expr: AST, inLoopBody: Boolean, token: Token) extends AST

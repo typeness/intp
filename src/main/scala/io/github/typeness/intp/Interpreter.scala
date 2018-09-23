@@ -322,7 +322,7 @@ class Interpreter extends ASTVisitor {
 
   override protected def returnAST(ast: ReturnAST): TopType =
     visit(
-      ValDefAST(IdToken("return", ast.token.position), ast.result, AssignToken(ast.token.position))
+      ValDefAST(IdToken("return", ast.token.position), ast.result, inLoopBody = false, AssignToken(ast.token.position))
     )
 
   override protected def builtinFunctionCall(ast: BuiltinFunctionCall): TopType = {
@@ -415,40 +415,51 @@ class Interpreter extends ASTVisitor {
       ValDefAST(
         IdToken("break", ast.token.position),
         BooleanLiteral(TrueToken(ast.token.position)),
+        inLoopBody = true,
         AssignToken(ast.token.position)
       )
     )
 
   override protected def valDefAST(ast: ValDefAST): TopType = {
     val name = ast.name.value
-    memory.get(name) match {
-      case Some(objectInMemory) if objectInMemory.scopeLevel >= memory.scopeLevel =>
-        throw ObjectRedefinition(name, compilationUnit, ast.token.position)
-      case _ =>
-        ast.expr match {
-          // do not evaluate function definition
-          case fl: FunctionLiteral =>
-            memory.define(name -> FunctionType(fl, memory.getAll.toList), isMutable = false)
-          case _ => memory.define(name -> visit(ast.expr), isMutable = false)
-        }
+    // repeated definition in loop's body are treated as assignments
+    if (ast.inLoopBody && memory.get(name).nonEmpty) {
+      visit(AssignAST(ast.name, ast.expr, AssignToken(ast.token.position)))
+    } else {
+      memory.get(name) match {
+        case Some(objectInMemory) if objectInMemory.scopeLevel >= memory.scopeLevel =>
+          throw ObjectRedefinition(name, compilationUnit, ast.token.position)
+        case _ =>
+          ast.expr match {
+            // do not evaluate function definition
+            case fl: FunctionLiteral =>
+              memory.define(name -> FunctionType(fl, memory.getAll.toList), isMutable = false)
+            case _ => memory.define(name -> visit(ast.expr), isMutable = false)
+          }
+      }
+      UnitType
     }
-    UnitType
   }
 
   override protected def varDefAST(ast: VarDefAST): TopType = {
     val name = ast.name.value
-    memory.get(name) match {
-      case Some(objectInMemory) if objectInMemory.scopeLevel >= memory.scopeLevel =>
-        throw ObjectRedefinition(name, compilationUnit, ast.token.position)
-      case _ =>
-        ast.expr match {
-          // do not evaluate function definition
-          case fl: FunctionLiteral =>
-            memory.define(name -> FunctionType(fl, memory.getAll.toList), isMutable = true)
-          case _ => memory.define(name -> visit(ast.expr), isMutable = true)
-        }
+    // repeated definition in loop's body are treated as assignments
+    if (ast.inLoopBody && memory.get(name).nonEmpty) {
+      visit(AssignAST(ast.name, ast.expr, AssignToken(ast.token.position)))
+    } else {
+      memory.get(name) match {
+        case Some(objectInMemory) if objectInMemory.scopeLevel >= memory.scopeLevel =>
+          throw ObjectRedefinition(name, compilationUnit, ast.token.position)
+        case _ =>
+          ast.expr match {
+            // do not evaluate function definition
+            case fl: FunctionLiteral =>
+              memory.define(name -> FunctionType(fl, memory.getAll.toList), isMutable = true)
+            case _ => memory.define(name -> visit(ast.expr), isMutable = true)
+          }
+      }
+      UnitType
     }
-    UnitType
   }
 
   def runFromResource(res: String): TopType = {

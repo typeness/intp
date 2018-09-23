@@ -26,6 +26,7 @@ class ParserTest extends FunSuite {
           MultiplicationToken(Position(1, 19)),
           Number(IntegerConstToken(2, Position(1, 21)))
         ),
+        inLoopBody = false,
         ValToken(Position(1, 1))
       )
     )
@@ -155,6 +156,7 @@ class ParserTest extends FunSuite {
             MultiplicationToken(Position(1, 10)),
             Number(IntegerConstToken(2, Position(1, 11)))
           ),
+          inLoopBody = false,
           ValToken(Position(1, 1))
         ),
         ValDefAST(
@@ -164,6 +166,7 @@ class ParserTest extends FunSuite {
             AdditionToken(Position(2, 11)),
             VarAST(IdToken("x", Position(2, 13)))
           ),
+          inLoopBody = false,
           ValToken(Position(2, 1))
         ),
         ValDefAST(
@@ -189,6 +192,7 @@ class ParserTest extends FunSuite {
             ),
             LSquareBracketToken(Position(3, 12))
           ),
+          inLoopBody = false,
           ValToken(Position(3, 1))
         ),
         BinOp(
@@ -339,6 +343,7 @@ class ParserTest extends FunSuite {
                     MultiplicationToken(Position(2, 13)),
                     Number(IntegerConstToken(2, Position(2, 15)))
                   ),
+                  inLoopBody = false,
                   ValToken(Position(2, 3))
                 ),
                 VarDefAST(
@@ -351,12 +356,14 @@ class ParserTest extends FunSuite {
                     ),
                     LSquareBracketToken(Position(3, 13))
                   ),
+                  inLoopBody = false,
                   VarToken(Position(3, 3))
                 )
               )
             ),
             FuncToken(Position(1, 9))
           ),
+          inLoopBody = false,
           ValToken(Position(1, 1))
         )
       )
@@ -369,6 +376,7 @@ class ParserTest extends FunSuite {
       ast == ValDefAST(
         IdToken("c", Position(1, 5)),
         CharLiteral(CharToken('a', Position(1, 10))),
+        inLoopBody = false,
         ValToken(Position(1, 1))
       )
     )
@@ -388,6 +396,7 @@ class ParserTest extends FunSuite {
           ),
           LSquareBracketToken(Position(1, 9))
         ),
+        inLoopBody = false,
         ValToken(Position(1, 1))
       )
     )
@@ -419,6 +428,7 @@ class ParserTest extends FunSuite {
             ValDefAST(
               IdToken("c", Position(2, 7)),
               BooleanLiteral(TrueToken(Position(2, 11))),
+              inLoopBody = false,
               ValToken(Position(2, 3))
             )
           )
@@ -429,6 +439,7 @@ class ParserTest extends FunSuite {
               ValDefAST(
                 IdToken("c", Position(4, 7)),
                 BooleanLiteral(FalseToken(Position(4, 11))),
+                inLoopBody = false,
                 ValToken(Position(4, 3))
               )
             )
@@ -453,6 +464,7 @@ class ParserTest extends FunSuite {
                 AdditionToken(Position(2, 13)),
                 Number(IntegerConstToken(1, Position(2, 15)))
               ),
+              inLoopBody = true,
               VarToken(Position(2, 3))
             )
           )
@@ -488,6 +500,7 @@ class ParserTest extends FunSuite {
                   ),
                   FuncToken(Position(2, 11))
                 ),
+                inLoopBody = false,
                 ValToken(Position(2, 3))
               ),
               FunctionCall(
@@ -498,6 +511,7 @@ class ParserTest extends FunSuite {
           ),
           FuncToken(Position(1, 9))
         ),
+        inLoopBody = false,
         ValToken(Position(1, 1))
       )
     )
@@ -584,6 +598,7 @@ class ParserTest extends FunSuite {
               ),
               LSquareBracketToken(Position(2, 8))
             ),
+            inLoopBody = false,
             ValToken(Position(2, 0))
           ),
           ValDefAST(
@@ -599,6 +614,7 @@ class ParserTest extends FunSuite {
                 LSquareBracketToken(Position(4, 12))
               )
             ),
+            inLoopBody = false,
             ValToken(Position(4, 0))
           )
         )
@@ -681,6 +697,7 @@ class ParserTest extends FunSuite {
                 ),
                 LSquareBracketToken(Position(1, 9))
               ),
+              inLoopBody = false,
               ValToken(Position(1, 1))
             ),
             BuiltinFunctionCall(
@@ -737,6 +754,7 @@ class ParserTest extends FunSuite {
                 ),
                 FuncToken(Position(1, 9))
               ),
+              inLoopBody = false,
               ValToken(Position(1, 1))
             ),
             BuiltinFunctionCall(
@@ -785,6 +803,7 @@ class ParserTest extends FunSuite {
                 ),
                 LCurlyBracketToken(Position(1, 14))
               ),
+              inLoopBody = false,
               ValToken(Position(1, 1))
             )
           )
@@ -808,11 +827,13 @@ class ParserTest extends FunSuite {
                 ),
                 LCurlyBracketToken(Position(1, 11))
               ),
+              inLoopBody = false,
               ValToken(Position(1, 1))
             ),
             ValDefAST(
               IdToken("f", Position(2, 5)),
               PropertyAccess(VarAST(IdToken("obj", Position(2, 9))), IdToken("y", Position(2, 13))),
+              inLoopBody = false,
               ValToken(Position(2, 1))
             )
           )
@@ -850,6 +871,7 @@ class ParserTest extends FunSuite {
                 ),
                 FuncToken(Position(1, 14))
               ),
+              inLoopBody = false,
               ValToken(Position(1, 1))
             ),
             ValDefAST(
@@ -878,6 +900,7 @@ class ParserTest extends FunSuite {
                   )
                 )
               ),
+              inLoopBody = false,
               ValToken(Position(2, 1))
             ),
             ValDefAST(
@@ -886,6 +909,7 @@ class ParserTest extends FunSuite {
                 VarAST(IdToken("person", Position(3, 9))),
                 IdToken("name", Position(3, 16))
               ),
+              inLoopBody = false,
               ValToken(Position(3, 1))
             ),
             ValDefAST(
@@ -894,6 +918,7 @@ class ParserTest extends FunSuite {
                 VarAST(IdToken("person", Position(4, 9))),
                 IdToken("surname", Position(4, 16))
               ),
+              inLoopBody = false,
               ValToken(Position(4, 1))
             )
           )
@@ -913,6 +938,7 @@ class ParserTest extends FunSuite {
                 Map(IdToken("a", Position(1, 13)) -> CharLiteral(CharToken('f', Position(1, 18)))),
                 LCurlyBracketToken(Position(1, 12))
               ),
+              inLoopBody = false,
               ValToken(Position(1, 1))
             ),
             PropertyAssignAST(

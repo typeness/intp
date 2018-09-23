@@ -11,7 +11,7 @@ class Parser(text: String)(
   private var currentToken: Token = lexer.getNextToken
 
   def parse(): Program = {
-    val node = program()
+    val node = program(false)
     if (currentToken.tokenType != EOF) {
       throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
     }
@@ -23,10 +23,10 @@ class Parser(text: String)(
   /*
   program = {statement} ;
    */
-  private def program(): Program = {
+  private def program(inLoopBody: Boolean): Program = {
     val statemets: ListBuffer[AST] = ListBuffer.empty
     while (currentToken.tokenType != EOF && currentToken.tokenType != R_CURLY_BRACKET) {
-      statemets.append(statement())
+      statemets.append(statement(inLoopBody))
     }
     Program(children = statemets.toList)
   }
@@ -40,7 +40,7 @@ class Parser(text: String)(
              | definition
              | disjunction ;
    */
-  private def statement(): AST = {
+  private def statement(inLoopBody: Boolean): AST = {
     currentToken.tokenType match {
       case IMPORT    => importStatement()
       case IF        => ifStatement()
@@ -48,7 +48,7 @@ class Parser(text: String)(
       case RETURN    => returnStatement()
       case FOR       => forStatement()
       case BREAK     => breakStatement()
-      case VAL | VAR => definition()
+      case VAL | VAR => definition(inLoopBody)
       case _         => disjunction()
     }
   }
@@ -65,7 +65,7 @@ class Parser(text: String)(
     eat(SEMICOLON)
     val step = forStatementStep()
     eat(L_CURLY_BRACKET)
-    val body = program()
+    val body = program(true)
     eat(R_CURLY_BRACKET)
     ForAST(initial, condition, step, body, ForToken(forPosition))
   }
@@ -80,7 +80,7 @@ class Parser(text: String)(
     while (currentToken.tokenType != SEMICOLON) {
       currentToken.tokenType match {
         case VAR | VAL =>
-          statements += definition()
+          statements += definition(false)
         case _ =>
           statements += disjunction()
       }
@@ -125,7 +125,7 @@ class Parser(text: String)(
     eat(IF)
     val condition = disjunction()
     eat(L_CURLY_BRACKET)
-    val ifBlock = program()
+    val ifBlock = program(false)
     eat(R_CURLY_BRACKET)
     val elseBlock = currentToken.tokenType match {
       case ELSE =>
@@ -133,7 +133,7 @@ class Parser(text: String)(
         currentToken.tokenType match {
           case L_CURLY_BRACKET =>
             eat(L_CURLY_BRACKET)
-            val elseBlock = program()
+            val elseBlock = program(false)
             eat(R_CURLY_BRACKET)
             Some(elseBlock)
           case IF => Some(ifStatement())
@@ -155,7 +155,7 @@ class Parser(text: String)(
     eat(WHILE)
     val condition = disjunction()
     eat(L_CURLY_BRACKET)
-    val whileBlock = program()
+    val whileBlock = program(true)
     eat(R_CURLY_BRACKET)
     WhileAST(condition, whileBlock, WhileToken(pos))
   }
@@ -182,7 +182,7 @@ class Parser(text: String)(
   definition = VAL ID disjunction
              | VAR ID disjunction
    */
-  private def definition(): AST = {
+  private def definition(inLoopBody: Boolean): AST = {
     val pos = currentToken.position
     currentToken.tokenType match {
       case VAL =>
@@ -191,7 +191,7 @@ class Parser(text: String)(
           case id: IdToken =>
             eat(ID)
             eat(ASSIGN)
-            ValDefAST(id, disjunction(), ValToken(pos))
+            ValDefAST(id, disjunction(), inLoopBody, ValToken(pos))
           case _ => throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
         }
       case VAR =>
@@ -200,7 +200,7 @@ class Parser(text: String)(
           case id: IdToken =>
             eat(ID)
             eat(ASSIGN)
-            VarDefAST(id, disjunction(), VarToken(pos))
+            VarDefAST(id, disjunction(), inLoopBody, VarToken(pos))
           case _ => throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
         }
       case _ => throw SyntaxError(currentToken.value, compilationUnit, currentToken.position)
@@ -409,7 +409,7 @@ class Parser(text: String)(
     eat(FUNC)
     val parameters = formalParametersList()
     eat(L_CURLY_BRACKET)
-    val root = program()
+    val root = program(false)
     eat(R_CURLY_BRACKET)
     fluentSyntax(FunctionLiteral(parameters, root, FuncToken(pos)))
   }

@@ -599,4 +599,8 @@ class InterpreterTest extends FunSuite {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/scopes.intp")
   }
+  test("Variables definition inside loops") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/loopDefs.intp")
+  }
 }
