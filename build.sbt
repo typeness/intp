@@ -1,7 +1,7 @@
 
 name := "intp"
 
-version := "0.4.4"
+version := "0.5.0"
 assemblyJarName in assembly := name.value + "-" + version.value+ ".jar"
 
 scalaVersion := "2.12.4"
