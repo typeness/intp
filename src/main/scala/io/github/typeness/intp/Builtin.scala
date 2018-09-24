@@ -73,7 +73,7 @@ object Builtin {
       (args: List[TopType], compilationUnit: CompilationUnit, position: Position) =>
         args.head match {
           case ArrayType(seq) => IntegerType(seq.size)
-          case value          => throw TypeMismatch(value, "Array", compilationUnit, position)
+          case value          => throw TypeMismatch(value, Type.Array, compilationUnit, position)
       },
       args.size,
       1
@@ -94,7 +94,7 @@ object Builtin {
           case BooleanType(bool) =>
             if (!bool) throw AssertionError(compilationUnit, position)
             else UnitType
-          case value => throw TypeMismatch(value, "Boolean", compilationUnit, position)
+          case value => throw TypeMismatch(value, Type.Boolean, compilationUnit, position)
       },
       args.size,
       1
@@ -107,14 +107,14 @@ object Builtin {
           case IntegerType(v) => IntegerType(v)
           case CharType(v)    => IntegerType(v.toInt)
           case DoubleType(v)  => IntegerType(v.toInt)
-          case ArrayType(seq) =>
+          case array@ArrayType(seq) =>
             Try(seq.mkString.toInt) match {
               case Success(x) => IntegerType(x)
               case Failure(_) =>
-                throw TypeMismatch(seq.mkString, "Integer", compilationUnit, position)
+                throw TypeMismatch(array, Type.Integer, compilationUnit, position)
             }
           case value =>
-            throw CastError(value.toString, "Integer", compilationUnit, position)
+            throw CastError(value, Type.Integer, compilationUnit, position)
       },
       args.size,
       1
@@ -127,13 +127,13 @@ object Builtin {
           case IntegerType(v) => CharType(v.toChar)
           case CharType(v)    => CharType(v)
           case DoubleType(v)  => CharType(v.toChar)
-          case ArrayType(seq) =>
+          case array@ArrayType(seq) =>
             Try(seq.head.toString.charAt(0)) match {
               case Success(x) => CharType(x)
-              case Failure(_) => throw TypeMismatch(seq.mkString, "Char", compilationUnit, position)
+              case Failure(_) => throw TypeMismatch(array, Type.Char, compilationUnit, position)
             }
           case value =>
-            throw CastError(value.toString, "Char", compilationUnit, position)
+            throw CastError(value, Type.Char, compilationUnit, position)
       },
       args.size,
       1
@@ -146,14 +146,14 @@ object Builtin {
           case IntegerType(v) => DoubleType(v.toDouble)
           case CharType(v)    => DoubleType(v.toDouble)
           case DoubleType(v)  => DoubleType(v)
-          case ArrayType(seq) =>
+          case array@ArrayType(seq) =>
             Try(seq.mkString.toDouble) match {
               case Success(x) => DoubleType(x)
               case Failure(_) =>
-                throw TypeMismatch(seq.mkString, "Double", compilationUnit, position)
+                throw TypeMismatch(array, Type.Double, compilationUnit, position)
             }
           case value =>
-            throw CastError(value.toString, "Double", compilationUnit, position)
+            throw CastError(value, Type.Double, compilationUnit, position)
       },
       args.size,
       1
@@ -167,7 +167,7 @@ object Builtin {
             System.exit(code)
             UnitType
           case value =>
-            throw CastError(value.toString, "Integer", compilationUnit, position)
+            throw TypeMismatch(value, Type.Integer, compilationUnit, position)
       },
       args.size,
       1

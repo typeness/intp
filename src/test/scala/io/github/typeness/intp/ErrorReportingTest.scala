@@ -76,7 +76,7 @@ class ErrorReportingTest extends FunSuite {
   test("Use undefined variable") {
     val error = intercept[UndefinedVariable] {
       val interpreter = new Interpreter()
-      interpreter.runFromString("val a = b")
+      interpreter.runFromResource("errors/undefined.intp")
     }
     println(error.getMessage)
   }
@@ -87,7 +87,7 @@ class ErrorReportingTest extends FunSuite {
     }
     println(error.getMessage)
   }
-  test("Provide wrong number of for anonymous function call") {
+  test("Provide wrong number of arguments for anonymous function call") {
     val error = intercept[WrongFunctionCall] {
       val interpreter = new Interpreter()
       interpreter.runFromResource("errors/wrong-anon-function-call.intp")
@@ -98,6 +98,13 @@ class ErrorReportingTest extends FunSuite {
     val error = intercept[AssertionError] {
       val interpreter = new Interpreter()
       interpreter.runFromResource("errors/failed-assertion.intp")
+    }
+    println(error.getMessage)
+  }
+  test("Array index out of bound") {
+    val error = intercept[IndexOutOfBound] {
+      val interpreter = new Interpreter()
+      interpreter.runFromResource("errors/indexOutOfBounds.intp")
     }
     println(error.getMessage)
   }

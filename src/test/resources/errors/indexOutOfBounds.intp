@@ -1,0 +1,2 @@
+val array = []
+val x = array[99]

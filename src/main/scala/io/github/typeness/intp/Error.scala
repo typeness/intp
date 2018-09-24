@@ -29,19 +29,19 @@ case class AssertionError(compilationUnit: CompilationUnit, position: Position)
       position
     )
 
-case class TypeMismatch(found: Any,
-                        required: String,
+case class TypeMismatch(found: TopType,
+                        required: Type.Enum,
                         compilationUnit: CompilationUnit,
                         position: Position)
     extends InterpreterError(
       "type mismatch\n" +
-        s"found: $found\n" +
-        s"required: $required\n",
+        s"found: '${Type.toEnum(found).toString}' with value '$found'\n" +
+        s"required: '$required'\n",
       compilationUnit,
       position
     )
 
-case class CastError(from: String, to: String, compilationUnit: CompilationUnit, position: Position)
+case class CastError(from: TopType, to: Type.Enum, compilationUnit: CompilationUnit, position: Position)
     extends InterpreterError(
       "casting failed\n" +
         s"from: $from\n" +
@@ -51,22 +51,22 @@ case class CastError(from: String, to: String, compilationUnit: CompilationUnit,
     )
 
 case class WrongUnaryOperator(op: Token,
-                              value: Any,
+                              operand: Type.Enum,
                               compilationUnit: CompilationUnit,
                               position: Position)
     extends InterpreterError(
-      s"bad operand type for unary operator: ${op.value} $value\n",
+      s"bad operand's type '${operand.toString}' for unary operator' ${op.value}' \n",
       compilationUnit,
       position
     )
 
-case class WrongBinaryOperator(left: Any,
+case class WrongBinaryOperator(left: Type.Enum,
                                op: Token,
-                               right: Any,
+                               right: Type.Enum,
                                compilationUnit: CompilationUnit,
                                position: Position)
     extends InterpreterError(
-      s"bad operands type for binary operator: $left ${op.value} $right\n",
+      s"bad operand's type for binary operator: '${left.toString}' '${op.value}' '${right.toString}'\n",
       compilationUnit,
       position
     )
