@@ -603,4 +603,8 @@ class InterpreterTest extends FunSuite {
     val interpreter = new Interpreter()
     interpreter.runFromResource("interpreter/loopDefs.intp")
   }
+  test("Short-circuit evaluation") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("interpreter/shortCircuitEval.intp")
+  }
 }

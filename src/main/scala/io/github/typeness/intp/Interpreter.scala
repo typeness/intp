@@ -42,16 +42,23 @@ class Interpreter extends ASTVisitor {
       throw WrongBinaryOperator(left, op, right, compilationUnit, op.position)
   }
 
-  private def booleanOperands(left: Boolean, op: Token, right: Boolean): BooleanType =
-    op.tokenType match {
-      case AND        => BooleanType(left && right)
-      case OR         => BooleanType(left || right)
-      case EQUALS     => BooleanType(left == right)
-      case NOT_EQUALS => BooleanType(left != right)
+  private def booleanOperands(left: Boolean, op: Token, right: AST): BooleanType = {
+    def evalRight(right: AST): BooleanType = visit(right) match {
+      case b: BooleanType => b
+      case _ => throw WrongBinaryOperator(left, op, right, compilationUnit, op.position)
+    }
+    (left, op.tokenType) match {
+      case (false, AND)       => BooleanType(false)
+      case (true, AND)        => evalRight(right)
+      case (true, OR)         => BooleanType(true)
+      case (false, OR)        => evalRight(right)
+      case (_, EQUALS)        => BooleanType(left == evalRight(right).value)
+      case (_, NOT_EQUALS)    => BooleanType(left != evalRight(right).value)
       case _ =>
         throw WrongBinaryOperator(left, op, right, compilationUnit, op.position)
     }
 
+  }
   private def charOperands(left: Char, op: Token, right: Char): TopType =
     op.tokenType match {
       case EQUALS     => BooleanType(left == right)
@@ -84,26 +91,30 @@ class Interpreter extends ASTVisitor {
       case _          => throw WrongBinaryOperator(left, op, right, compilationUnit, op.position)
     }
 
-  override protected def binOp(ast: BinOp): TopType =
-    (visit(ast.left), visit(ast.right)) match {
-      /* In case of double Ints to be able to call numericOperands method
-        we need to cast one operand to Double then we can cast again to Int
-       */
-      case (IntegerType(left), IntegerType(right)) =>
-        //      case (left: Int, right: Int) =>
-        integerOperands(left, ast.op, right)
-      case (IntegerType(left), DoubleType(right)) => doubleOperands(left.toDouble, ast.op, right)
-      case (DoubleType(left), IntegerType(right)) => doubleOperands(left, ast.op, right.toDouble)
-      case (DoubleType(left), DoubleType(right))  => doubleOperands(left, ast.op, right)
-      case (BooleanType(left), BooleanType(right)) =>
-        booleanOperands(left, ast.op, right)
-      case (ArrayType(left), ArrayType(right)) =>
-        arrayOperands(left, ast.op, right)
-      case (CharType(left), CharType(right))             => charOperands(left, ast.op, right)
-      case (left @ ObjectType(_), right @ ObjectType(_)) => objectOperands(left, ast.op, right)
-      case (left, right) =>
-        throw WrongBinaryOperator(left, ast.op, right, compilationUnit, ast.op.position)
+  override protected def binOp(ast: BinOp): TopType = {
+    val leftOperand = visit(ast.left)
+    leftOperand match {
+      // second operand is lazy for short circuit evaluation
+      case BooleanType(value) => booleanOperands(value, ast.token, ast.right)
+      case _ => (leftOperand, visit(ast.right)) match {
+        /* In case of double Ints to be able to call numericOperands method
+          we need to cast one operand to Double then we can cast again to Int
+         */
+        case (IntegerType(left), IntegerType(right)) =>
+          //      case (left: Int, right: Int) =>
+          integerOperands(left, ast.op, right)
+        case (IntegerType(left), DoubleType(right)) => doubleOperands(left.toDouble, ast.op, right)
+        case (DoubleType(left), IntegerType(right)) => doubleOperands(left, ast.op, right.toDouble)
+        case (DoubleType(left), DoubleType(right))  => doubleOperands(left, ast.op, right)
+        case (ArrayType(left), ArrayType(right)) =>
+          arrayOperands(left, ast.op, right)
+        case (CharType(left), CharType(right))             => charOperands(left, ast.op, right)
+        case (left @ ObjectType(_), right @ ObjectType(_)) => objectOperands(left, ast.op, right)
+        case (left, right) =>
+          throw WrongBinaryOperator(left, ast.op, right, compilationUnit, ast.op.position)
+      }
     }
+  }
 
   override protected def number(ast: Number): TopType = ast.token match {
     case IntegerConstToken(intValue, _) => IntegerType(intValue)
