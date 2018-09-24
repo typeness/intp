@@ -1,10 +1,10 @@
-binSearch = func(sortedArray, value) {
-  search = func(p, r) {
+val binSearch = func(sortedArray, value) {
+  val search = func(p, r) {
     if (p > r) {
       return -1
     }
     else {
-      q = (p + r) / 2
+      val q = (p + r) / 2
       if (sortedArray[q] == value) {
         return q
       }
@@ -19,7 +19,7 @@ binSearch = func(sortedArray, value) {
   return search(0, size(sortedArray) - 1)
 }
 
-array = [-3, 2, 3, 5, 7, 8]
+var array = [-3, 2, 3, 5, 7, 8]
 assert(binSearch(array, -3) == 0)
 assert(binSearch(array, 2) == 1)
 assert(binSearch(array, 3) == 2)

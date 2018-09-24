@@ -1,5 +1,5 @@
-isPalindrome = func(word) {
-  i = 0
+val isPalindrome = func(word) {
+  var i = 0
   while (i < size(word) / 2) {
     if (word[i] != word[size(word) - i - 1]) {
       return false

@@ -27,4 +27,20 @@ class RuntimeTest extends FunSuite {
     val interpreter = new Interpreter()
     interpreter.runFromResource("runtime/palindrome.intp")
   }
+  test("Insertion sort") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("runtime/insertionSort.intp")
+  }
+  test("Merge sort") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("runtime/mergeSort.intp")
+  }
+  test("Quick sort") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("runtime/quickSort.intp")
+  }
+  test("Perfect square") {
+    val interpreter = new Interpreter()
+    interpreter.runFromResource("runtime/isPerfectSquare.intp")
+  }
 }

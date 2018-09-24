@@ -1,0 +1,27 @@
+val isPerfectSquare = func(n) {
+  if n == 1 {
+    return true
+  }
+  var begin = 1
+  var end = n
+  while begin < end {
+    var middle = (begin + end) / 2
+    if middle * middle == n {
+      return true
+    } else if middle * middle < n {
+      begin = middle + 1
+    } else {
+      end = middle - 1
+    }
+  }
+  return false
+}
+
+assert(isPerfectSquare(1))
+assert(not isPerfectSquare(2))
+assert(not isPerfectSquare(3))
+assert(isPerfectSquare(4))
+assert(not isPerfectSquare(5))
+assert(isPerfectSquare(9))
+assert(isPerfectSquare(16))
+
