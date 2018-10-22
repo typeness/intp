@@ -1,5 +1,15 @@
 ## intp
 Imperative and dynamically typed programming language.
+
+### REPL
+Apart from file based interpreter there's also REPL. To run code type `GO` at the end, for e.g
+```
+val x = 1 + 2
+println(x)
+GO
+```
+
+## Docs 
 ### If-else statement
 No need to put condition in parentheses
 ```

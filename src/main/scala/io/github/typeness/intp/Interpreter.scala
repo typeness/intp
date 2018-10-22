@@ -476,8 +476,8 @@ class Interpreter extends ASTVisitor {
 
   def runFromString(source: String): TopType = {
     fileName = source
+    compilationUnit = compilationUnit.copy(source = source)
     val parser = new Parser(source)(compilationUnit)
-    compilationUnit = parser.compilationUnit
     val ast = parser.parse()
     visit(ast)
   }
