@@ -52,7 +52,7 @@ Person actually desugars to function returning object literal i.e. `func(name, s
 
 ### Function
 ```
-factorial = func(n) {
+val factorial = func(n) {
   if n == 0 or n == 1 return 1
   else return n * factorial(n - 1)
 }
